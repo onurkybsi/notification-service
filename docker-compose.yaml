@@ -1,0 +1,11 @@
+version: '3.0'
+
+services:
+  notification_service_db:
+    image: postgres:15.5
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=notification_service_db
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
