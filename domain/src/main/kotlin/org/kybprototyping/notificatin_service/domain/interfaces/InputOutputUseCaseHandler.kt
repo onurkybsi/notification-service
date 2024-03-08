@@ -1,4 +1,4 @@
-package org.kybprototyping.notification_service.domain.interfaces
+package org.kybprototyping.notificatin_service.domain.interfaces
 
 /**
  * Represents the use cases with an input and an output.

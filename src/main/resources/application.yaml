@@ -1,6 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/notification_service_db
-    username: username
-    password: password
-    driverClassName: org.postgresql.Driver
