@@ -1,6 +1,7 @@
 package org.kybprototyping.notificatin_service.domain.interfaces
 
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Simple generic interface for validators.
@@ -36,17 +37,24 @@ interface Validator<T> {
             failures[name] = fieldFailures
         }
 
+        /**
+         * Returns whether there are failures or not.
+         *
+         * @return **true** if there is no failure, otherwise **false**.
+         */
         fun  isValid(): Boolean {
             return failures.isEmpty()
         }
 
-        override fun toString(): String {
-            val failuresStr = StringBuilder("{")
-            for (fieldName in failures.keys) {
-                failuresStr.append((fieldName + "=" + failures[fieldName]) + ", ")
-            }
-            failuresStr.delete(failuresStr.length - 2, failuresStr.length).append("}")
-            return failuresStr.toString()
+        /**
+         * Returns the added failures.
+         *
+         * @return added failures
+         */
+        fun getFailures(): HashMap<String, ArrayList<String>> {
+            val copy = HashMap<String, ArrayList<String>>()
+            failures.forEach { f -> copy[f.key] = ArrayList(f.value) }
+            return  copy
         }
 
     }

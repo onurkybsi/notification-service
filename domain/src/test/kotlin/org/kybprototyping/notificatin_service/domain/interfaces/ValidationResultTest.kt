@@ -3,6 +3,9 @@ package org.kybprototyping.notificatin_service.domain.interfaces
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import org.kybprototyping.notificatin_service.domain.interfaces.Validator.ValidationResult
+import java.util.HashMap
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -46,18 +49,26 @@ class ValidationResultTest {
     }
 
     @Test
-    fun toString_Should_Return_FieldFailures_String() {
+    @Suppress("unchecked_cast")
+    fun getFailures_Should_Return_DeepCopy_Of_FieldFailures() {
         // given
         val validationResult = ValidationResult()
         validationResult.addFailure("fieldX", "cannot be null")
         validationResult.addFailure("fieldX", "must be email formatted")
         validationResult.addFailure("fieldY", "cannot be null")
 
+        val memberProperties = ValidationResult::class.memberProperties
+        val failuresField = memberProperties.stream().filter { m -> m.name == "failures" }.findFirst().orElseThrow()
+        failuresField.apply { isAccessible = true }
+        val failures = failuresField.get(validationResult) as HashMap<String, ArrayList<String>>
+
         // when
-        val actualResult = validationResult.toString()
+        val actualResult = validationResult.getFailures()
 
         // then
-        assertEquals("{fieldY=[cannot be null], fieldX=[cannot be null, must be email formatted]}", actualResult)
+        assertTrue { actualResult !== failures }
+        assertTrue { actualResult.entries.stream().allMatch { ae -> failures.entries.stream().allMatch { fe -> fe !== ae } } }
+        assertEquals(mapOf(Pair("fieldX", listOf("cannot be null", "must be email formatted")), Pair("fieldY", listOf("cannot be null"))), actualResult)
     }
 
 }
