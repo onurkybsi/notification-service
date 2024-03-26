@@ -3,7 +3,7 @@ package org.kybprototyping.notificatin_service.domain.exception
 /**
  * Represents the exceptions occurred during handling a use case.
  */
-class UseCaseException(message: String, dueToDataInvalidity: Boolean, failures: Any?) : RuntimeException(message) {
+class UseCaseException(message: String, val dueToDataInvalidity: Boolean = false, val failures: Any? = null) : RuntimeException(message) {
 }
 
 /**
