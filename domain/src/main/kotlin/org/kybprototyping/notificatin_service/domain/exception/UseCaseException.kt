@@ -1,0 +1,18 @@
+package org.kybprototyping.notificatin_service.domain.exception
+
+/**
+ * Represents the exceptions occurred during handling a use case.
+ */
+class UseCaseException(message: String, dueToDataInvalidity: Boolean, failures: Any?) : RuntimeException(message) {
+}
+
+/**
+ * Builds a [UseCaseException] with context of data invalidity.
+ *
+ * @param message exception message
+ * @param failures object contains the details of the invalidity
+ * @return built [UseCaseException]
+ */
+fun dataInvalidity(message: String, failures: Any): UseCaseException {
+    return UseCaseException(message, true, failures)
+}
