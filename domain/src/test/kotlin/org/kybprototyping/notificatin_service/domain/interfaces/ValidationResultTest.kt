@@ -20,7 +20,8 @@ class ValidationResultTest {
         result.addFailure("fieldX", "something wrong")
 
         // then
-        assertEquals("{fieldX=[something wrong]}", result.toString())
+        assertEquals(mapOf(Pair("fieldX", listOf("something wrong"))), result.getFailures())
+
     }
 
     @Test

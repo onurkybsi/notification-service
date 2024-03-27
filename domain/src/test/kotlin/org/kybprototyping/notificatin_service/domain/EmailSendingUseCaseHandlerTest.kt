@@ -3,10 +3,13 @@ package org.kybprototyping.notificatin_service.domain
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.kybprototyping.notificatin_service.domain.dto.EmailLanguage
 import org.kybprototyping.notificatin_service.domain.dto.EmailSendingInput
+import org.kybprototyping.notificatin_service.domain.dto.EmailType
 import org.kybprototyping.notificatin_service.domain.exception.UseCaseException
 import org.kybprototyping.notificatin_service.domain.interfaces.Validator
 import org.kybprototyping.notificatin_service.domain.interfaces.Validator.ValidationResult
+import org.kybprototyping.notificatin_service.domain.port.EmailTemplateStoragePort
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -19,6 +22,8 @@ internal class EmailSendingUseCaseHandlerTest {
 
     @Mock
     lateinit var validator: Validator<EmailSendingInput>
+    @Mock
+    lateinit var emailTemplateStorageAdapter: EmailTemplateStoragePort
 
     @InjectMocks
     lateinit var underTest: EmailSendingUseCaseHandler
@@ -26,7 +31,7 @@ internal class EmailSendingUseCaseHandlerTest {
     @Test
     fun handle_Should_Throw_DataInvalidityException_When_Given_Input_Is_Not_Valid() {
         // given
-        val input = EmailSendingInput("")
+        val input = EmailSendingInput(EmailType.WELCOME, EmailLanguage.EN, "")
         val validationResult = ValidationResult()
         validationResult.addFailure("to", "must be an email address")
         Mockito.`when`(validator.validate(input)).thenReturn(validationResult)
