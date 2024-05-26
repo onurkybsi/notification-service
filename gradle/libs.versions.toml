@@ -1,0 +1,10 @@
+[versions]
+kotlin-gradle-plugin = "1.9.20"
+spring-context = "6.1.8"
+
+[libraries]
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-gradle-plugin" }
+spring-context = { module = "org.springframework:spring-context", version.ref = "spring-context" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot" }
