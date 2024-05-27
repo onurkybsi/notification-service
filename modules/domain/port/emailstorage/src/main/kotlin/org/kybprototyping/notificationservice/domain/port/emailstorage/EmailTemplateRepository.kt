@@ -8,7 +8,7 @@ import org.kybprototyping.notificationservice.domain.model.EmailType
 /**
  * Represents the API which provides the email template data stored in the underlying datasource.
  */
-interface EmailTemplateStorage {
+interface EmailTemplateRepository {
 
     /**
      * Returns the email template with given [type] and [language].
