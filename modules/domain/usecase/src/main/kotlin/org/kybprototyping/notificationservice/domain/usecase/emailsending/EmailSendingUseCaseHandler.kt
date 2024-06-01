@@ -1,10 +1,10 @@
 package org.kybprototyping.notificationservice.domain.usecase.emailsending
 
+import org.kybprototyping.notificationservice.common.Validator
 import org.kybprototyping.notificationservice.domain.common.exception.dataInvalidity
 import org.kybprototyping.notificationservice.domain.model.EmailSendingInput
 import org.kybprototyping.notificationservice.domain.port.emailstorage.EmailTemplateRepository
 import org.kybprototyping.notificationservice.domain.usecase.InputOnlyUseCaseHandler
-import org.kybprototyping.notificationservice.domain.usecase.Validator
 
 internal class EmailSendingUseCaseHandler(
     private val validator: Validator<EmailSendingInput>,
@@ -15,7 +15,7 @@ internal class EmailSendingUseCaseHandler(
     override fun handle(input: EmailSendingInput) {
         // Step 1: Validate input
         val validationResult = validator.validate(input)
-        if (!validationResult.isValid()) {
+        if (validationResult.isNotValid()) {
             throw dataInvalidity("Input is not valid!", validationResult.getFailures())
         }
         // Step 2: Fetch template

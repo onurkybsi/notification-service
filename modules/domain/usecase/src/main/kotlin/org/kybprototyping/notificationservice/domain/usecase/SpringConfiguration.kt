@@ -1,5 +1,6 @@
 package org.kybprototyping.notificationservice.domain.usecase
 
+import org.kybprototyping.notificationservice.common.Validator
 import org.kybprototyping.notificationservice.domain.model.EmailSendingInput
 import org.kybprototyping.notificationservice.domain.port.emailstorage.EmailTemplateRepository
 import org.kybprototyping.notificationservice.domain.usecase.emailsending.EmailSendingUseCaseHandler

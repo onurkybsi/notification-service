@@ -15,5 +15,6 @@ include(
     "modules:domain:port:emailstorage",
     "modules:domain:common",
     "modules:domain:usecase",
-    "modules:adapter:primary"
+    "modules:adapter:primary",
+    "modules:common"
 )

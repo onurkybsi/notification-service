@@ -3,7 +3,7 @@ package org.kybprototyping.notificationservice.domain.usecase
 /**
  * Represents the use cases with an input and no output.
  */
-interface InputOnlyUseCaseHandler<I> {
+interface InputOnlyUseCaseHandler<in I> {
 
     /**
      * Handles the use case with given input.
