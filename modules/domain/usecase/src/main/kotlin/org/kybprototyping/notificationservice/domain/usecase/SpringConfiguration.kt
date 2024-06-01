@@ -2,7 +2,7 @@ package org.kybprototyping.notificationservice.domain.usecase
 
 import org.kybprototyping.notificationservice.common.Validator
 import org.kybprototyping.notificationservice.domain.model.EmailSendingInput
-import org.kybprototyping.notificationservice.domain.port.emailstorage.EmailTemplateRepository
+import org.kybprototyping.notificationservice.domain.port.notificationtemplaterepository.NotificationTemplateRepository
 import org.kybprototyping.notificationservice.domain.usecase.emailsending.EmailSendingUseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.emailsending.EmailSendingValidator
 import org.springframework.context.annotation.Bean
@@ -14,9 +14,9 @@ open class SpringConfiguration {
     @Bean
     open fun emailSendingUseCaseHandler(
         validator: Validator<EmailSendingInput>,
-        emailTemplateRepositoryAdapter: EmailTemplateRepository
+        notificationTemplateRepositoryAdapter: NotificationTemplateRepository
     ): InputOnlyUseCaseHandler<EmailSendingInput> {
-        return EmailSendingUseCaseHandler(validator, emailTemplateRepositoryAdapter)
+        return EmailSendingUseCaseHandler(validator, notificationTemplateRepositoryAdapter)
     }
 
     @Bean

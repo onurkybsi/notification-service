@@ -3,5 +3,5 @@ dependencies {
     implementation(project(":modules:common"))
     implementation(project(":modules:domain:common"))
     implementation(project(":modules:domain:model"))
-    implementation(project(":modules:domain:port:emailstorage"))
+    implementation(project(":modules:domain:port:notificationtemplaterepository"))
 }

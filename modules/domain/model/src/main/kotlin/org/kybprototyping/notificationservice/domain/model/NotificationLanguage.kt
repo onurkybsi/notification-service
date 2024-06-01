@@ -1,9 +1,9 @@
 package org.kybprototyping.notificationservice.domain.model
 
 /**
- * Languages of email notifications.
+ * Languages of notifications.
  */
-enum class EmailLanguage {
+enum class NotificationLanguage {
 
     EN,
     DE

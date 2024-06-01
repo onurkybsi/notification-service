@@ -12,9 +12,11 @@ rootProject.name = "notification-service"
 
 include(
     "modules:domain:model",
-    "modules:domain:port:emailstorage",
+    "modules:domain:port:notificationtemplaterepository",
     "modules:domain:common",
     "modules:domain:usecase",
     "modules:adapter:primary",
     "modules:common"
 )
+include("modules:adapter:secondary:notificationtemplaterepository")
+findProject(":modules:adapter:secondary:notificationtemplaterepository")?.name = "notificationtemplaterepository"

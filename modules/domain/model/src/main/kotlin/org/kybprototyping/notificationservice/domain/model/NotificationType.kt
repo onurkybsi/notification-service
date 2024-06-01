@@ -1,9 +1,9 @@
 package org.kybprototyping.notificationservice.domain.model
 
 /**
- * Types of email notifications.
+ * Types of notifications.
  */
-enum class EmailType {
+enum class NotificationType {
 
     WELCOME,
     PASSWORD_RESET
