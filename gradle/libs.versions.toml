@@ -1,7 +1,21 @@
 [versions]
 spring-context = "6.1.8"
+flyway = "8.2.0"
+nustuderjooq = "9.0"
+postgresqljdbcdriver = "42.7.3"
+postgresqlr2dbcdriver = "1.0.5.RELEASE"
+r2dbcpool = "1.0.1.RELEASE"
+springdatar2dbc = "3.3.0"
 
 [libraries]
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring-context" }
+postgresqljdbcdriver = { module = "org.postgresql:postgresql", version.ref = "postgresqljdbcdriver" }
+postgresqlr2dbcdriver = { module = "org.postgresql:r2dbc-postgresql", version.ref = "postgresqlr2dbcdriver" }
+r2dbcpool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbcpool" }
+springdatar2dbc = { module = "org.springframework.data:spring-data-r2dbc", version.ref = "springdatar2dbc" }
 
 [plugins]
+flyway = { id = "org.flywaydb.flyway", version.ref = "flyway" }
+nustuderjooq = { id = "nu.studer.jooq", version.ref = "nustuderjooq" }
+
+[bundles]

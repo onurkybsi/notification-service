@@ -1,0 +1,15 @@
+package org.kybprototyping.notificationservice.domain.usecase.notificationtemplatecreation
+
+import org.kybprototyping.notificationservice.domain.model.NotificationChannel
+import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
+import org.kybprototyping.notificationservice.domain.model.NotificationType
+
+/**
+ * Represents the input of notification template creation use case.
+ */
+data class NotificationTemplateCreationInput(
+    val channel: NotificationChannel,
+    val type: NotificationType,
+    val language: NotificationLanguage,
+    val content: String,
+)
