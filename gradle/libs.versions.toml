@@ -9,6 +9,7 @@ r2dbcpool = "1.0.1.RELEASE"
 spring-datar2dbc = "3.3.0"
 testcontainers = "1.19.8"
 kotlinxcoroutinestest = "1.8.1"
+springdoc = "2.5.0"
 
 [libraries]
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring-context" }
@@ -19,6 +20,7 @@ spring-datar2dbc = { module = "org.springframework.data:spring-data-r2dbc", vers
 testcontainers = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 flywaycore = { module = "org.flywaydb:flyway-core", version.ref = "flywaycore" }
 kotlinxcoroutinestest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxcoroutinestest" }
+springdoc = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
 
 [plugins]
 flywayplugin = { id = "org.flywaydb.flyway", version.ref = "flywayplugin" }

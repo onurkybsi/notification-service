@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.postgresqlr2dbcdriver)
     implementation(libs.r2dbcpool)
     implementation(libs.spring.datar2dbc)
+    implementation(libs.springdoc)
 
     // Needed for Flyway migration
     runtimeOnly(libs.postgresqljdbcdriver)

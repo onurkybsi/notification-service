@@ -7,6 +7,10 @@ logging:
     org.springframework.orm.jpa: DEBUG
     org.springframework.transaction: DEBUG
 
+springdoc:
+  swagger-ui:
+    path: "/swagger-ui"
+
 db:
   host: ${DB_HOST}
   port: ${DB_PORT}
