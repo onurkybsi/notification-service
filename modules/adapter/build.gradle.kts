@@ -1,10 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.run.BootRun
 
-val dbUrl = System.getenv("DB_URL")
-val dbUser = System.getenv("DB_USER")
-val dbPassword = System.getenv("DB_PASSWORD")
-
 plugins {
     // From Spring initializer
     id("org.springframework.boot") version "3.3.0"
@@ -15,9 +11,9 @@ plugins {
 }
 
 flyway {
-    url = dbUrl
-    user = dbUser
-    password = dbPassword
+    url = System.getenv("DB_URL")
+    user = System.getenv("DB_USER")
+    password = System.getenv("DB_PASSWORD")
     locations = arrayOf("classpath:db/migration")
 }
 
@@ -28,12 +24,11 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("org.springframework.data:spring-data-r2dbc:3.3.0")
 
     implementation(project(":modules:domain"))
     implementation(libs.postgresqlr2dbcdriver)
     implementation(libs.r2dbcpool)
-    implementation("org.springframework.data:spring-data-relational:3.3.0")
+    implementation(libs.spring.datar2dbc)
 
     // Needed for Flyway migration
     runtimeOnly(libs.postgresqljdbcdriver)
@@ -43,9 +38,9 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    testImplementation(libs.testcontainers)
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation(libs.kotlinxcoroutinestest)
     testImplementation(libs.flywaycore)
+    testImplementation(libs.testcontainers)
 }
 
 tasks.withType<KotlinCompile> {

@@ -6,17 +6,19 @@ nustuderjooq = "9.0"
 postgresqljdbcdriver = "42.7.3"
 postgresqlr2dbcdriver = "1.0.5.RELEASE"
 r2dbcpool = "1.0.1.RELEASE"
-springdatar2dbc = "3.3.0"
+spring-datar2dbc = "3.3.0"
 testcontainers = "1.19.8"
+kotlinxcoroutinestest = "1.8.1"
 
 [libraries]
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring-context" }
 postgresqljdbcdriver = { module = "org.postgresql:postgresql", version.ref = "postgresqljdbcdriver" }
 postgresqlr2dbcdriver = { module = "org.postgresql:r2dbc-postgresql", version.ref = "postgresqlr2dbcdriver" }
 r2dbcpool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbcpool" }
-springdatar2dbc = { module = "org.springframework.data:spring-data-r2dbc", version.ref = "springdatar2dbc" }
+spring-datar2dbc = { module = "org.springframework.data:spring-data-r2dbc", version.ref = "spring-datar2dbc" }
 testcontainers = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 flywaycore = { module = "org.flywaydb:flyway-core", version.ref = "flywaycore" }
+kotlinxcoroutinestest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxcoroutinestest" }
 
 [plugins]
 flywayplugin = { id = "org.flywaydb.flyway", version.ref = "flywayplugin" }
