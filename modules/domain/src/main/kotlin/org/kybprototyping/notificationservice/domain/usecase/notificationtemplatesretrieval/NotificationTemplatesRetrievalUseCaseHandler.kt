@@ -9,6 +9,6 @@ internal class NotificationTemplatesRetrievalUseCaseHandler(
 ): InputOutputUseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>> {
 
     override suspend fun handle(input: NotificationTemplatesRetrievalInput): List<NotificationTemplate> =
-        notificationTemplateRepositoryPort.getList(input.channel, input.type, input.language)
+        notificationTemplateRepositoryPort.getListBy(input.channel, input.type, input.language)
 
 }

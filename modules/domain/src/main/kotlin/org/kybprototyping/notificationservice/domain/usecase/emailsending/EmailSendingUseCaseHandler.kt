@@ -19,7 +19,7 @@ internal class EmailSendingUseCaseHandler(
             throw dataInvalidity("Input is not valid!", validationResult.getFailures())
         }
         // Step 2: Fetch template
-        val template = notificationTemplateRepositoryPortAdapter.get(NotificationChannel.EMAIL, input.type, input.language)
+        val template = notificationTemplateRepositoryPortAdapter.getOneBy(NotificationChannel.EMAIL, input.type, input.language)
         // Step 3: Prepare email content, (warning log if there are missing placeholder values)
         // Step 4: Store email to be sent
         // Step 5: Send email

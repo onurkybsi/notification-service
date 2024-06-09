@@ -33,7 +33,6 @@ open class SpringConfiguration {
 
     @Bean
     internal open fun emailSendingUseCaseHandler(
-        validator: Validator<EmailSendingInput>,
         notificationTemplateRepositoryPortAdapter: NotificationTemplateRepositoryPort
     ): InputOnlyUseCaseHandler<EmailSendingInput> {
         return EmailSendingUseCaseHandler(EmailSendingValidator(), notificationTemplateRepositoryPortAdapter)

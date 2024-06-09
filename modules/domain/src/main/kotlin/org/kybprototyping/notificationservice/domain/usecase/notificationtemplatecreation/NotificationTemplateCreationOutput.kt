@@ -4,5 +4,5 @@ package org.kybprototyping.notificationservice.domain.usecase.notificationtempla
  * Represents the output of notification template creation use case.
  */
 data class NotificationTemplateCreationOutput(
-    val id: Long
+    val id: Int
 )

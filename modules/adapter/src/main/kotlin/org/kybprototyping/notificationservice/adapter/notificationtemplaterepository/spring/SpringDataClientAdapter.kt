@@ -1,55 +1,93 @@
 package org.kybprototyping.notificationservice.adapter.notificationtemplaterepository.spring
 
+import kotlinx.coroutines.reactive.awaitSingle
 import org.kybprototyping.notificationservice.domain.model.*
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 import org.springframework.r2dbc.core.DatabaseClient
-import org.springframework.r2dbc.core.awaitOne
+import org.springframework.r2dbc.core.awaitSingleOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
 
-private const val INSERTION_SCRIPT = """
-    INSERT INTO public.notification_template (modification_date, creation_date, channel, type, language, content)
-    VALUES(:modification_date, :creation_date, :channel, :type, :language, :content)
-"""
-
 @Component
-internal open class SpringDataClientAdapter(
-    private val databaseClient: DatabaseClient
-): NotificationTemplateRepositoryPort {
+internal class SpringDataClientAdapter(
+    private val databaseClient: DatabaseClient,
+    private val mapper: NotificationTemplateMapper
+) : NotificationTemplateRepositoryPort {
 
     @Transactional
-    override suspend fun create(request: NotificationTemplateCreationRequest): Long {
-        val values: MutableMap<String, Any> = LinkedHashMap()
-        values["modification_date"] = OffsetDateTime.now() // TODO: TimeUtils!
-        values["creation_date"] = OffsetDateTime.now() // TODO: TimeUtils!
-        values["channel"] = request.channel
-        values["type"] = request.type
-        values["language"] = request.language
-        values["content"] = request.content
-        return databaseClient.sql(INSERTION_SCRIPT).bindValues(values)
-            .filter { s -> s.returnGeneratedValues("id") }
-            .map { row -> row.get("id", String::class.java)?.toLong() ?: throw RuntimeException() /*TODO: Custom exception!*/ }
-            .awaitOne()
+    override suspend fun create(request: NotificationTemplateCreationRequest): Int {
+        val values = mapOf(
+            "modificationDate" to OffsetDateTime.now(),
+            "creationDate" to OffsetDateTime.now(),
+            "channel" to mapper.toEntity(request.channel),
+            "type" to mapper.toEntity(request.type),
+            "language" to mapper.toEntity(request.language),
+            "content" to request.content)
+        return databaseClient.sql("""
+            INSERT INTO public.notification_template (modification_date, creation_date, channel, type, language, content)
+            VALUES(:modificationDate, :creationDate, :channel, :type, :language, :content)
+            RETURNING id
+            """.trimIndent()
+        ).bindValues(values)
+            .map { row -> row.get("id") as Int }
+            .awaitSingleOrNull()!!
     }
 
-    override suspend fun getList(
+    @Transactional(readOnly = true)
+    override suspend fun getListBy(
         channel: NotificationChannel?,
         type: NotificationType?,
         language: NotificationLanguage?
     ): List<NotificationTemplate> {
-        TODO("Not yet implemented")
+        val whereClause = StringBuilder()
+        val values = mutableMapOf<String, Any>()
+        if (channel != null) {
+            whereClause.append("(:channel IS NULL OR channel = :channel)")
+            values["channel"] = mapper.toEntity(channel)
+        }
+        if (type != null) {
+            if (whereClause.isNotEmpty())
+                whereClause.append(" AND ")
+            whereClause.append("(:type IS NULL OR type = :type)")
+            values["type"] = mapper.toEntity(type)
+        }
+        if (language != null) {
+            if (whereClause.isNotEmpty())
+                whereClause.append(" AND ")
+            whereClause.append("(:language IS NULL OR language = :language)")
+            values["language"] = mapper.toEntity(language)
+        }
+        return databaseClient.sql("SELECT * FROM public.notification_template WHERE $whereClause")
+            .bindValues(values)
+            .map { row -> mapper.toDto(row) }
+            .all()
+            .collectList()
+            .awaitSingle()
     }
 
-    override suspend fun get(
+    @Transactional(readOnly = true)
+    override suspend fun getOneBy(
         channel: NotificationChannel,
         type: NotificationType,
         language: NotificationLanguage
-    ): NotificationTemplate? {
-        TODO("Not yet implemented")
-    }
+    ): NotificationTemplate? =
+        databaseClient.sql("""
+            SELECT * FROM public.notification_template
+            WHERE channel = :channel AND type = :type AND language = :language
+            """
+        )
+            .bind("channel", mapper.toEntity(channel))
+            .bind("type", mapper.toEntity(type))
+            .bind("language", mapper.toEntity(language))
+            .map { row -> mapper.toDto(row) }
+            .awaitSingleOrNull()
 
-    override suspend fun getById(id: Long): NotificationTemplate? {
-        TODO("Not yet implemented")
-    }
+    @Transactional(readOnly = true)
+    override suspend fun getById(id: Int): NotificationTemplate? =
+        databaseClient.sql("SELECT * FROM public.notification_template WHERE id = :id")
+            .bind("id", id)
+            .map { row -> mapper.toDto(row) }
+            .awaitSingleOrNull()
+
 }

@@ -6,7 +6,7 @@ import java.time.OffsetDateTime
  * Represents the notification templates.
  */
 data class NotificationTemplate(
-    val id: Long,
+    val id: Int,
     val channel: NotificationChannel,
     val type: NotificationType,
     val language: NotificationLanguage,
