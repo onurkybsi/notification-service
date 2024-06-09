@@ -36,7 +36,7 @@ internal class SpringDataClientAdapterIntegrationTest {
 
     @BeforeEach
     fun refresh() = runBlocking {
-        databaseClient.sql("DELETE FROM public.notification_template").await();
+        databaseClient.sql("DELETE FROM public.notification_template").await()
     }
 
     @Test
