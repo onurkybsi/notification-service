@@ -105,4 +105,16 @@ internal class SpringDataClientAdapter(
             .map { row -> mapper.toDto(row) }
             .awaitSingleOrNull()
 
+    @Transactional
+    override suspend fun delete(id: Int): NotificationTemplate? =
+        databaseClient.sql("""
+            DELETE FROM public.notification_template
+            WHERE id = :id
+            RETURNING *
+            """.trimIndent()
+        )
+            .bind("id", id)
+            .map { row -> mapper.toDto(row) }
+            .awaitSingleOrNull()
+
 }

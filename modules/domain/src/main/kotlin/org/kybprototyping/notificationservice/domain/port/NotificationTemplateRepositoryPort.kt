@@ -52,4 +52,12 @@ interface NotificationTemplateRepositoryPort {
      */
     suspend fun updateContent(id: Int, content: String): NotificationTemplate?
 
+    /**
+     * Deletes the notification template with given [id].
+     *
+     * @param id notification template ID
+     * @return deleted notification template if there is one, otherwise _null_
+     */
+    suspend fun delete(id: Int): NotificationTemplate?
+
 }

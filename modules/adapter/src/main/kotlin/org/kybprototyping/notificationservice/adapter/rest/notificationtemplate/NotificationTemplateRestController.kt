@@ -1,6 +1,7 @@
 package org.kybprototyping.notificationservice.adapter.rest.notificationtemplate
 
 import org.kybprototyping.notificationservice.domain.model.*
+import org.kybprototyping.notificationservice.domain.usecase.InputOnlyUseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.InputOutputUseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationInput
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationOutput
@@ -20,7 +21,9 @@ internal class NotificationTemplateRestController(
     private val notificationTemplateRetrievalUseCaseHandler:
         InputOutputUseCaseHandler<Int, NotificationTemplate>,
     private val notificationTemplateUpdateUseCaseHandler:
-        InputOutputUseCaseHandler<NotificationTemplateUpdateInput, NotificationTemplate>
+        InputOutputUseCaseHandler<NotificationTemplateUpdateInput, NotificationTemplate>,
+    private val notificationTemplateDeletionUseCaseHandler:
+        InputOnlyUseCaseHandler<Int>
 ) {
 
     @PostMapping
@@ -45,9 +48,7 @@ internal class NotificationTemplateRestController(
 
     @GetMapping("/{id}")
     internal suspend fun getNotificationTemplate(@PathVariable id: Int): ResponseEntity<NotificationTemplate> =
-        ResponseEntity.ok(
-            notificationTemplateRetrievalUseCaseHandler.handle(id)
-        )
+        ResponseEntity.ok(notificationTemplateRetrievalUseCaseHandler.handle(id))
 
     @PatchMapping("/{id}")
     internal suspend fun updateContent(@PathVariable id: Int, @RequestBody body: NotificationTemplateUpdateRequest) =
@@ -57,4 +58,11 @@ internal class NotificationTemplateRestController(
                 content = body.content
             ))
         )
+
+    @DeleteMapping("/{id}")
+    internal suspend fun deleteNotificationTemplate(@PathVariable id: Int): ResponseEntity<Nothing> {
+        notificationTemplateDeletionUseCaseHandler.handle(id)
+        return ResponseEntity.noContent().build()
+    }
+
 }

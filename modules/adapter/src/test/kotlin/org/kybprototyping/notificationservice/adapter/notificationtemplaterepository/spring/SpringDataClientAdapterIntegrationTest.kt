@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.await
+import org.springframework.r2dbc.core.awaitSingleOrNull
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -158,6 +159,41 @@ internal class SpringDataClientAdapterIntegrationTest {
 
         // then
         assertThat(actualResult).isNull()
+    }
+
+    @Test
+    fun `delete should delete notification template with given ID and return updated`() = runTest {
+        // given
+        val createTemplateId = underTest.create(notificationTemplateCreationRequest())
+        val createdTemplate = underTest.getById(createTemplateId)
+
+        // when
+        val actualResult = underTest.delete(createTemplateId)
+
+        // then
+        assertThat(actualResult).isEqualTo(createdTemplate)
+        val templatesCount = databaseClient
+            .sql("SELECT COUNT(*) FROM public.notification_template")
+            .map { row -> row.get(0) as Long }
+            .awaitSingleOrNull()
+        assertThat(templatesCount).isEqualTo(0)
+    }
+
+    @Test
+    fun `delete should return null when no notification template found with given ID`() = runTest {
+        // given
+        val id = 1
+
+        // when
+        val actualResult = underTest.delete(id)
+
+        // then
+        assertThat(actualResult).isNull()
+        val templatesCount = databaseClient
+            .sql("SELECT COUNT(*) FROM public.notification_template")
+            .map { row -> row.get(0) as Long }
+            .awaitSingleOrNull()
+        assertThat(templatesCount).isEqualTo(0)
     }
 
     private companion object {
