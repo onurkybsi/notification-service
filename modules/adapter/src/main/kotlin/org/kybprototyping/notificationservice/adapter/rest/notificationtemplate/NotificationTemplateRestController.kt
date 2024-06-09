@@ -1,10 +1,11 @@
-package org.kybprototyping.notificationservice.adapter.rest
+package org.kybprototyping.notificationservice.adapter.rest.notificationtemplate
 
 import org.kybprototyping.notificationservice.domain.model.*
 import org.kybprototyping.notificationservice.domain.usecase.InputOutputUseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationInput
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationOutput
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.retrieval.NotificationTemplatesRetrievalInput
+import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.update.NotificationTemplateUpdateInput
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
@@ -17,7 +18,9 @@ internal class NotificationTemplateRestController(
     private val notificationTemplatesRetrievalUseCaseHandler:
         InputOutputUseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>>,
     private val notificationTemplateRetrievalUseCaseHandler:
-        InputOutputUseCaseHandler<Int, NotificationTemplate>
+        InputOutputUseCaseHandler<Int, NotificationTemplate>,
+    private val notificationTemplateUpdateUseCaseHandler:
+        InputOutputUseCaseHandler<NotificationTemplateUpdateInput, NotificationTemplate>
 ) {
 
     @PostMapping
@@ -46,4 +49,12 @@ internal class NotificationTemplateRestController(
             notificationTemplateRetrievalUseCaseHandler.handle(id)
         )
 
+    @PatchMapping("/{id}")
+    internal suspend fun updateContent(@PathVariable id: Int, @RequestBody body: NotificationTemplateUpdateRequest) =
+        ResponseEntity.ok(
+            notificationTemplateUpdateUseCaseHandler.handle(NotificationTemplateUpdateInput(
+                id = id,
+                content = body.content
+            ))
+        )
 }

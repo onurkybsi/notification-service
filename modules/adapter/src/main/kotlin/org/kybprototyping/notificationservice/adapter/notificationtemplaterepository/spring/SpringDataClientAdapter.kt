@@ -90,4 +90,19 @@ internal class SpringDataClientAdapter(
             .map { row -> mapper.toDto(row) }
             .awaitSingleOrNull()
 
+    @Transactional
+    override suspend fun updateContent(id: Int, content: String): NotificationTemplate? =
+        databaseClient.sql("""
+            UPDATE public.notification_template
+            SET content = :content, modification_date = :modificationDate
+            WHERE id = :id
+            RETURNING *
+            """.trimIndent()
+        )
+            .bind("id", id)
+            .bind("content", content)
+            .bind("modificationDate", OffsetDateTime.now())
+            .map { row -> mapper.toDto(row) }
+            .awaitSingleOrNull()
+
 }

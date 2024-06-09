@@ -43,4 +43,13 @@ interface NotificationTemplateRepositoryPort {
      */
     suspend fun getById(id: Int): NotificationTemplate?
 
+    /**
+     * Updates the content of notification template with given [id].
+     *
+     * @param id notification template ID
+     * @param content content to set for the notification template
+     * @return updated notification template if there is one, otherwise _null_
+     */
+    suspend fun updateContent(id: Int, content: String): NotificationTemplate?
+
 }

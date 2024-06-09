@@ -133,6 +133,33 @@ internal class SpringDataClientAdapterIntegrationTest {
         assertThat(actual).isNull()
     }
 
+    @Test
+    fun `updateContent should update notification template with given ID and return updated`() = runTest {
+        // given
+        val createTemplateId = underTest.create(notificationTemplateCreationRequest())
+
+        // when
+        val actualResult = underTest.updateContent(createTemplateId, "Updated content")
+
+        // then
+        assertThat(actualResult)
+            .usingRecursiveComparison()
+            .ignoringFields("modificationDate", "creationDate")
+            .isEqualTo(notificationTemplate().copy(content = "Updated content"))
+    }
+
+    @Test
+    fun `updateContent should return null when no notification template found with given ID`() = runTest {
+        // given
+        val id = 1
+
+        // when
+        val actualResult = underTest.updateContent(id, "Updated content")
+
+        // then
+        assertThat(actualResult).isNull()
+    }
+
     private companion object {
         private val instance = PostgreSQLContainer("postgres:15.5")
             .withDatabaseName("notification_db")
