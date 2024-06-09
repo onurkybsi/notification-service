@@ -43,4 +43,22 @@ class ValidationResult {
         return  copy
     }
 
+    companion object {
+        /**
+         * Builds a [ValidationResult] from given [failures].
+         *
+         * @param failures validation failures as __field name__ and __failure message__ pairs.
+         * @return built [ValidationResult]
+         */
+        @JvmStatic
+        fun from(vararg failures: Pair<String, Array<String>>): ValidationResult {
+            val validationResult = ValidationResult()
+            failures.forEach { failure ->
+                failure.second.forEach {
+                    validationResult.addFailure(failure.first, it)
+                }
+            }
+            return validationResult
+        }
+    }
 }

@@ -6,12 +6,7 @@ import org.kybprototyping.notificationservice.domain.usecase.notificationtemplat
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationOutput
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.retrieval.NotificationTemplatesRetrievalInput
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.net.URI
 
 @RestController
@@ -20,7 +15,9 @@ internal class NotificationTemplateRestController(
     private val notificationTemplateCreationUseCaseHandler:
         InputOutputUseCaseHandler<NotificationTemplateCreationInput, NotificationTemplateCreationOutput>,
     private val notificationTemplatesRetrievalUseCaseHandler:
-        InputOutputUseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>>
+        InputOutputUseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>>,
+    private val notificationTemplateRetrievalUseCaseHandler:
+        InputOutputUseCaseHandler<Int, NotificationTemplate>
 ) {
 
     @PostMapping
@@ -34,12 +31,19 @@ internal class NotificationTemplateRestController(
         @RequestParam(required = false) type: NotificationType?,
         @RequestParam(required = false) language: NotificationLanguage?
     ): ResponseEntity<List<NotificationTemplate>> =
-        ResponseEntity.ok(notificationTemplatesRetrievalUseCaseHandler.handle(
-            NotificationTemplatesRetrievalInput(
-            channel = channel,
-            type = type,
-            language = language
-        )
+        ResponseEntity.ok(
+            notificationTemplatesRetrievalUseCaseHandler.handle(
+                NotificationTemplatesRetrievalInput(
+                    channel = channel,
+                    type = type,
+                    language = language
+                )
         ))
+
+    @GetMapping("/{id}")
+    internal suspend fun getNotificationTemplate(@PathVariable id: Int): ResponseEntity<NotificationTemplate> =
+        ResponseEntity.ok(
+            notificationTemplateRetrievalUseCaseHandler.handle(id)
+        )
 
 }

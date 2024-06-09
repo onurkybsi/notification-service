@@ -10,6 +10,7 @@ import org.kybprototyping.notificationservice.domain.usecase.notification.sendin
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationInput
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationOutput
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationUseCaseHandler
+import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.retrieval.NotificationTemplateRetrievalUseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.retrieval.NotificationTemplatesRetrievalInput
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.retrieval.NotificationTemplatesRetrievalUseCaseHandler
 import org.springframework.context.annotation.Bean
@@ -29,6 +30,13 @@ open class SpringConfiguration {
         notificationTemplateRepositoryPortAdapter: NotificationTemplateRepositoryPort
     ): InputOutputUseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>> =
         NotificationTemplatesRetrievalUseCaseHandler(notificationTemplateRepositoryPortAdapter)
+
+    @Bean
+    internal open fun notificationTemplateRetrievalUseCaseHandler(
+        notificationTemplateRepositoryAdapter: NotificationTemplateRepositoryPort
+    ): InputOutputUseCaseHandler<Int, NotificationTemplate> =
+        NotificationTemplateRetrievalUseCaseHandler(notificationTemplateRepositoryAdapter)
+
 
     @Bean
     internal open fun emailSendingUseCaseHandler(
