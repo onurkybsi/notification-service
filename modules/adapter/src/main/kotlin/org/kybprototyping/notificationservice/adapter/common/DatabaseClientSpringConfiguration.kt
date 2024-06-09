@@ -14,7 +14,7 @@ import org.springframework.r2dbc.connection.TransactionAwareConnectionFactoryPro
 import org.springframework.r2dbc.core.DatabaseClient
 
 @Configuration
-open class DatabaseClientSpringConfiguration {
+internal open class DatabaseClientSpringConfiguration {
 
     @Bean
     internal open fun databaseClient(connectionFactory: ConnectionFactory) = DatabaseClient.create(connectionFactory)
