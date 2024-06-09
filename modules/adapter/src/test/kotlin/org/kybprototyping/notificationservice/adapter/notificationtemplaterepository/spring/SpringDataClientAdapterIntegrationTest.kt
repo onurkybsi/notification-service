@@ -315,6 +315,19 @@ internal class SpringDataClientAdapterIntegrationTest {
                 NotificationType.PASSWORD_RESET,
                 null,
                 emptyList<NotificationTemplate>()
+            ),
+            Arguments.of(
+                arrayOf(
+                    notificationTemplateCreationRequest(),
+                    notificationTemplateCreationRequest().copy(type = NotificationType.PASSWORD_RESET)
+                ),
+                null,
+                null,
+                null,
+                listOf(
+                    notificationTemplate(),
+                    notificationTemplate().copy(type = NotificationType.PASSWORD_RESET)
+                )
             )
         )
 

@@ -40,30 +40,21 @@ internal class SpringDataClientAdapter(
         type: NotificationType?,
         language: NotificationLanguage?
     ): List<NotificationTemplate> {
-        val whereClause = StringBuilder()
-        val values = mutableMapOf<String, Any>()
-        if (channel != null) {
-            whereClause.append("(:channel IS NULL OR channel = :channel)")
-            values["channel"] = mapper.toEntity(channel)
+        val whereClause = prepareWhereClause(channel, type, language)
+        return if (whereClause == null) {
+            databaseClient.sql("SELECT * FROM public.notification_template")
+                .map { row -> mapper.toDto(row) }
+                .all()
+                .collectList()
+                .awaitSingle()
+        } else {
+            databaseClient.sql( "SELECT * FROM public.notification_template WHERE ${whereClause.first}")
+                .bindValues(whereClause.second)
+                .map { row -> mapper.toDto(row) }
+                .all()
+                .collectList()
+                .awaitSingle()
         }
-        if (type != null) {
-            if (whereClause.isNotEmpty())
-                whereClause.append(" AND ")
-            whereClause.append("(:type IS NULL OR type = :type)")
-            values["type"] = mapper.toEntity(type)
-        }
-        if (language != null) {
-            if (whereClause.isNotEmpty())
-                whereClause.append(" AND ")
-            whereClause.append("(:language IS NULL OR language = :language)")
-            values["language"] = mapper.toEntity(language)
-        }
-        return databaseClient.sql("SELECT * FROM public.notification_template WHERE $whereClause")
-            .bindValues(values)
-            .map { row -> mapper.toDto(row) }
-            .all()
-            .collectList()
-            .awaitSingle()
     }
 
     @Transactional(readOnly = true)
@@ -116,5 +107,34 @@ internal class SpringDataClientAdapter(
             .bind("id", id)
             .map { row -> mapper.toDto(row) }
             .awaitSingleOrNull()
+
+    private fun prepareWhereClause(
+        channel: NotificationChannel?,
+        type: NotificationType?,
+        language: NotificationLanguage?): Pair<String, Map<String, Any>>? {
+        val whereClause = StringBuilder()
+        val values = mutableMapOf<String, Any>()
+        if (channel != null) {
+            whereClause.append("(:channel IS NULL OR channel = :channel)")
+            values["channel"] = mapper.toEntity(channel)
+        }
+        if (type != null) {
+            if (whereClause.isNotEmpty())
+                whereClause.append(" AND ")
+            whereClause.append("(:type IS NULL OR type = :type)")
+            values["type"] = mapper.toEntity(type)
+        }
+        if (language != null) {
+            if (whereClause.isNotEmpty())
+                whereClause.append(" AND ")
+            whereClause.append("(:language IS NULL OR language = :language)")
+            values["language"] = mapper.toEntity(language)
+        }
+        return if(whereClause.isEmpty()) {
+            null
+        } else {
+            whereClause.toString() to values
+        }
+    }
 
 }
