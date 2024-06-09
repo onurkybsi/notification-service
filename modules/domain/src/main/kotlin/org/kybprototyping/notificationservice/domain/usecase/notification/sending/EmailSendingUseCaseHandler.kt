@@ -1,10 +1,10 @@
-package org.kybprototyping.notificationservice.domain.usecase.emailsending
+package org.kybprototyping.notificationservice.domain.usecase.notification.sending
 
 import org.kybprototyping.notificationservice.common.Validator
-import org.kybprototyping.notificationservice.domain.usecase.dataInvalidity
 import org.kybprototyping.notificationservice.domain.model.NotificationChannel
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 import org.kybprototyping.notificationservice.domain.usecase.InputOnlyUseCaseHandler
+import org.kybprototyping.notificationservice.domain.usecase.dataInvalidity
 
 internal class EmailSendingUseCaseHandler(
     private val validator: Validator<EmailSendingInput>,

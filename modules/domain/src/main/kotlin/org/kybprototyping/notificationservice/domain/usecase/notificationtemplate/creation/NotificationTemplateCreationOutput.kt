@@ -1,4 +1,4 @@
-package org.kybprototyping.notificationservice.domain.usecase.notificationtemplatecreation
+package org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation
 
 /**
  * Represents the output of notification template creation use case.

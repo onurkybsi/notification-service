@@ -2,9 +2,9 @@ package org.kybprototyping.notificationservice.adapter.rest
 
 import org.kybprototyping.notificationservice.domain.model.*
 import org.kybprototyping.notificationservice.domain.usecase.InputOutputUseCaseHandler
-import org.kybprototyping.notificationservice.domain.usecase.notificationtemplatecreation.NotificationTemplateCreationInput
-import org.kybprototyping.notificationservice.domain.usecase.notificationtemplatecreation.NotificationTemplateCreationOutput
-import org.kybprototyping.notificationservice.domain.usecase.notificationtemplatesretrieval.NotificationTemplatesRetrievalInput
+import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationInput
+import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationOutput
+import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.retrieval.NotificationTemplatesRetrievalInput
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping

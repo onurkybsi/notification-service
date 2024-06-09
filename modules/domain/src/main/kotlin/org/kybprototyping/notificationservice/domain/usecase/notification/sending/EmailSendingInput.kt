@@ -1,4 +1,4 @@
-package org.kybprototyping.notificationservice.domain.usecase.emailsending
+package org.kybprototyping.notificationservice.domain.usecase.notification.sending
 
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
 import org.kybprototyping.notificationservice.domain.model.NotificationType

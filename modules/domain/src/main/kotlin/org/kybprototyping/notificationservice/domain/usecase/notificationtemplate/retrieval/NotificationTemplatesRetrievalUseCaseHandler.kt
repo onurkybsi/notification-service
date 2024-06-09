@@ -1,4 +1,4 @@
-package org.kybprototyping.notificationservice.domain.usecase.notificationtemplatesretrieval
+package org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.retrieval
 
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort

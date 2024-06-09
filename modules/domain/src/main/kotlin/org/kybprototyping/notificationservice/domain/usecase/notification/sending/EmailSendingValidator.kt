@@ -1,4 +1,4 @@
-package org.kybprototyping.notificationservice.domain.usecase.emailsending
+package org.kybprototyping.notificationservice.domain.usecase.notification.sending
 
 import org.kybprototyping.notificationservice.common.ValidationResult
 import org.kybprototyping.notificationservice.common.Validator
