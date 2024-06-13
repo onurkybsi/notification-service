@@ -1,0 +1,4 @@
+package org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation
+
+internal class NotificationTemplateCreationUseCaseHandlerTest {
+}

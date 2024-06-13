@@ -10,6 +10,7 @@ spring-datar2dbc = "3.3.0"
 testcontainers = "1.19.8"
 kotlinxcoroutinestest = "1.8.1"
 springdoc = "2.5.0"
+spring-transaction = "6.1.8"
 
 [libraries]
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring-context" }
@@ -21,6 +22,7 @@ testcontainers = { module = "org.testcontainers:postgresql", version.ref = "test
 flywaycore = { module = "org.flywaydb:flyway-core", version.ref = "flywaycore" }
 kotlinxcoroutinestest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxcoroutinestest" }
 springdoc = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
+spring-transaction = { module = "org.springframework:spring-tx", version.ref = "spring-transaction" }
 
 [plugins]
 flywayplugin = { id = "org.flywaydb.flyway", version.ref = "flywayplugin" }

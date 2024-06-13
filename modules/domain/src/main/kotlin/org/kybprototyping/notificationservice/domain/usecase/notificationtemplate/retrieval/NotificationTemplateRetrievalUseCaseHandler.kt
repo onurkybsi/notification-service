@@ -2,8 +2,8 @@ package org.kybprototyping.notificationservice.domain.usecase.notificationtempla
 
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
-import org.kybprototyping.notificationservice.domain.usecase.InputOutputUseCaseHandler
-import org.kybprototyping.notificationservice.domain.usecase.nonExistentData
+import org.kybprototyping.notificationservice.domain.common.interfaces.InputOutputUseCaseHandler
+import org.kybprototyping.notificationservice.domain.common.exception.nonExistentData
 
 internal class NotificationTemplateRetrievalUseCaseHandler(
     private val notificationTemplateRepositoryAdapter: NotificationTemplateRepositoryPort

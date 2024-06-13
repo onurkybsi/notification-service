@@ -2,8 +2,8 @@ package org.kybprototyping.notificationservice.domain
 
 import org.kybprototyping.notificationservice.domain.model.*
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
-import org.kybprototyping.notificationservice.domain.usecase.InputOnlyUseCaseHandler
-import org.kybprototyping.notificationservice.domain.usecase.InputOutputUseCaseHandler
+import org.kybprototyping.notificationservice.domain.common.interfaces.InputOnlyUseCaseHandler
+import org.kybprototyping.notificationservice.domain.common.interfaces.InputOutputUseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.notification.sending.EmailSendingInput
 import org.kybprototyping.notificationservice.domain.usecase.notification.sending.EmailSendingUseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.notification.sending.EmailSendingValidator

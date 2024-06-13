@@ -1,6 +1,6 @@
 package org.kybprototyping.notificationservice.adapter.rest
 
-import org.kybprototyping.notificationservice.domain.usecase.UseCaseException
+import org.kybprototyping.notificationservice.domain.common.exception.UseCaseException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity

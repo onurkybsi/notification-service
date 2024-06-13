@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.kybprototyping.notificationservice.adapter.rest.InvalidRequestResponse
 import org.kybprototyping.notificationservice.adapter.rest.NonExistentResourceResponse
 import org.kybprototyping.notificationservice.domain.model.*
-import org.kybprototyping.notificationservice.domain.usecase.InputOnlyUseCaseHandler
-import org.kybprototyping.notificationservice.domain.usecase.InputOutputUseCaseHandler
+import org.kybprototyping.notificationservice.domain.common.interfaces.InputOnlyUseCaseHandler
+import org.kybprototyping.notificationservice.domain.common.interfaces.InputOutputUseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationInput
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.creation.NotificationTemplateCreationOutput
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.retrieval.NotificationTemplatesRetrievalInput
@@ -30,15 +30,15 @@ import java.net.URI
 )
 internal class NotificationTemplateRestController(
     private val notificationTemplateCreationUseCaseHandler:
-        InputOutputUseCaseHandler<NotificationTemplateCreationInput, NotificationTemplateCreationOutput>,
+    InputOutputUseCaseHandler<NotificationTemplateCreationInput, NotificationTemplateCreationOutput>,
     private val notificationTemplatesRetrievalUseCaseHandler:
-        InputOutputUseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>>,
+    InputOutputUseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>>,
     private val notificationTemplateRetrievalUseCaseHandler:
-        InputOutputUseCaseHandler<Int, NotificationTemplate>,
+    InputOutputUseCaseHandler<Int, NotificationTemplate>,
     private val notificationTemplateUpdateUseCaseHandler:
-        InputOutputUseCaseHandler<NotificationTemplateUpdateInput, NotificationTemplate>,
+    InputOutputUseCaseHandler<NotificationTemplateUpdateInput, NotificationTemplate>,
     private val notificationTemplateDeletionUseCaseHandler:
-        InputOnlyUseCaseHandler<Int>
+    InputOnlyUseCaseHandler<Int>
 ) {
 
     @PostMapping

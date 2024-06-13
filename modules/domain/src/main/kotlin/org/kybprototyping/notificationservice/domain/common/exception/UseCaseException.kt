@@ -1,4 +1,4 @@
-package org.kybprototyping.notificationservice.domain.usecase
+package org.kybprototyping.notificationservice.domain.common.exception
 
 /**
  * Represents the exceptions occurred during handling a use case.
