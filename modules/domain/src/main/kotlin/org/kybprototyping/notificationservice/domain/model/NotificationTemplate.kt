@@ -11,8 +11,8 @@ data class NotificationTemplate(
     val type: NotificationType,
     val language: NotificationLanguage,
     val content: String,
-    val modifiedBy: String?,
+    val modifiedBy: String? = null,
     val modificationDate: OffsetDateTime,
-    val createdBy: String?,
+    val createdBy: String? = null,
     val creationDate: OffsetDateTime
 )
