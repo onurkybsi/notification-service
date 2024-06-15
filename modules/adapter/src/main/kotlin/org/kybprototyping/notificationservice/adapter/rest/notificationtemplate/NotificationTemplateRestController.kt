@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.kybprototyping.notificationservice.adapter.rest.InvalidRequestResponse
 import org.kybprototyping.notificationservice.adapter.rest.NonExistentResourceResponse
+import org.kybprototyping.notificationservice.adapter.rest.OkApiResponse
 import org.kybprototyping.notificationservice.domain.model.*
 import org.kybprototyping.notificationservice.domain.common.interfaces.InputOnlyUseCaseHandler
 import org.kybprototyping.notificationservice.domain.common.interfaces.InputOutputUseCaseHandler
@@ -30,15 +31,15 @@ import java.net.URI
 )
 internal class NotificationTemplateRestController(
     private val notificationTemplateCreationUseCaseHandler:
-    InputOutputUseCaseHandler<NotificationTemplateCreationInput, NotificationTemplateCreationOutput>,
+        InputOutputUseCaseHandler<NotificationTemplateCreationInput, NotificationTemplateCreationOutput>,
     private val notificationTemplatesRetrievalUseCaseHandler:
-    InputOutputUseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>>,
+        InputOutputUseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>>,
     private val notificationTemplateRetrievalUseCaseHandler:
-    InputOutputUseCaseHandler<Int, NotificationTemplate>,
+        InputOutputUseCaseHandler<Int, NotificationTemplate>,
     private val notificationTemplateUpdateUseCaseHandler:
-    InputOutputUseCaseHandler<NotificationTemplateUpdateInput, NotificationTemplate>,
+        InputOutputUseCaseHandler<NotificationTemplateUpdateInput, NotificationTemplate>,
     private val notificationTemplateDeletionUseCaseHandler:
-    InputOnlyUseCaseHandler<Int>
+        InputOnlyUseCaseHandler<Int>
 ) {
 
     @PostMapping
@@ -85,13 +86,7 @@ internal class NotificationTemplateRestController(
 
     @GetMapping("/{id}")
     @Operation(summary = "Returns the notification template with given ID.")
-    @ApiResponses(
-        ApiResponse(
-            responseCode = "200",
-            description = "Successful retrieval",
-            content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)]
-        )
-    )
+    @OkApiResponse
     @NonExistentResourceResponse
     internal suspend fun getNotificationTemplate(@PathVariable id: Int): ResponseEntity<NotificationTemplate> =
         ResponseEntity.ok(notificationTemplateRetrievalUseCaseHandler.handle(id))
@@ -104,6 +99,7 @@ internal class NotificationTemplateRestController(
         content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)]
     )
     @NonExistentResourceResponse
+    @InvalidRequestResponse
     internal suspend fun updateContent(@PathVariable id: Int, @RequestBody body: NotificationTemplateUpdateRequest) =
         ResponseEntity.ok(
             notificationTemplateUpdateUseCaseHandler.handle(NotificationTemplateUpdateInput(

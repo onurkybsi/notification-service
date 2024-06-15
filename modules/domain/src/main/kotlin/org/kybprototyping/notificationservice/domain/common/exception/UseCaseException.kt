@@ -4,7 +4,7 @@ package org.kybprototyping.notificationservice.domain.common.exception
  * Represents the exceptions occurred during handling a use case.
  */
 class UseCaseException(
-    message: String,
+    override val message: String,
     val dueToDataInvalidity: Boolean = false,
     val dueToNonExistentData: Boolean = false,
     val failures: Any? = null

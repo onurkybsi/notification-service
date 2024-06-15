@@ -42,6 +42,8 @@ dependencies {
     testImplementation(libs.kotlinxcoroutinestest)
     testImplementation(libs.flywaycore)
     testImplementation(libs.testcontainers)
+    testImplementation(libs.mockk)
+    testImplementation(libs.springmockk)
 }
 
 tasks.withType<KotlinCompile> {
