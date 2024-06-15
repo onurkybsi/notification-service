@@ -2,6 +2,7 @@ package org.kybprototyping.notificationservice.domain.usecase.notificationtempla
 
 import org.kybprototyping.notificationservice.domain.model.NotificationChannel
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
+import org.kybprototyping.notificationservice.domain.model.NotificationTemplateCreationRequest
 import org.kybprototyping.notificationservice.domain.model.NotificationType
 
 /**
@@ -13,3 +14,16 @@ data class NotificationTemplateCreationInput(
     val language: NotificationLanguage,
     val content: String,
 )
+
+/**
+ * Builds [NotificationTemplateCreationRequest] from [this].
+ *
+ * @return built [NotificationTemplateCreationRequest]
+ */
+fun NotificationTemplateCreationInput.toNotificationTemplateCreationRequest() =
+    NotificationTemplateCreationRequest(
+        channel = channel,
+        type = type,
+        language = language,
+        content = content
+    )
