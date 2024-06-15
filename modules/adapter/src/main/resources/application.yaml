@@ -12,8 +12,8 @@ springdoc:
     path: "/swagger-ui"
 
 db:
-  host: ${DB_HOST}
-  port: ${DB_PORT}
+  host: ${DB_HOST:localhost}
+  port: ${DB_PORT:5432}
   user: ${DB_USER}
   password: ${DB_PASSWORD}
-  poolMaxSize: ${DB_POOL_MAX_SIZE}
+  poolMaxSize: ${DB_POOL_MAX_SIZE:5}
