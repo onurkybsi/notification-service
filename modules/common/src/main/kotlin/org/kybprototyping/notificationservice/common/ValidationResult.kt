@@ -29,7 +29,7 @@ class ValidationResult {
      * @return **true** if there are some failures, otherwise **false**.
      */
     fun  isNotValid(): Boolean {
-        return failures.isEmpty()
+        return failures.isNotEmpty()
     }
 
     /**

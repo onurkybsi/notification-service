@@ -7,7 +7,7 @@ dependencies {
     testImplementation(libs.junitjupiter)
     testImplementation(libs.kotlinxcoroutinestest)
     testImplementation(libs.mockk)
-    testImplementation("org.assertj:assertj-core:3.26.0")
+    testImplementation(libs.assertj)
 }
 
 tasks.withType<Test> {

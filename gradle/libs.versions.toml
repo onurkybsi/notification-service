@@ -14,6 +14,8 @@ spring-transaction = "6.1.8"
 junitjupiter = "5.11.0-M2"
 mockk = "1.13.11"
 springmockk = "4.0.2"
+assertj = "3.26.0"
+kotlinreflect = "2.0.0"
 
 [libraries]
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring-context" }
@@ -26,9 +28,11 @@ flywaycore = { module = "org.flywaydb:flyway-core", version.ref = "flywaycore" }
 kotlinxcoroutinestest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxcoroutinestest" }
 springdoc = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
 spring-transaction = { module = "org.springframework:spring-tx", version.ref = "spring-transaction" }
-junitjupiter = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitjupiter" }
+junitjupiter = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitjupiter" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmockk" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+kotlinreflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinreflect" }
 
 [plugins]
 flywayplugin = { id = "org.flywaydb.flyway", version.ref = "flywayplugin" }
