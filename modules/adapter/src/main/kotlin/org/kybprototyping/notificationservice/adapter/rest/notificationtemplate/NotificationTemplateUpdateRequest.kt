@@ -1,5 +1,6 @@
 package org.kybprototyping.notificationservice.adapter.rest.notificationtemplate
 
 internal data class NotificationTemplateUpdateRequest(
-    val content: String
+    val subject: String?,
+    val content: String?
 )

@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS notification_template (
   channel notification_channel NOT NULL,
   type notification_type NOT NULL,
   language notification_language NOT NULL,
+  subject VARCHAR NOT NULL,
   content VARCHAR NOT NULL,
   UNIQUE(channel, type, language)
 );

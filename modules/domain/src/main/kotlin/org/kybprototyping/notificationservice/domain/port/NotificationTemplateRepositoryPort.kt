@@ -18,6 +18,8 @@ interface NotificationTemplateRepositoryPort {
     /**
      * Returns the notification templates with given filtering values.
      *
+     * The _null_ are ignored, the filtering is only applied for _non-null_ values.
+     *
      * @param channel channel of the notification
      * @param type type of the notification
      * @param language language of the notification
@@ -44,13 +46,14 @@ interface NotificationTemplateRepositoryPort {
     suspend fun getById(id: Int): NotificationTemplate?
 
     /**
-     * Updates the content of notification template with given [id].
+     * Updates the notification template by given [request].
      *
-     * @param id notification template ID
-     * @param content content to set for the notification template
+     * Only _non-null_ values are updated given with the [request].
+     *
+     * @param request parameters for the updated
      * @return updated notification template if there is one, otherwise _null_
      */
-    suspend fun updateContent(id: Int, content: String): NotificationTemplate?
+    suspend fun updateBy(request: NotificationTemplateUpdateRequest): NotificationTemplate?
 
     /**
      * Deletes the notification template with given [id].

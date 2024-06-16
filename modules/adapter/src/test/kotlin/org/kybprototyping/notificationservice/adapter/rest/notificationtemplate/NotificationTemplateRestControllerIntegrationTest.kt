@@ -54,6 +54,7 @@ open class NotificationTemplateRestControllerIntegrationTest {
             channel = NotificationChannel.EMAIL,
             type = NotificationType.WELCOME,
             language = NotificationLanguage.EN,
+            subject = "subject",
             content = "content"
         )
         coEvery { notificationTemplateCreationUseCaseHandler.handle(body) } returns NotificationTemplateCreationOutput(1)
@@ -107,6 +108,7 @@ open class NotificationTemplateRestControllerIntegrationTest {
                         channel = NotificationChannel.EMAIL,
                         type = NotificationType.WELCOME,
                         language = NotificationLanguage.EN,
+                        subject = "subject",
                         content = "content",
                         modificationDate = OffsetDateTime.parse("2024-06-15T09:30:00Z"),
                         creationDate = OffsetDateTime.parse("2024-06-15T09:30:00Z")
@@ -134,6 +136,7 @@ open class NotificationTemplateRestControllerIntegrationTest {
                         "channel": "EMAIL",
                         "type": "WELCOME",
                         "language": "EN",
+                        "subject": "subject",
                         "content": "content",
                         "modificationDate": "2024-06-15T09:30:00Z",
                         "creationDate": "2024-06-15T09:30:00Z"
@@ -155,6 +158,7 @@ open class NotificationTemplateRestControllerIntegrationTest {
                     channel = NotificationChannel.EMAIL,
                     type = NotificationType.WELCOME,
                     language = NotificationLanguage.EN,
+                    subject = "subject",
                     content = "content",
                     modificationDate = OffsetDateTime.parse("2024-06-15T09:30:00Z"),
                     creationDate = OffsetDateTime.parse("2024-06-15T09:30:00Z")
@@ -175,6 +179,7 @@ open class NotificationTemplateRestControllerIntegrationTest {
                       "channel": "EMAIL",
                       "type": "WELCOME",
                       "language": "EN",
+                      "subject": "subject",
                       "content": "content",
                       "modificationDate": "2024-06-15T09:30:00Z",
                       "creationDate": "2024-06-15T09:30:00Z"
@@ -217,11 +222,13 @@ open class NotificationTemplateRestControllerIntegrationTest {
         // given
         val id = 1
         val body = NotificationTemplateUpdateRequest(
+            subject = "updated subject",
             content = "updated content"
         )
         coEvery { notificationTemplateUpdateUseCaseHandler.handle(
             NotificationTemplateUpdateInput(
                 id = id,
+                subject = body.subject,
                 content = body.content
             )
         ) }.returns(
@@ -230,6 +237,7 @@ open class NotificationTemplateRestControllerIntegrationTest {
                 channel = NotificationChannel.EMAIL,
                 type = NotificationType.WELCOME,
                 language = NotificationLanguage.EN,
+                subject = "updated subject",
                 content = "updated content",
                 modificationDate = OffsetDateTime.parse("2024-06-15T09:30:00Z"),
                 creationDate = OffsetDateTime.parse("2024-06-15T09:30:00Z")
@@ -251,6 +259,7 @@ open class NotificationTemplateRestControllerIntegrationTest {
                       "channel": "EMAIL",
                       "type": "WELCOME",
                       "language": "EN",
+                      "subject": "updated subject",
                       "content": "updated content",
                       "modificationDate": "2024-06-15T09:30:00Z",
                       "creationDate": "2024-06-15T09:30:00Z"
@@ -260,6 +269,7 @@ open class NotificationTemplateRestControllerIntegrationTest {
         coVerify(exactly = 1) { notificationTemplateUpdateUseCaseHandler.handle(
             NotificationTemplateUpdateInput(
                 id = 1,
+                subject = "updated subject",
                 content = "updated content"
             )
         ) }
@@ -270,11 +280,13 @@ open class NotificationTemplateRestControllerIntegrationTest {
         // given
         val id = 1
         val body = NotificationTemplateUpdateRequest(
+            subject = "updated subject",
             content = "updated content"
         )
         coEvery { notificationTemplateUpdateUseCaseHandler.handle(
             NotificationTemplateUpdateInput(
                 id = id,
+                subject = body.subject,
                 content = body.content
             )
         ) }.throws(nonExistentData("No notification template exists with given ID 1!"))
@@ -301,26 +313,10 @@ open class NotificationTemplateRestControllerIntegrationTest {
         coVerify(exactly = 1) { notificationTemplateUpdateUseCaseHandler.handle(
             NotificationTemplateUpdateInput(
                 id = 1,
+                subject = "updated subject",
                 content = "updated content"
             )
         ) }
-    }
-
-    @Test
-    fun `should return invalid response when given content update request is not valid`() {
-        // given
-        val id = 1
-
-        // when & then
-        webTestClient.patch()
-            .uri("/api/v1/notification-template/{id}", id)
-            .headers { it.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) }
-            .bodyValue("{}")
-            .exchange()
-            .expectStatus()
-            .isBadRequest
-            .expectBody()
-        coVerify(exactly = 0) { notificationTemplateUpdateUseCaseHandler.handle(any()) }
     }
 
     @Test

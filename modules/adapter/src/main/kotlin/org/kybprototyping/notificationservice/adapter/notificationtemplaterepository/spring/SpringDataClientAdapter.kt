@@ -23,10 +23,11 @@ internal class SpringDataClientAdapter(
             "channel" to mapper.toEntity(request.channel),
             "type" to mapper.toEntity(request.type),
             "language" to mapper.toEntity(request.language),
+            "subject" to request.subject,
             "content" to request.content)
         return databaseClient.sql("""
-            INSERT INTO public.notification_template (modification_date, creation_date, channel, type, language, content)
-            VALUES(:modificationDate, :creationDate, :channel, :type, :language, :content)
+            INSERT INTO public.notification_template (modification_date, creation_date, channel, type, language, subject, content)
+            VALUES(:modificationDate, :creationDate, :channel, :type, :language, :subject, :content)
             RETURNING id
             """.trimIndent()
         ).bindValues(values)
@@ -82,19 +83,19 @@ internal class SpringDataClientAdapter(
             .awaitSingleOrNull()
 
     @Transactional
-    override suspend fun updateContent(id: Int, content: String): NotificationTemplate? =
-        databaseClient.sql("""
+    override suspend fun updateBy(request: NotificationTemplateUpdateRequest): NotificationTemplate? {
+        val (setStatement, values) = prepareSetStatement(request)
+        return databaseClient.sql("""
             UPDATE public.notification_template
-            SET content = :content, modification_date = :modificationDate
+            SET $setStatement
             WHERE id = :id
             RETURNING *
             """.trimIndent()
         )
-            .bind("id", id)
-            .bind("content", content)
-            .bind("modificationDate", OffsetDateTime.now())
+            .bindValues(values)
             .map { row -> mapper.toDto(row) }
             .awaitSingleOrNull()
+    }
 
     @Transactional
     override suspend fun delete(id: Int): NotificationTemplate? =
@@ -135,6 +136,24 @@ internal class SpringDataClientAdapter(
         } else {
             whereClause.toString() to values
         }
+    }
+
+    private fun prepareSetStatement(request: NotificationTemplateUpdateRequest): Pair<String, Map<String, Any>> {
+        val setStatement = StringBuilder()
+        val values = mutableMapOf<String, Any>("id" to request.id)
+        if (request.subject != null) {
+            setStatement.append("subject = :subject")
+            values["subject"] = request.subject!!
+        }
+        if (request.content != null) {
+            if (setStatement.isNotEmpty())  setStatement.append(", ")
+            setStatement.append("content = :content")
+            values["content"] = request.content!!
+        }
+        if (setStatement.isNotEmpty())  setStatement.append(", ")
+        setStatement.append("modification_date = :modificationDate")
+        values["modificationDate"] = OffsetDateTime.now()
+        return setStatement.toString() to values
     }
 
 }

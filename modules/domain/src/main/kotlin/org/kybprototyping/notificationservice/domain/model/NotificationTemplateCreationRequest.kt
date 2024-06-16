@@ -7,5 +7,6 @@ data class NotificationTemplateCreationRequest(
     val channel: NotificationChannel,
     val type: NotificationType,
     val language: NotificationLanguage,
+    val subject: String,
     val content: String,
 )

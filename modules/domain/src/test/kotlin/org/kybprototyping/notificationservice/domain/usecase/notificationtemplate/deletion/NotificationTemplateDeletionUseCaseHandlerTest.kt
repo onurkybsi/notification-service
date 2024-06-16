@@ -38,6 +38,7 @@ internal class NotificationTemplateDeletionUseCaseHandlerTest {
                 channel = NotificationChannel.EMAIL,
                 type = NotificationType.WELCOME,
                 language = NotificationLanguage.EN,
+                subject = "subject",
                 content = "content",
                 modificationDate = OffsetDateTime.parse("2024-06-15T09:30:00Z"),
                 creationDate = OffsetDateTime.parse("2024-06-15T09:30:00Z")

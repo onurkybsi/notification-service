@@ -99,11 +99,11 @@ internal class NotificationTemplateRestController(
         content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)]
     )
     @NonExistentResourceResponse
-    @InvalidRequestResponse
-    internal suspend fun updateContent(@PathVariable id: Int, @RequestBody body: NotificationTemplateUpdateRequest) =
+    internal suspend fun updateNotificationTemplate(@PathVariable id: Int, @RequestBody body: NotificationTemplateUpdateRequest) =
         ResponseEntity.ok(
             notificationTemplateUpdateUseCaseHandler.handle(NotificationTemplateUpdateInput(
                 id = id,
+                subject = body.subject,
                 content = body.content
             ))
         )

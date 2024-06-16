@@ -10,6 +10,7 @@ data class NotificationTemplate(
     val channel: NotificationChannel,
     val type: NotificationType,
     val language: NotificationLanguage,
+    val subject: String,
     val content: String,
     val modifiedBy: String? = null,
     val modificationDate: OffsetDateTime,

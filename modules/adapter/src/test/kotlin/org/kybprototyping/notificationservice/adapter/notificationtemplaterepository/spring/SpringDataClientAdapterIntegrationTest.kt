@@ -47,7 +47,8 @@ internal class SpringDataClientAdapterIntegrationTest {
             channel = NotificationChannel.EMAIL,
             type = NotificationType.WELCOME,
             language = NotificationLanguage.EN,
-            content = "Content"
+            subject = "subject",
+            content = "content"
         )
 
         // when
@@ -135,27 +136,31 @@ internal class SpringDataClientAdapterIntegrationTest {
     }
 
     @Test
-    fun `updateContent should update notification template with given ID and return updated`() = runTest {
+    fun `updateBy should update notification template by given request and return updated`() = runTest {
         // given
         val createTemplateId = underTest.create(notificationTemplateCreationRequest())
 
         // when
-        val actualResult = underTest.updateContent(createTemplateId, "Updated content")
+        val actualResult = underTest.updateBy(NotificationTemplateUpdateRequest(
+            id = createTemplateId,
+            subject = "updated subject",
+            content = "updated content"
+        ))
 
         // then
         assertThat(actualResult)
             .usingRecursiveComparison()
-            .ignoringFields("modificationDate", "creationDate")
-            .isEqualTo(notificationTemplate().copy(content = "Updated content"))
+            .ignoringFields("id","modificationDate", "creationDate")
+            .isEqualTo(notificationTemplate().copy(subject = "updated subject", content = "updated content"))
     }
 
     @Test
-    fun `updateContent should return null when no notification template found with given ID`() = runTest {
+    fun `updateBy should return null when no notification template found with given ID`() = runTest {
         // given
         val id = 1
 
         // when
-        val actualResult = underTest.updateContent(id, "Updated content")
+        val actualResult = underTest.updateBy(NotificationTemplateUpdateRequest(id, null, null))
 
         // then
         assertThat(actualResult).isNull()
@@ -240,7 +245,8 @@ internal class SpringDataClientAdapterIntegrationTest {
             channel = NotificationChannel.EMAIL,
             type = NotificationType.WELCOME,
             language = NotificationLanguage.EN,
-            content = "Content"
+            subject = "subject",
+            content = "content"
         )
 
         private fun notificationTemplate() = NotificationTemplate(
@@ -248,7 +254,8 @@ internal class SpringDataClientAdapterIntegrationTest {
             channel = NotificationChannel.EMAIL,
             type = NotificationType.WELCOME,
             language = NotificationLanguage.EN,
-            content = "Content",
+            subject = "subject",
+            content = "content",
             modifiedBy = null,
             modificationDate = OffsetDateTime.parse("2024-06-01T09:00:00Z"),
             createdBy = null,

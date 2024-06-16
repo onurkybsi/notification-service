@@ -19,6 +19,7 @@ internal class NotificationTemplateMapper {
             channel = toDto(row.get("channel") as NotificationChannelEntity),
             type = toDto(row.get("type") as NotificationTypeEntity),
             language = toDto(row.get("language") as NotificationLanguageEntity),
+            subject = row.get("subject") as String,
             content = row.get("content") as String,
             modifiedBy = row.get("modified_by") as String?,
             modificationDate = OffsetDateTime.of(row.get("modification_date") as LocalDateTime, ZoneOffset.UTC),

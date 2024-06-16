@@ -5,5 +5,6 @@ package org.kybprototyping.notificationservice.domain.usecase.notificationtempla
  */
 data class NotificationTemplateUpdateInput(
     val id: Int,
-    val content: String
+    val subject: String?,
+    val content: String?
 )

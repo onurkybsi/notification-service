@@ -43,7 +43,7 @@ open class SpringConfiguration {
     @Bean
     internal open fun notificationTemplateUpdateUseCaseHandler(
         notificationTemplateRepositoryAdapter: NotificationTemplateRepositoryPort
-    ): InputOutputUseCaseHandler<NotificationTemplateUpdateInput, NotificationTemplate> =
+    ): InputOutputUseCaseHandler<NotificationTemplateUpdateInput, NotificationTemplate?> =
         NotificationTemplateUpdateUseCaseHandler(notificationTemplateRepositoryAdapter)
 
     @Bean

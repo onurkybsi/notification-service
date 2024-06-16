@@ -12,6 +12,7 @@ data class NotificationTemplateCreationInput(
     val channel: NotificationChannel,
     val type: NotificationType,
     val language: NotificationLanguage,
+    val subject: String,
     val content: String,
 )
 
@@ -25,5 +26,6 @@ fun NotificationTemplateCreationInput.toNotificationTemplateCreationRequest() =
         channel = channel,
         type = type,
         language = language,
+        subject = subject,
         content = content
     )

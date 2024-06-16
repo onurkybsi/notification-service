@@ -30,6 +30,7 @@ internal class NotificationTemplateCreationUseCaseHandlerTest {
             channel = NotificationChannel.EMAIL,
             type = NotificationType.WELCOME,
             language = NotificationLanguage.EN,
+            subject = "subject",
             content = "content"
         )
         coEvery { notificationTemplateRepositoryPortAdapter.create(input.toNotificationTemplateCreationRequest()) } returns 1
