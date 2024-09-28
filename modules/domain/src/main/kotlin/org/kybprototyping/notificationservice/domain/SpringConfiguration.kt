@@ -1,12 +1,11 @@
 package org.kybprototyping.notificationservice.domain
 
-import arrow.core.Either
-import org.kybprototyping.notificationservice.domain.common.Failure
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateRetrievalUseCase
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplatesRetrievalInput
+import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplatesRetrievalUseCase
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -14,18 +13,13 @@ import org.springframework.context.annotation.Configuration
 internal open class SpringConfiguration {
 
     @Bean
-    internal open fun notificationTemplatesRetrievalUseCase(): UseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>> {
-        return object : UseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>> {
-            override suspend fun handle(input: NotificationTemplatesRetrievalInput): Either<Failure, List<NotificationTemplate>> {
-                TODO("Not yet implemented")
-            }
-
-        }
-    }
+    internal open fun notificationTemplatesRetrievalUseCase(
+        repositoryPort: NotificationTemplateRepositoryPort
+    ): UseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>> =
+        NotificationTemplatesRetrievalUseCase(repositoryPort)
 
     @Bean
-    internal open fun notificationTemplateRetrievalUseCase(repositoryPort: NotificationTemplateRepositoryPort): UseCaseHandler<Int, NotificationTemplate?> {
-        return NotificationTemplateRetrievalUseCase(repositoryPort)
-    }
+    internal open fun notificationTemplateRetrievalUseCase(repositoryPort: NotificationTemplateRepositoryPort): UseCaseHandler<Int, NotificationTemplate?> =
+        NotificationTemplateRetrievalUseCase(repositoryPort)
 
 }

@@ -7,8 +7,11 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.kybprototyping.notificationservice.adapter.TestData
+import org.kybprototyping.notificationservice.domain.model.NotificationTemplate as DomainNotificationTemplate
+import org.kybprototyping.notificationservice.domain.model.NotificationType as DomainNotificationType
 import org.kybprototyping.notificationservice.adapter.repository.PostgreSQLContainerRunner
 import org.kybprototyping.notificationservice.adapter.repository.common.DbSpringConfiguration
+import org.kybprototyping.notificationservice.domain.model.NotificationType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
@@ -39,7 +42,7 @@ internal class SpringDataImplIntegrationTest : PostgreSQLContainerRunner() {
     @Test
     fun `should return notification template from repository by ID`() = runTest {
         // given
-        entityTemplate.insert(NotificationTemplate.from(TestData.notificationTemplate)).awaitSingleOrNull() ?: throw AssertionError()
+        insert(TestData.notificationTemplate)
         val id = 1
 
         // when
@@ -59,6 +62,36 @@ internal class SpringDataImplIntegrationTest : PostgreSQLContainerRunner() {
 
         // then
         actual shouldBeRight null
+    }
+
+    @Test
+    fun `should return all notification templates`() = runTest {
+        // given
+        insert(TestData.notificationTemplate)
+        insert(TestData.notificationTemplate.copy(id = 2, type = DomainNotificationType.PASSWORD_RESET))
+
+        // when
+        val actual = underTest.findBy(null, null, null)
+
+        // then
+        actual shouldBeRight listOf(TestData.notificationTemplate, TestData.notificationTemplate.copy(id = 2, type = DomainNotificationType.PASSWORD_RESET))
+    }
+
+    @Test
+    fun `should return notification templates by notification type`() = runTest {
+        // given
+        insert(TestData.notificationTemplate)
+        insert(TestData.notificationTemplate.copy(id = 2, type = DomainNotificationType.PASSWORD_RESET))
+
+        // when
+        val actual = underTest.findBy(null, NotificationType.WELCOME, null)
+
+        // then
+        actual shouldBeRight listOf(TestData.notificationTemplate)
+    }
+
+    private suspend fun insert(template: DomainNotificationTemplate) {
+        entityTemplate.insert(NotificationTemplate.from(template)).awaitSingleOrNull() ?: throw AssertionError()
     }
 
 }
