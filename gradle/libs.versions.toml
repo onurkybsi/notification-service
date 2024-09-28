@@ -7,6 +7,13 @@ jackson = "2.18.0"
 springmockk = "4.0.2"
 assertj = "3.26.3"
 mockk = "1.13.12"
+postgresql-r2dbc = "1.0.5.RELEASE"
+flyway = "9.22.3"
+postgresql-jdbc = "42.7.3"
+testcontainers = "1.20.1"
+kotlincoroutinestest = "1.9.0"
+kotestassertionsarrow = "1.4.0"
+junit-engine = "5.11.0-M2"
 
 [libraries]
 springdoc = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
@@ -19,9 +26,19 @@ jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", ver
 springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmockk" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+postgresql-r2dbc = { module = "org.postgresql:r2dbc-postgresql", version.ref = "postgresql-r2dbc" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+postgresql-jdbc = { module = "org.postgresql:postgresql", version.ref = "postgresql-jdbc" }
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+kotlincoroutinestest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlincoroutinestest" }
+kotestassertionsarrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotestassertionsarrow" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-engine" }
 
 [plugins]
+flyway-plugin = { id = "org.flywaydb.flyway", version.ref = "flyway" }
 
 [bundles]
 arrow = ["arrow-core", "arrow-fx-coroutines"]
 jackson = ["jackson-core", "jackson-databind"]
+testcontainers = ["testcontainers-junit", "testcontainers-postgresql"]

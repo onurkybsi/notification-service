@@ -4,6 +4,7 @@ import arrow.core.Either
 import org.kybprototyping.notificationservice.domain.common.Failure
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
+import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateRetrievalUseCase
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplatesRetrievalInput
 import org.springframework.context.annotation.Bean
@@ -23,8 +24,8 @@ internal open class SpringConfiguration {
     }
 
     @Bean
-    internal open fun notificationTemplateRetrievalUseCase(): UseCaseHandler<Int, NotificationTemplate> {
-        return NotificationTemplateRetrievalUseCase()
+    internal open fun notificationTemplateRetrievalUseCase(repositoryPort: NotificationTemplateRepositoryPort): UseCaseHandler<Int, NotificationTemplate?> {
+        return NotificationTemplateRetrievalUseCase(repositoryPort)
     }
 
 }

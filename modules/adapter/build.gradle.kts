@@ -1,8 +1,24 @@
+import org.springframework.boot.gradle.tasks.run.BootRun
+
+val dbHost = System.getenv("DB_HOST") ?: "localhost"
+val dbPort = System.getenv("DB_PORT") ?: 5432
+val dbUser = System.getenv("DB_USER") ?: "user"
+val dbPassword = System.getenv("DB_PASSWORD") ?: "password"
+
 plugins {
 	// From Spring Initializr
 	kotlin("plugin.spring") version "1.9.25"
 	id("org.springframework.boot") version "3.3.4"
 	id("io.spring.dependency-management") version "1.1.6"
+
+	alias(libs.plugins.flyway.plugin)
+}
+
+flyway {
+	url = "jdbc:postgresql://$dbHost:$dbPort/notification_db"
+	user = dbUser
+	password = dbPassword
+	locations = arrayOf("classpath:db/migration")
 }
 
 dependencies {
@@ -26,7 +42,17 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-log4j2")
 	implementation(libs.apache.log4j.kotlin)
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+//	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+	implementation("org.springframework.data:spring-data-r2dbc")
+	implementation("io.r2dbc:r2dbc-pool:1.0.1.RELEASE")
+
+	implementation(libs.postgresql.r2dbc)
+	runtimeOnly(libs.postgresql.jdbc) // For Flyway task
 	testImplementation(libs.springmockk)
+	testImplementation(libs.bundles.testcontainers)
+	testImplementation(libs.flyway.core)
+	testImplementation(libs.kotlincoroutinestest)
+	testImplementation(libs.kotestassertionsarrow)
 }
 
 configurations {
@@ -37,4 +63,8 @@ configurations {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.withType<BootRun> {
+	dependsOn("flywayMigrate")
 }

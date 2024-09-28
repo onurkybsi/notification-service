@@ -23,3 +23,12 @@ data class DataInvalidityFailure(
  * Failure that indicates that the data by given input could not be found.
  */
 data class DataNotFoundFailure(override val message: String) : Failure(message, false)
+
+/**
+ * Failure that indicates that something went unexpectedly wrong.
+ */
+data class UnexpectedFailure(
+    override val message: String = "Something went unexpectedly wrong!",
+    override val isTemporary: Boolean = false,
+    override val cause: Throwable? = null
+) : Failure(message, isTemporary)

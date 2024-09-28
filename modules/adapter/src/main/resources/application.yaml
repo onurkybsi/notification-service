@@ -15,3 +15,17 @@ springdoc:
   swagger-ui:
     enabled: true
     path: "/swagger-ui"
+
+logging:
+  level:
+    org:
+      springframework:
+        r2dbc: "DEBUG"
+      kybprototyping: "DEBUG"
+
+db:
+  host: "localhost"
+  port: 5432
+  user: "user"
+  password: "password"
+  poolMaxSize: 5

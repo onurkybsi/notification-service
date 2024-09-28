@@ -3,6 +3,7 @@ package org.kybprototyping.notificationservice.adapter.rest.common
 import org.kybprototyping.notificationservice.domain.common.DataInvalidityFailure
 import org.kybprototyping.notificationservice.domain.common.DataNotFoundFailure
 import org.kybprototyping.notificationservice.domain.common.Failure
+import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
@@ -15,6 +16,13 @@ internal object ResponseEntityUtils {
                 .of(problemDetail(HttpStatus.BAD_REQUEST, properties = mapOf("validationResult" to this.validationResult)))
                 .build()
             is DataNotFoundFailure -> ResponseEntity.of(problemDetail(HttpStatus.NOT_FOUND)).build()
+            is UnexpectedFailure ->  ResponseEntity.of(
+                problemDetail(
+                    status = HttpStatus.INTERNAL_SERVER_ERROR,
+                    detail = this.message,
+                    properties = mapOf("isTemporary" to this.isTemporary)
+                )
+            ).build()
         }
 
     private fun problemDetail(
