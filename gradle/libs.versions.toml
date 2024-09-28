@@ -1,0 +1,21 @@
+[versions]
+springdoc = "2.6.0"
+arrow = "1.2.4"
+spring-context = "6.1.8"
+apache-log4j-kotlin = "1.5.0"
+jackson = "2.18.0"
+
+[libraries]
+springdoc = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
+arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
+spring-context = { module = "org.springframework:spring-context", version.ref = "spring-context" }
+apache-log4j-kotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "apache-log4j-kotlin" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+
+[plugins]
+
+[bundles]
+arrow = ["arrow-core", "arrow-fx-coroutines"]
+jackson = ["jackson-core", "jackson-databind"]

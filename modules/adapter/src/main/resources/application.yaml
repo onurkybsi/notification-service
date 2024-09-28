@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: "notification-service"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - beans
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: "/swagger-ui"
