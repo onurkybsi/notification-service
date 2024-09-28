@@ -9,7 +9,11 @@ import org.kybprototyping.notificationservice.adapter.rest.common.InternalServer
 import org.kybprototyping.notificationservice.adapter.rest.common.NotFoundApiResponse
 import org.kybprototyping.notificationservice.adapter.rest.common.OkApiResponse
 import org.kybprototyping.notificationservice.adapter.rest.common.ResponseEntityUtils.toResponseEntity
+import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationChannel.Companion.toDomain
+import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationLanguage.Companion.toDomain
+import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationType.Companion.toDomain
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
+import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplatesRetrievalInput
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate as DomainNotificationTemplate
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -22,10 +26,11 @@ import org.springframework.web.bind.annotation.*
     description = "Notification Template API v1"
 )
 internal class NotificationTemplateRetrievalController(
+    private val notificationTemplatesRetrievalUseCase: UseCaseHandler<NotificationTemplatesRetrievalInput, List<DomainNotificationTemplate>>,
     private val notificationTemplateRetrievalUseCase: UseCaseHandler<Int, DomainNotificationTemplate>
 ) {
     @GetMapping
-    @Operation(summary = "Returns the notification templates with given values.")
+    @Operation(summary = "Returns the notification templates by given values.")
     @OkApiResponse(
         content = [
             Content(
@@ -39,10 +44,20 @@ internal class NotificationTemplateRetrievalController(
         @RequestParam(required = false) channel: NotificationChannel?,
         @RequestParam(required = false) type: NotificationType?,
         @RequestParam(required = false) language: NotificationLanguage?
-    ): ResponseEntity<*> = TODO("Will be implemented...")
+    ): ResponseEntity<*> =
+        notificationTemplatesRetrievalUseCase.handle(
+            NotificationTemplatesRetrievalInput(
+                channel = channel?.toDomain(),
+                type = type?.toDomain(),
+                language = language?.toDomain()
+            )
+        ).fold(
+            ifLeft = { it.toResponseEntity() },
+            ifRight = { ResponseEntity.ok(it) }
+        )
 
     @GetMapping("/{id}")
-    @Operation(summary = "Returns the notification template with given ID.")
+    @Operation(summary = "Returns the notification template by given ID.")
     @OkApiResponse(content = [
         Content(
             mediaType = MediaType.APPLICATION_JSON_VALUE,

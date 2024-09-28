@@ -4,6 +4,9 @@ arrow = "1.2.4"
 spring-context = "6.1.8"
 apache-log4j-kotlin = "1.5.0"
 jackson = "2.18.0"
+springmockk = "4.0.2"
+assertj = "3.26.3"
+mockk = "1.13.12"
 
 [libraries]
 springdoc = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
@@ -13,6 +16,9 @@ spring-context = { module = "org.springframework:spring-context", version.ref = 
 apache-log4j-kotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "apache-log4j-kotlin" }
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmockk" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [plugins]
 
