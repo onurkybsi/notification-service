@@ -25,6 +25,14 @@ data class DataInvalidityFailure(
 data class DataNotFoundFailure(override val message: String) : Failure(message, false)
 
 /**
+ * Failure that indicates that the data with given values are already processed.
+ */
+data class DataConflictFailure(
+    override val message: String,
+    override val isTemporary: Boolean = false,
+): Failure(message, isTemporary)
+
+/**
  * Failure that indicates that something went unexpectedly wrong.
  */
 data class UnexpectedFailure(
