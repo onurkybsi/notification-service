@@ -1,9 +1,11 @@
 package org.kybprototyping.notificationservice.adapter.repository.notificationtemplate
 
+import arrow.core.getOrElse
 import io.kotest.assertions.arrow.core.shouldBeRight
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.kybprototyping.notificationservice.adapter.TestData
@@ -88,6 +90,50 @@ internal class SpringDataImplIntegrationTest : PostgreSQLContainerRunner() {
 
         // then
         actual shouldBeRight listOf(TestData.notificationTemplate)
+    }
+
+    @Test
+    fun `should create notification template by values`() = runTest {
+        // given
+
+        // when
+        val actual = underTest.create(
+            channel = TestData.notificationTemplate.channel,
+            type = TestData.notificationTemplate.type,
+            language = TestData.notificationTemplate.language,
+            subject = TestData.notificationTemplate.subject,
+            content = TestData.notificationTemplate.content
+        )
+
+        // then
+        actual shouldBeRight 1
+        val created = underTest.findBy(
+            channel = TestData.notificationTemplate.channel,
+            type = TestData.notificationTemplate.type,
+            language = TestData.notificationTemplate.language
+        ).getOrElse { throw AssertionError() }
+        assertThat(created[0])
+            .usingRecursiveComparison()
+            .ignoringFields("modifiedAt", "createdAt") // TODO: Assert these as well after TimeUtils!
+            .isEqualTo(TestData.notificationTemplate)
+    }
+
+    @Test
+    fun `should return null for notification template creation when a template is already created with the same channel, type and language`() = runTest {
+        // given
+        insert(TestData.notificationTemplate)
+
+        // when
+        val actual = underTest.create(
+            channel = TestData.notificationTemplate.channel,
+            type = TestData.notificationTemplate.type,
+            language = TestData.notificationTemplate.language,
+            subject = TestData.notificationTemplate.subject,
+            content = TestData.notificationTemplate.content
+        )
+
+        // then
+        actual shouldBeRight null
     }
 
     private suspend fun insert(template: DomainNotificationTemplate) {

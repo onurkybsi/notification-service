@@ -9,7 +9,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
 internal data class NotificationTemplate(
-    val id: Int,
+    val id: Int?,
     val channel: NotificationChannel,
     val type: NotificationType,
     val language: NotificationLanguage,
@@ -23,7 +23,7 @@ internal data class NotificationTemplate(
     internal companion object {
         internal fun NotificationTemplate.toDomain() =
             DomainNotificationTemplate(
-                id = this.id,
+                id = this.id!!,
                 channel = this.channel.toDomain(),
                 type = this.type.toDomain(),
                 language = this.language.toDomain(),

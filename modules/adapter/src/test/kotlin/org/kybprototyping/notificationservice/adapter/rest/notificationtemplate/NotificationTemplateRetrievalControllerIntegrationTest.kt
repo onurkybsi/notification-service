@@ -150,7 +150,8 @@ internal class NotificationTemplateRetrievalControllerIntegrationTest {
     fun `should return not found when no notification template found by ID`() {
         // given
         val id = 1
-        coEvery { notificationTemplateRetrievalUseCase.handle(id) } returns DataNotFoundFailure(StringUtils.EMPTY).left()
+        coEvery { notificationTemplateRetrievalUseCase.handle(id) }
+            .returns(DataNotFoundFailure("No notification template found by given ID: 1").left())
 
         // when & then
         webTestClient.get()
@@ -165,7 +166,7 @@ internal class NotificationTemplateRetrievalControllerIntegrationTest {
                         "type": "about:blank",
                         "title": "Not Found",
                         "status": 404,
-                        "detail": "Not Found",
+                        "detail": "No notification template found by given ID: 1",
                         "instance": "/api/v1/notification-template/${id}"
                     }
                 """.trimIndent()

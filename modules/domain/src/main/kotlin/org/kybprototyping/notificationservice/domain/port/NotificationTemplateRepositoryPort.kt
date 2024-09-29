@@ -36,4 +36,24 @@ interface NotificationTemplateRepositoryPort {
         language: NotificationLanguage?,
     ): Either<UnexpectedFailure, List<NotificationTemplate>>
 
+    /**
+     * Creates a new template and returns its ID.
+     *
+     * @param channel notification channel
+     * @param type type of the notification
+     * @param language language of the notification
+     * @param subject subject of the notification
+     * @param content content of the notification
+     * @return ID of the created template or **null** if the template with
+     *  the same [channel], [type], [language] is already created, or,
+     *  [UnexpectedFailure] if something went unexpectedly wrong
+     */
+    suspend fun create(
+        channel: NotificationChannel,
+        type: NotificationType,
+        language: NotificationLanguage,
+        subject: String,
+        content: String,
+    ): Either<UnexpectedFailure, Int?>
+
 }

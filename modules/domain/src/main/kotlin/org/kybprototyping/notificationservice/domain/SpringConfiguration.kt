@@ -3,6 +3,7 @@ package org.kybprototyping.notificationservice.domain
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
+import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateCreationUseCase
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateRetrievalUseCase
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplatesRetrievalInput
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplatesRetrievalUseCase
@@ -21,5 +22,9 @@ internal open class SpringConfiguration {
     @Bean
     internal open fun notificationTemplateRetrievalUseCase(repositoryPort: NotificationTemplateRepositoryPort): UseCaseHandler<Int, NotificationTemplate?> =
         NotificationTemplateRetrievalUseCase(repositoryPort)
+
+    @Bean
+    internal open fun notificationTemplateCreationUseCase(repositoryPort: NotificationTemplateRepositoryPort) =
+        NotificationTemplateCreationUseCase(repositoryPort)
 
 }
