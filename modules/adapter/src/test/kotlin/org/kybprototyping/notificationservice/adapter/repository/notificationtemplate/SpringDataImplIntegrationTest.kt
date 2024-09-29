@@ -1,7 +1,9 @@
 package org.kybprototyping.notificationservice.adapter.repository.notificationtemplate
 
 import arrow.core.getOrElse
+import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -14,11 +16,13 @@ import org.kybprototyping.notificationservice.domain.model.NotificationType as D
 import org.kybprototyping.notificationservice.adapter.repository.PostgreSQLContainerRunner
 import org.kybprototyping.notificationservice.adapter.repository.common.DbSpringConfiguration
 import org.kybprototyping.notificationservice.domain.model.NotificationType
+import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.r2dbc.core.allAndAwait
 import org.springframework.data.r2dbc.core.delete
+import org.springframework.data.relational.core.query.Query
 
 @SpringBootTest(
     classes = [
@@ -134,6 +138,33 @@ internal class SpringDataImplIntegrationTest : PostgreSQLContainerRunner() {
 
         // then
         actual shouldBeRight null
+    }
+
+    @Test
+    fun `should delete an existing notification template from data repository by given ID`() = runTest {
+        // given
+        val id = TestData.notificationTemplate.id
+        insert(TestData.notificationTemplate)
+
+        // when
+        val actual = underTest.delete(id)
+
+        // then
+        actual shouldBeRight Unit
+        val templateCount = entityTemplate.count(Query.empty(), NotificationTemplate::class.java).awaitSingle()
+        assertThat(templateCount).isEqualTo(0)
+    }
+
+    @Test
+    fun `should return DataNotFoundFailure for notification template deletion when no template found by given ID`() = runTest {
+        // given
+        val id = TestData.notificationTemplate.id
+
+        // when
+        val actual = underTest.delete(id)
+
+        // then
+        actual shouldBeLeft NotificationTemplateRepositoryPort.DeletionFailure.DataNotFoundFailure
     }
 
     private suspend fun insert(template: DomainNotificationTemplate) {

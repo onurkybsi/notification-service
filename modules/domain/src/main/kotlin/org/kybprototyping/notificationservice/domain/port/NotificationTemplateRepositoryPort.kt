@@ -56,4 +56,27 @@ interface NotificationTemplateRepositoryPort {
         content: String,
     ): Either<UnexpectedFailure, Int?>
 
+    /**
+     * Deletes a notification template from the data repository by given ID.
+     *
+     * @param id notification template ID
+     * @return [DeletionFailure] if something went wrong during deletion
+     */
+    suspend fun delete(id: Int): Either<DeletionFailure, Unit>
+
+    /**
+     * Failure that might occur during [delete] execution.
+     */
+    sealed class DeletionFailure {
+        /**
+         * Failure indicates that the template to delete doesn't exist.
+         */
+        data object DataNotFoundFailure : DeletionFailure()
+
+        /**
+         * Failure indicates that the deletion has unexpectedly failed.
+         */
+        data class UnexpectedFailure(val cause: Throwable) : DeletionFailure()
+    }
+
 }

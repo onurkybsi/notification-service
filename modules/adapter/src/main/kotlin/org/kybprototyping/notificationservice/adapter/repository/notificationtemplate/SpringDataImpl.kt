@@ -11,6 +11,7 @@ import org.kybprototyping.notificationservice.domain.model.NotificationChannel a
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage as DomainNotificationLanguage
 import org.kybprototyping.notificationservice.domain.model.NotificationType as DomainNotificationType
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
+import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort.DeletionFailure
 import org.springframework.dao.DuplicateKeyException
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate as DomainNotificationTemplate
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
@@ -87,5 +88,23 @@ internal class SpringDataImpl(private val entityTemplate: R2dbcEntityTemplate) :
             null.right()
         } catch (e: Exception) {
             UnexpectedFailure(isTemporary = true, cause = e).left()
+        }
+
+    override suspend fun delete(id: Int): Either<DeletionFailure, Unit> =
+        try {
+            entityTemplate
+                .delete(NotificationTemplate::class.java)
+                .matching(query(where("id").`is`(id)))
+                .all()
+                .awaitSingle()
+                .let { rowsDeleted ->
+                    if (rowsDeleted == 0L) {
+                        DeletionFailure.DataNotFoundFailure.left()
+                    } else {
+                        Unit.right()
+                    }
+                }
+        } catch (e: Exception) {
+            DeletionFailure.UnexpectedFailure(e).left()
         }
 }
