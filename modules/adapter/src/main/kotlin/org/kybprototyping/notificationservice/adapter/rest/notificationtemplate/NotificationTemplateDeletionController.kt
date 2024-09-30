@@ -3,6 +3,7 @@ package org.kybprototyping.notificationservice.adapter.rest.notificationtemplate
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.kybprototyping.notificationservice.adapter.rest.common.InternalServerErrorApiResponse
 import org.kybprototyping.notificationservice.adapter.rest.common.NotFoundApiResponse
 import org.kybprototyping.notificationservice.adapter.rest.common.ResponseEntityUtils.toResponseEntity
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
@@ -24,6 +25,7 @@ internal class NotificationTemplateDeletionController(private val useCaseHandler
         description = "Successful deletion"
     )
     @NotFoundApiResponse(description = "Template to delete doesn't exist.")
+    @InternalServerErrorApiResponse
     internal suspend fun deleteNotificationTemplate(@PathVariable id: Int): ResponseEntity<*> =
         useCaseHandler.handle(id)
             .fold(

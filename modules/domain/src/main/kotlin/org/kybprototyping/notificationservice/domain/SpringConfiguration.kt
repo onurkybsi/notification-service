@@ -32,4 +32,8 @@ internal open class SpringConfiguration {
     internal open fun notificationTemplateDeletionUseCase(repositoryPort: NotificationTemplateRepositoryPort) =
         NotificationTemplateDeletionUseCase(repositoryPort)
 
+    @Bean
+    internal open fun notificationTemplateUpdateUseCase(repositoryPort: NotificationTemplateRepositoryPort) =
+        NotificationTemplateUpdateUseCase(repositoryPort)
+
 }

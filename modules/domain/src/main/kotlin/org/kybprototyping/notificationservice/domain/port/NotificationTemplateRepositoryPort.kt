@@ -65,6 +65,16 @@ interface NotificationTemplateRepositoryPort {
     suspend fun delete(id: Int): Either<DeletionFailure, Unit>
 
     /**
+     * Update the notification template's subject and content by given ID.
+     *
+     * @param id ID of the template to update
+     * @param subjectToSet updated subject, **if non-null**, if it's given as **null** no update will be made
+     * @param contentToSet updated content, **if non-null**, if it's given as **null** no update will be made
+     * @return [UpdateFailure] if something went wrong during deletion
+     */
+    suspend fun update(id: Int, subjectToSet: String?, contentToSet: String?): Either<UpdateFailure, Unit>
+
+    /**
      * Failure that might occur during [delete] execution.
      */
     sealed class DeletionFailure {
@@ -77,6 +87,21 @@ interface NotificationTemplateRepositoryPort {
          * Failure indicates that the deletion has unexpectedly failed.
          */
         data class UnexpectedFailure(val cause: Throwable) : DeletionFailure()
+    }
+
+    /**
+     * Failure that might occur during [update] execution.
+     */
+    sealed class UpdateFailure {
+        /**
+         * Failure indicates that the template to update doesn't exist.
+         */
+        data object DataNotFoundFailure : UpdateFailure()
+
+        /**
+         * Failure indicates that the update has unexpectedly failed.
+         */
+        data class UnexpectedFailure(val cause: Throwable) : UpdateFailure()
     }
 
 }

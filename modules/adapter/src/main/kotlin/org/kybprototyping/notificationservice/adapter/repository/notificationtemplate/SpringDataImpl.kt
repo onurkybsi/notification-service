@@ -3,6 +3,7 @@ package org.kybprototyping.notificationservice.adapter.repository.notificationte
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.NotificationTemplate.Companion.toDomain
@@ -12,6 +13,7 @@ import org.kybprototyping.notificationservice.domain.model.NotificationLanguage 
 import org.kybprototyping.notificationservice.domain.model.NotificationType as DomainNotificationType
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort.DeletionFailure
+import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort.UpdateFailure
 import org.springframework.dao.DuplicateKeyException
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate as DomainNotificationTemplate
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
@@ -19,6 +21,7 @@ import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Criteria.where
 import org.springframework.data.relational.core.query.Query
 import org.springframework.data.relational.core.query.Query.query
+import org.springframework.data.relational.core.query.Update
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -107,4 +110,41 @@ internal class SpringDataImpl(private val entityTemplate: R2dbcEntityTemplate) :
         } catch (e: Exception) {
             DeletionFailure.UnexpectedFailure(e).left()
         }
+
+    override suspend fun update(
+        id: Int,
+        subjectToSet: String?,
+        contentToSet: String?
+    ): Either<UpdateFailure, Unit> {
+        try {
+            if (subjectToSet == null && contentToSet == null)
+                return Unit.right()
+
+            val columnsToUpdate = mutableListOf("modified_at = :modifiedAt")
+            val valuesToBind = mutableMapOf<String, Any>("id" to id, "modifiedAt" to LocalDateTime.now()) // TODO: TimeUtils!
+            subjectToSet?.let { columnsToUpdate.add("subject = :subject"); valuesToBind["subject"] = subjectToSet }
+            contentToSet?.let { columnsToUpdate.add("content = :content"); valuesToBind["content"] = contentToSet }
+
+            entityTemplate.databaseClient.sql(
+                """
+                    UPDATE notification_template 
+                    SET ${columnsToUpdate.joinToString(", ")}
+                    WHERE id = :id
+                """
+            )
+                .bindValues(valuesToBind)
+                .fetch()
+                .rowsUpdated()
+                .awaitSingle()
+                .let { rowsUpdated ->
+                    return if (rowsUpdated > 0) {
+                        Unit.right()
+                    } else {
+                        UpdateFailure.DataNotFoundFailure.left()
+                    }
+                }
+        } catch (e: Exception) {
+            return UpdateFailure.UnexpectedFailure(e).left()
+        }
+    }
 }

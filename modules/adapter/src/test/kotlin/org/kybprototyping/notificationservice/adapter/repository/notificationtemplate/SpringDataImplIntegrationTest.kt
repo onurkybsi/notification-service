@@ -10,6 +10,8 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.kybprototyping.notificationservice.adapter.TestData
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate as DomainNotificationTemplate
 import org.kybprototyping.notificationservice.domain.model.NotificationType as DomainNotificationType
@@ -165,6 +167,51 @@ internal class SpringDataImplIntegrationTest : PostgreSQLContainerRunner() {
 
         // then
         actual shouldBeLeft NotificationTemplateRepositoryPort.DeletionFailure.DataNotFoundFailure
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = [
+        "Updated Subject, Updated Subject, Updated Content, Updated Content",
+        "Updated Subject, Updated Subject, null, Welcome to our platform \${firstName}",
+        "null, Welcome, Updated Content, Updated Content",
+        "null, Welcome, null, Welcome to our platform \${firstName}",
+    ], nullValues = ["null"])
+    fun `should update an existing notification template by values`(
+        subjectToSet: String?,
+        expectedSubject: String,
+        contentToSet: String?,
+        expectedContent: String,
+    ) = runTest {
+        // given
+        val id = TestData.notificationTemplate.id
+        insert(TestData.notificationTemplate)
+
+        // when
+        val actual = underTest.update(id, subjectToSet, contentToSet)
+
+        // then
+        actual shouldBeRight Unit
+        val updated = underTest.findBy(
+            channel = TestData.notificationTemplate.channel,
+            type = TestData.notificationTemplate.type,
+            language = TestData.notificationTemplate.language
+        ).getOrElse { throw AssertionError() }
+        assertThat(updated[0])
+            .usingRecursiveComparison()
+            .ignoringFields("modifiedAt", "createdAt") // TODO: Assert these as well after TimeUtils!
+            .isEqualTo(TestData.notificationTemplate.copy(subject = expectedSubject, content = expectedContent))
+    }
+
+    @Test
+    fun `should return DataNotFoundFailure for notification template update when no template found by given ID`() = runTest {
+        // given
+        val id = TestData.notificationTemplate.id
+
+        // when
+        val actual = underTest.update(id, "Updated Subject", "Updated Content")
+
+        // then
+        actual shouldBeLeft NotificationTemplateRepositoryPort.UpdateFailure.DataNotFoundFailure
     }
 
     private suspend fun insert(template: DomainNotificationTemplate) {
