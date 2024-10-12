@@ -1,6 +1,12 @@
 spring:
   application:
     name: "notification-service"
+  r2dbc:
+    url: "r2dbc:postgresql://${DB_HOST}:${DB_PORT}/notification_db"
+    username: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+    pool:
+      enabled: true
 
 management:
   endpoints:
@@ -23,9 +29,7 @@ logging:
         r2dbc: "DEBUG"
       kybprototyping: "DEBUG"
 
-db:
-  host: "localhost"
-  port: 5432
-  user: "user"
-  password: "password"
-  poolMaxSize: 5
+
+ports:
+  notification-template-repository:
+    impl: "jooq"

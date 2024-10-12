@@ -3,7 +3,6 @@ package org.kybprototyping.notificationservice.adapter.repository.notificationte
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.NotificationTemplate.Companion.toDomain
@@ -14,6 +13,7 @@ import org.kybprototyping.notificationservice.domain.model.NotificationType as D
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort.DeletionFailure
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort.UpdateFailure
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.dao.DuplicateKeyException
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate as DomainNotificationTemplate
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
@@ -21,11 +21,14 @@ import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Criteria.where
 import org.springframework.data.relational.core.query.Query
 import org.springframework.data.relational.core.query.Query.query
-import org.springframework.data.relational.core.query.Update
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 @Component
+@ConditionalOnProperty(
+    value = ["ports.notification-template-repository.impl"],
+    havingValue = "spring-data"
+)
 internal class SpringDataImpl(private val entityTemplate: R2dbcEntityTemplate) : NotificationTemplateRepositoryPort {
     override suspend fun findById(id: Int): Either<UnexpectedFailure, DomainNotificationTemplate?> =
         try {

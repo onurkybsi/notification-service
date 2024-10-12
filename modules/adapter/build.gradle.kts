@@ -1,3 +1,5 @@
+import nu.studer.gradle.jooq.JooqEdition
+import nu.studer.gradle.jooq.JooqGenerate
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 val dbHost = System.getenv("DB_HOST") ?: "localhost"
@@ -12,6 +14,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.6"
 
 	alias(libs.plugins.flyway.plugin)
+	alias(libs.plugins.studerjooqgenerator)
 }
 
 flyway {
@@ -19,6 +22,36 @@ flyway {
 	user = dbUser
 	password = dbPassword
 	locations = arrayOf("classpath:db/migration")
+}
+
+jooq {
+	version = dependencyManagement.importedProperties["jooq.version"]
+	edition = JooqEdition.OSS
+
+	configurations {
+		create("main") {
+			jooqConfiguration.apply {
+				jdbc.apply {
+					driver = "org.postgresql.Driver"
+					url = "jdbc:postgresql://$dbHost:$dbPort/notification_db"
+					user = dbUser
+					password = dbPassword
+				}
+				generator.apply {
+					name = "org.jooq.codegen.KotlinGenerator"
+					database.apply {
+						name = "org.jooq.meta.postgres.PostgresDatabase"
+						inputSchema = "public"
+					}
+					// Target package of the generated code
+					target.apply {
+						packageName = "org.kybprototyping.notificationservice.adapter.repository.notificationtemplate"
+					}
+					strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
+				}
+			}
+		}
+	}
 }
 
 dependencies {
@@ -42,12 +75,13 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-log4j2")
 	implementation(libs.apache.log4j.kotlin)
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
-//	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
-	implementation("org.springframework.data:spring-data-r2dbc")
-	implementation("io.r2dbc:r2dbc-pool:1.0.1.RELEASE")
-
 	implementation(libs.postgresql.r2dbc)
+	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+	implementation("org.springframework.boot:spring-boot-starter-jooq")
+
 	runtimeOnly(libs.postgresql.jdbc) // For Flyway task
+	jooqGenerator(libs.postgresql.jdbc)
+
 	testImplementation(libs.springmockk)
 	testImplementation(libs.bundles.testcontainers)
 	testImplementation(libs.flyway.core)
@@ -65,6 +99,11 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
+tasks.withType<JooqGenerate> {
+	dependsOn("flywayMigrate")
+}
+
 tasks.withType<BootRun> {
 	dependsOn("flywayMigrate")
+	dependsOn("generateJooq")
 }

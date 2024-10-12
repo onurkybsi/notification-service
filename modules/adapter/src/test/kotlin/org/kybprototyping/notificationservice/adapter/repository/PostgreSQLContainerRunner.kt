@@ -33,10 +33,11 @@ internal open class PostgreSQLContainerRunner {
             val port = instance.getMappedPort(5432)
             val username = instance.username
             val password = instance.password
-            registry.add("db.host") { host }
-            registry.add("db.port") { port }
-            registry.add("db.user") { username }
-            registry.add("db.password") { password }
+
+            registry.add("DB_HOST") { host }
+            registry.add("DB_PORT") { port }
+            registry.add("DB_USER") { username }
+            registry.add("DB_PASSWORD") { password }
         }
 
         private fun flywayMigration() {
