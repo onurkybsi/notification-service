@@ -22,6 +22,7 @@ import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
+// TODO: Make this Spring transactional management compatible.
 @Component
 @ConditionalOnProperty(
     value = ["ports.notification-template-repository.impl"],

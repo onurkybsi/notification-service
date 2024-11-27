@@ -32,4 +32,4 @@ logging:
 
 ports:
   notification-template-repository:
-    impl: "jooq"
+    impl: "spring-data"
