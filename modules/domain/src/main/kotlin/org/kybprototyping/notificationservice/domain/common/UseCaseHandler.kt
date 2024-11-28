@@ -6,7 +6,6 @@ import arrow.core.Either
  * Represents the _Notification Service_ use case implementations.
  */
 interface UseCaseHandler<in I, out O> {
-
     /**
      * Handles the use case with given input.
      *
@@ -14,5 +13,4 @@ interface UseCaseHandler<in I, out O> {
      * @return output of the use case or [Failure] if something went wrong
      */
     suspend fun handle(input: I): Either<Failure, O>
-
 }

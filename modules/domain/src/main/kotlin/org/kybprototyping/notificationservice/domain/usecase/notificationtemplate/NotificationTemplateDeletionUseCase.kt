@@ -9,13 +9,15 @@ import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 
 internal class NotificationTemplateDeletionUseCase(
-    private val repositoryPort: NotificationTemplateRepositoryPort
+    private val repositoryPort: NotificationTemplateRepositoryPort,
 ) : UseCaseHandler<Int, Unit>, Logging {
-    override suspend fun handle(input: Int): Either<Failure, Unit> =
-        repositoryPort.delete(input).mapLeft { toFailure(it, input) }
+    override suspend fun handle(input: Int): Either<Failure, Unit> = repositoryPort.delete(input).mapLeft { toFailure(it, input) }
 
-    private fun toFailure(from: NotificationTemplateRepositoryPort.DeletionFailure, id: Int): Failure =
-        when(from) {
+    private fun toFailure(
+        from: NotificationTemplateRepositoryPort.DeletionFailure,
+        id: Int,
+    ): Failure =
+        when (from) {
             is NotificationTemplateRepositoryPort.DeletionFailure.DataNotFoundFailure -> {
                 DataNotFoundFailure(message = "No notification template found to delete by given ID: $id")
             }
@@ -24,5 +26,4 @@ internal class NotificationTemplateDeletionUseCase(
                 UnexpectedFailure(isTemporary = true)
             }
         }
-
 }

@@ -5,5 +5,5 @@ package org.kybprototyping.notificationservice.domain.model
  */
 enum class NotificationType {
     WELCOME,
-    PASSWORD_RESET;
+    PASSWORD_RESET,
 }

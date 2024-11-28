@@ -15,5 +15,5 @@ data class NotificationTemplate(
     val modifiedBy: String? = null,
     val modifiedAt: OffsetDateTime,
     val createdBy: String? = null,
-    val createdAt: OffsetDateTime
+    val createdAt: OffsetDateTime,
 )

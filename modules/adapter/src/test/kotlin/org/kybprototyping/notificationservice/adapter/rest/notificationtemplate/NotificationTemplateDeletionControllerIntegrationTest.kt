@@ -14,7 +14,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebFluxTest(controllers = [NotificationTemplateDeletionController::class])
 internal class NotificationTemplateDeletionControllerIntegrationTest {
-
     @MockkBean
     private lateinit var useCaseHandler: UseCaseHandler<Int, Unit>
 
@@ -29,7 +28,7 @@ internal class NotificationTemplateDeletionControllerIntegrationTest {
 
         // when & then
         webTestClient.delete()
-            .uri { it.path("/api/v1/notification-template/${id}").build() }
+            .uri { it.path("/api/v1/notification-template/$id").build() }
             .exchange()
             .expectStatus()
             .isNoContent
@@ -46,21 +45,21 @@ internal class NotificationTemplateDeletionControllerIntegrationTest {
 
         // when & then
         webTestClient.delete()
-            .uri { it.path("/api/v1/notification-template/${id}").build() }
+            .uri { it.path("/api/v1/notification-template/$id").build() }
             .exchange()
             .expectStatus()
             .isNotFound
             .expectBody()
             .json(
                 """
-                    {
-                        "type": "about:blank",
-                        "title": "Not Found",
-                        "status": 404,
-                        "detail": "No notification template found to delete by given ID: 1",
-                        "instance": "/api/v1/notification-template/${id}"
-                    }
-                """.trimIndent()
+                {
+                    "type": "about:blank",
+                    "title": "Not Found",
+                    "status": 404,
+                    "detail": "No notification template found to delete by given ID: 1",
+                    "instance": "/api/v1/notification-template/$id"
+                }
+                """.trimIndent(),
             )
     }
 
@@ -72,22 +71,21 @@ internal class NotificationTemplateDeletionControllerIntegrationTest {
 
         // when & then
         webTestClient.delete()
-            .uri { it.path("/api/v1/notification-template/${id}").build() }
+            .uri { it.path("/api/v1/notification-template/$id").build() }
             .exchange()
             .expectStatus()
             .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
             .expectBody()
             .json(
                 """
-                    {
-                        "type": "about:blank",
-                        "title": "Internal Server Error",
-                        "status": 500,
-                        "detail": "An unexpected error occurred!",
-                        "instance": "/api/v1/notification-template/${id}"
-                    }
-                """.trimIndent()
+                {
+                    "type": "about:blank",
+                    "title": "Internal Server Error",
+                    "status": 500,
+                    "detail": "An unexpected error occurred!",
+                    "instance": "/api/v1/notification-template/$id"
+                }
+                """.trimIndent(),
             )
     }
-
 }

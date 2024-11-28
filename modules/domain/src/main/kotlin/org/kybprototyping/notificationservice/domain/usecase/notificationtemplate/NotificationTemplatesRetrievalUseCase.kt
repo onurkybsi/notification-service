@@ -7,7 +7,7 @@ import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 
 internal class NotificationTemplatesRetrievalUseCase(
-    private val repositoryPort: NotificationTemplateRepositoryPort
+    private val repositoryPort: NotificationTemplateRepositoryPort,
 ) : UseCaseHandler<NotificationTemplatesRetrievalInput, List<NotificationTemplate>>, Logging {
     override suspend fun handle(input: NotificationTemplatesRetrievalInput) =
         repositoryPort.findBy(input.channel, input.type, input.language)

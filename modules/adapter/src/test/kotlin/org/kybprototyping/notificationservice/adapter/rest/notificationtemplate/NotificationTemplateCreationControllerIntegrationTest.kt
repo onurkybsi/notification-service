@@ -21,7 +21,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebFluxTest(controllers = [NotificationTemplateCreationController::class])
 internal class NotificationTemplateCreationControllerIntegrationTest {
-
     private val objetMapper = ObjectMapper() // TODO: Use the common one!
 
     @MockkBean
@@ -33,13 +32,14 @@ internal class NotificationTemplateCreationControllerIntegrationTest {
     @Test
     fun `should create a notification template and return created template ID`() {
         // given
-        val expectedInput = NotificationTemplateCreationInput(
-            channel = testRequestBody.channel.toDomain(),
-            type = testRequestBody.type.toDomain(),
-            language = testRequestBody.language.toDomain(),
-            subject = testRequestBody.subject,
-            content = testRequestBody.content
-        )
+        val expectedInput =
+            NotificationTemplateCreationInput(
+                channel = testRequestBody.channel.toDomain(),
+                type = testRequestBody.type.toDomain(),
+                language = testRequestBody.language.toDomain(),
+                subject = testRequestBody.subject,
+                content = testRequestBody.content,
+            )
         coEvery { useCaseHandler.handle(expectedInput) } returns 1.right()
 
         // when & then
@@ -59,13 +59,14 @@ internal class NotificationTemplateCreationControllerIntegrationTest {
     @Test
     fun `should return conflict when notification template creation fails with DataConflictFailure`() {
         // given
-        val expectedInput = NotificationTemplateCreationInput(
-            channel = testRequestBody.channel.toDomain(),
-            type = testRequestBody.type.toDomain(),
-            language = testRequestBody.language.toDomain(),
-            subject = testRequestBody.subject,
-            content = testRequestBody.content
-        )
+        val expectedInput =
+            NotificationTemplateCreationInput(
+                channel = testRequestBody.channel.toDomain(),
+                type = testRequestBody.type.toDomain(),
+                language = testRequestBody.language.toDomain(),
+                subject = testRequestBody.subject,
+                content = testRequestBody.content,
+            )
         coEvery { useCaseHandler.handle(expectedInput) } returns DataConflictFailure("Template is already created!").left()
 
         // when & then
@@ -79,27 +80,28 @@ internal class NotificationTemplateCreationControllerIntegrationTest {
             .expectBody()
             .json(
                 """
-                    {
-                        "type": "about:blank",
-                        "title": "Conflict",
-                        "status": 409,
-                        "detail": "Template is already created!",
-                        "instance": "/api/v1/notification-template"
-                    }
-                """.trimIndent()
+                {
+                    "type": "about:blank",
+                    "title": "Conflict",
+                    "status": 409,
+                    "detail": "Template is already created!",
+                    "instance": "/api/v1/notification-template"
+                }
+                """.trimIndent(),
             )
     }
 
     @Test
     fun `should return internal server error when unexpected exception is thrown during notification template creation use case execution`() {
         // given
-        val expectedInput = NotificationTemplateCreationInput(
-            channel = testRequestBody.channel.toDomain(),
-            type = testRequestBody.type.toDomain(),
-            language = testRequestBody.language.toDomain(),
-            subject = testRequestBody.subject,
-            content = testRequestBody.content
-        )
+        val expectedInput =
+            NotificationTemplateCreationInput(
+                channel = testRequestBody.channel.toDomain(),
+                type = testRequestBody.type.toDomain(),
+                language = testRequestBody.language.toDomain(),
+                subject = testRequestBody.subject,
+                content = testRequestBody.content,
+            )
         coEvery { useCaseHandler.handle(expectedInput) } throws RuntimeException("Unexpected exception occurred!")
 
         // when & then
@@ -113,25 +115,25 @@ internal class NotificationTemplateCreationControllerIntegrationTest {
             .expectBody()
             .json(
                 """
-                    {
-                        "type": "about:blank",
-                        "title": "Internal Server Error",
-                        "status": 500,
-                        "detail": "An unexpected error occurred!",
-                        "instance": "/api/v1/notification-template"
-                    }
-                """.trimIndent()
+                {
+                    "type": "about:blank",
+                    "title": "Internal Server Error",
+                    "status": 500,
+                    "detail": "An unexpected error occurred!",
+                    "instance": "/api/v1/notification-template"
+                }
+                """.trimIndent(),
             )
     }
 
     private companion object {
-        val testRequestBody = NotificationTemplateCreationRequest(
-            channel = NotificationChannel.EMAIL,
-            type = NotificationType.WELCOME,
-            language = NotificationLanguage.EN,
-            subject = StringUtils.EMPTY,
-            content = StringUtils.EMPTY
-        )
+        val testRequestBody =
+            NotificationTemplateCreationRequest(
+                channel = NotificationChannel.EMAIL,
+                type = NotificationType.WELCOME,
+                language = NotificationLanguage.EN,
+                subject = StringUtils.EMPTY,
+                content = StringUtils.EMPTY,
+            )
     }
-
 }

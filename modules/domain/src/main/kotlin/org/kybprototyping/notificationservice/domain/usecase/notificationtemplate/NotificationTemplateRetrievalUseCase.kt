@@ -13,7 +13,7 @@ import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 
 internal class NotificationTemplateRetrievalUseCase(
-    private val repositoryPort: NotificationTemplateRepositoryPort
+    private val repositoryPort: NotificationTemplateRepositoryPort,
 ) : UseCaseHandler<Int, NotificationTemplate?>, Logging {
     override suspend fun handle(input: Int): Either<Failure, NotificationTemplate> =
         repositoryPort.findById(input)

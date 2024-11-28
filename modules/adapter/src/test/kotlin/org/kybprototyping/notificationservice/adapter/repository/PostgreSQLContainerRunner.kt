@@ -9,9 +9,10 @@ import org.testcontainers.containers.PostgreSQLContainer
 
 internal open class PostgreSQLContainerRunner {
     private companion object {
-        private val instance = PostgreSQLContainer("postgres:15.5")
-            .withDatabaseName("notification_db")
-            .withReuse(true)
+        private val instance =
+            PostgreSQLContainer("postgres:15.5")
+                .withDatabaseName("notification_db")
+                .withReuse(true)
 
         @BeforeAll
         @JvmStatic

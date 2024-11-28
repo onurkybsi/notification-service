@@ -13,6 +13,8 @@ kotlin {
 
 plugins {
     kotlin("jvm") version "1.9.25"
+
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
 }
 
 allprojects {
@@ -23,4 +25,5 @@ allprojects {
 
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }

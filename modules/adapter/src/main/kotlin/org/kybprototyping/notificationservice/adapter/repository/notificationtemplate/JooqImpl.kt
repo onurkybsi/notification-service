@@ -26,7 +26,7 @@ import java.time.ZoneOffset
 @Component
 @ConditionalOnProperty(
     value = ["ports.notification-template-repository.impl"],
-    havingValue = "jooq"
+    havingValue = "jooq",
 )
 internal class JooqImpl(private val dslContext: DSLContext) : NotificationTemplateRepositoryPort {
     override suspend fun findById(id: Int) =
@@ -45,44 +45,46 @@ internal class JooqImpl(private val dslContext: DSLContext) : NotificationTempla
     override suspend fun findBy(
         channel: NotificationChannel?,
         type: NotificationType?,
-        language: NotificationLanguage?
-    ) =
-        try {
-            var query = dslContext.selectFrom(NOTIFICATION_TEMPLATE).where()
-            channel?.let { query = query.and(NOTIFICATION_TEMPLATE.CHANNEL.eq(channel.name)) }
-            type?.let { query = query.and(NOTIFICATION_TEMPLATE.TYPE.eq(type.name)) }
-            language?.let { query = query.and(NOTIFICATION_TEMPLATE.LANGUAGE.eq(language.name)) }
+        language: NotificationLanguage?,
+    ) = try {
+        var query = dslContext.selectFrom(NOTIFICATION_TEMPLATE).where()
+        channel?.let { query = query.and(NOTIFICATION_TEMPLATE.CHANNEL.eq(channel.name)) }
+        type?.let { query = query.and(NOTIFICATION_TEMPLATE.TYPE.eq(type.name)) }
+        language?.let { query = query.and(NOTIFICATION_TEMPLATE.LANGUAGE.eq(language.name)) }
 
-            Flux.from(query)
-                .map { it.toDomain() }
-                .collectList()
-                .awaitSingle()
-                .right()
-        } catch (e: Exception) { UnexpectedFailure(cause = e).left() }
+        Flux.from(query)
+            .map { it.toDomain() }
+            .collectList()
+            .awaitSingle()
+            .right()
+    } catch (e: Exception) {
+        UnexpectedFailure(cause = e).left()
+    }
 
     override suspend fun create(
         channel: NotificationChannel,
         type: NotificationType,
         language: NotificationLanguage,
         subject: String,
-        content: String
-    ) =
-        try {
-            dslContext
-                .insertInto(NOTIFICATION_TEMPLATE)
-                .set(NOTIFICATION_TEMPLATE.CHANNEL, channel.name)
-                .set(NOTIFICATION_TEMPLATE.TYPE, type.name)
-                .set(NOTIFICATION_TEMPLATE.LANGUAGE, language.name)
-                .set(NOTIFICATION_TEMPLATE.SUBJECT, subject)
-                .set(NOTIFICATION_TEMPLATE.CONTENT, content)
-                .set(NOTIFICATION_TEMPLATE.MODIFIED_AT, LocalDateTime.now()) // TODO: TimeUtils!
-                .set(NOTIFICATION_TEMPLATE.CREATED_AT, LocalDateTime.now()) // TODO: TimeUtils!
-                .onDuplicateKeyIgnore()
-                .returningResult(NOTIFICATION_TEMPLATE.ID)
-                .awaitFirstOrNull()
-                ?.get(0, Int::class.java)
-                .right()
-        } catch (e: Exception) { UnexpectedFailure(cause = e).left() }
+        content: String,
+    ) = try {
+        dslContext
+            .insertInto(NOTIFICATION_TEMPLATE)
+            .set(NOTIFICATION_TEMPLATE.CHANNEL, channel.name)
+            .set(NOTIFICATION_TEMPLATE.TYPE, type.name)
+            .set(NOTIFICATION_TEMPLATE.LANGUAGE, language.name)
+            .set(NOTIFICATION_TEMPLATE.SUBJECT, subject)
+            .set(NOTIFICATION_TEMPLATE.CONTENT, content)
+            .set(NOTIFICATION_TEMPLATE.MODIFIED_AT, LocalDateTime.now()) // TODO: TimeUtils!
+            .set(NOTIFICATION_TEMPLATE.CREATED_AT, LocalDateTime.now()) // TODO: TimeUtils!
+            .onDuplicateKeyIgnore()
+            .returningResult(NOTIFICATION_TEMPLATE.ID)
+            .awaitFirstOrNull()
+            ?.get(0, Int::class.java)
+            .right()
+    } catch (e: Exception) {
+        UnexpectedFailure(cause = e).left()
+    }
 
     override suspend fun delete(id: Int) =
         try {
@@ -104,15 +106,17 @@ internal class JooqImpl(private val dslContext: DSLContext) : NotificationTempla
     override suspend fun update(
         id: Int,
         subjectToSet: String?,
-        contentToSet: String?
+        contentToSet: String?,
     ): Either<NotificationTemplateRepositoryPort.UpdateFailure, Unit> {
         try {
-            if (subjectToSet == null && contentToSet == null)
+            if (subjectToSet == null && contentToSet == null) {
                 return Unit.right()
+            }
 
-            var statement = dslContext
-                .update(NOTIFICATION_TEMPLATE)
-                .set(NOTIFICATION_TEMPLATE.MODIFIED_AT, LocalDateTime.now()) // TODO: TimeUtils!
+            var statement =
+                dslContext
+                    .update(NOTIFICATION_TEMPLATE)
+                    .set(NOTIFICATION_TEMPLATE.MODIFIED_AT, LocalDateTime.now()) // TODO: TimeUtils!
             subjectToSet?.let { statement = statement.set(NOTIFICATION_TEMPLATE.SUBJECT, subjectToSet) }
             contentToSet?.let { statement = statement.set(NOTIFICATION_TEMPLATE.CONTENT, contentToSet) }
             statement.where(NOTIFICATION_TEMPLATE.ID.eq(id))
@@ -141,7 +145,7 @@ internal class JooqImpl(private val dslContext: DSLContext) : NotificationTempla
                 modifiedBy = this.modifiedBy,
                 modifiedAt = OffsetDateTime.of(this.modifiedAt, ZoneOffset.UTC),
                 createdBy = this.createdBy,
-                createdAt = OffsetDateTime.of(this.createdAt, ZoneOffset.UTC)
+                createdAt = OffsetDateTime.of(this.createdAt, ZoneOffset.UTC),
             )
 
         internal fun NotificationTemplate.toRecordForCreation() =

@@ -11,12 +11,12 @@ import org.springframework.http.ProblemDetail
     content = [
         Content(
             mediaType = MediaType.APPLICATION_JSON_VALUE,
-            schema = Schema(implementation = ProblemDetail::class)
-        )
-    ]
+            schema = Schema(implementation = ProblemDetail::class),
+        ),
+    ],
 )
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-internal annotation class InvalidRequestResponse(
-    val description: String = "Invalid request"
+internal annotation class InvalidRequestApiResponse(
+    val description: String = "Invalid request",
 )

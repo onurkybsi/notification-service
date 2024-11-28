@@ -13,7 +13,6 @@ import java.util.HashMap
  */
 @JsonSerialize(using = ValidationResult.Serializer::class)
 class ValidationResult {
-
     private val failures: HashMap<String, ArrayList<String>> = HashMap<String, ArrayList<String>>()
 
     /**
@@ -22,7 +21,10 @@ class ValidationResult {
      * @param name field name
      * @param message failure message
      */
-    fun failure(name: String, message: String) {
+    fun failure(
+        name: String,
+        message: String,
+    ) {
         val fieldFailures = failures.getOrDefault(name, ArrayList())
         fieldFailures.add(message)
         failures[name] = fieldFailures
@@ -43,7 +45,7 @@ class ValidationResult {
     fun failures(): HashMap<String, ArrayList<String>> {
         val copy = HashMap<String, ArrayList<String>>()
         failures.forEach { f -> copy[f.key] = ArrayList(f.value) }
-        return  copy
+        return copy
     }
 
     companion object {
@@ -65,7 +67,11 @@ class ValidationResult {
     }
 
     internal class Serializer : JsonSerializer<ValidationResult>() {
-        override fun serialize(p0: ValidationResult?, p1: JsonGenerator?, p2: SerializerProvider?) {
+        override fun serialize(
+            p0: ValidationResult?,
+            p1: JsonGenerator?,
+            p2: SerializerProvider?,
+        ) {
             p1?.writeStartObject()
             p0?.isNotValid()?.let {
                 p1?.writeBooleanField("isValid", !it)

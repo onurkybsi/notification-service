@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.kybprototyping.notificationservice.adapter.rest.common.ConflictApiResponse
-import org.kybprototyping.notificationservice.adapter.rest.common.InvalidRequestResponse
+import org.kybprototyping.notificationservice.adapter.rest.common.InvalidRequestApiResponse
 import org.kybprototyping.notificationservice.adapter.rest.common.ResponseEntityUtils.toResponseEntity
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationTemplateCreationRequest.Companion.toDomain
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
@@ -20,20 +20,22 @@ import java.net.URI
 @RequestMapping("/api/v1/notification-template")
 @Tag(name = "notification-template")
 internal class NotificationTemplateCreationController(
-    private val useCaseHandler: UseCaseHandler<NotificationTemplateCreationInput, Int>
+    private val useCaseHandler: UseCaseHandler<NotificationTemplateCreationInput, Int>,
 ) {
     @PostMapping
     @Operation(summary = "Creates a notification template.")
     @ApiResponse(
         responseCode = "201",
-        description = "Successful creation"
+        description = "Successful creation",
     )
-    @InvalidRequestResponse
+    @InvalidRequestApiResponse
     @ConflictApiResponse(description = "Template with the same channel, type and language is already created.")
-    internal suspend fun createNotificationTemplate(@RequestBody body: NotificationTemplateCreationRequest): ResponseEntity<*> =
+    internal suspend fun createNotificationTemplate(
+        @RequestBody body: NotificationTemplateCreationRequest,
+    ): ResponseEntity<*> =
         useCaseHandler.handle(body.toDomain())
             .fold(
                 ifLeft = { it.toResponseEntity() },
-                ifRight = { ResponseEntity.created(URI.create("/api/v1/notification-template/${it}")).build() }
+                ifRight = { ResponseEntity.created(URI.create("/api/v1/notification-template/$it")).build() },
             )
 }

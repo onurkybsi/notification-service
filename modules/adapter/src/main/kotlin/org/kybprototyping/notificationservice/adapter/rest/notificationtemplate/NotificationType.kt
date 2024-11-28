@@ -4,11 +4,12 @@ import org.kybprototyping.notificationservice.domain.model.NotificationType as D
 
 internal enum class NotificationType {
     WELCOME,
-    PASSWORD_RESET;
+    PASSWORD_RESET,
+    ;
 
     internal companion object {
         internal fun NotificationType.toDomain() =
-            when(this) {
+            when (this) {
                 WELCOME -> DomainNotificationType.WELCOME
                 PASSWORD_RESET -> DomainNotificationType.PASSWORD_RESET
             }

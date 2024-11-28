@@ -12,5 +12,5 @@ data class NotificationTemplateCreationInput(
     val type: NotificationType,
     val language: NotificationLanguage,
     val subject: String,
-    val content: String
+    val content: String,
 )

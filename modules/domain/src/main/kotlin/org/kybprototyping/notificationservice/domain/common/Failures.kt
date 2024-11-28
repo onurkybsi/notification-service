@@ -8,7 +8,7 @@ import org.kybprototying.notificationservice.common.ValidationResult
 sealed class Failure(
     open val message: String,
     open val isTemporary: Boolean,
-    open val cause: Throwable? = null
+    open val cause: Throwable? = null,
 )
 
 /**
@@ -16,7 +16,7 @@ sealed class Failure(
  */
 data class DataInvalidityFailure(
     override val message: String,
-    val validationResult: ValidationResult
+    val validationResult: ValidationResult,
 ) : Failure(message, false)
 
 /**
@@ -30,7 +30,7 @@ data class DataNotFoundFailure(override val message: String) : Failure(message, 
 data class DataConflictFailure(
     override val message: String,
     override val isTemporary: Boolean = false,
-): Failure(message, isTemporary)
+) : Failure(message, isTemporary)
 
 /**
  * Failure that indicates that something went unexpectedly wrong.
@@ -38,5 +38,5 @@ data class DataConflictFailure(
 data class UnexpectedFailure(
     override val message: String = "Something went unexpectedly wrong!",
     override val isTemporary: Boolean = false,
-    override val cause: Throwable? = null
+    override val cause: Throwable? = null,
 ) : Failure(message, isTemporary)

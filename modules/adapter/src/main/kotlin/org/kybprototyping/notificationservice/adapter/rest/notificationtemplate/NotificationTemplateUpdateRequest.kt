@@ -9,7 +9,6 @@ internal data class NotificationTemplateUpdateRequest(
     @JsonProperty(required = false)
     @Max(255)
     val subject: String?,
-
     @JsonProperty(required = false)
     @Max(30_000)
     val content: String?,

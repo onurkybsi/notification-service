@@ -20,7 +20,6 @@ import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRe
 
 @ExtendWith(MockKExtension::class)
 internal class NotificationTemplatesRetrievalUseCaseTest {
-
     @MockK
     private lateinit var repositoryPort: NotificationTemplateRepositoryPort
 
@@ -28,43 +27,46 @@ internal class NotificationTemplatesRetrievalUseCaseTest {
     private lateinit var underTest: NotificationTemplatesRetrievalUseCase
 
     @Test
-    fun `should return notification templates with given filtering values`() = runTest {
-        // given
-        val channel = NotificationChannel.EMAIL
-        val type = NotificationType.WELCOME
-        val language = NotificationLanguage.EN
-        val input = NotificationTemplatesRetrievalInput(
-            channel = channel,
-            type = type,
-            language = language
-        )
-        coEvery { repositoryPort.findBy(channel, type, language) } returns listOf(TestData.notificationTemplate).right()
+    fun `should return notification templates with given filtering values`() =
+        runTest {
+            // given
+            val channel = NotificationChannel.EMAIL
+            val type = NotificationType.WELCOME
+            val language = NotificationLanguage.EN
+            val input =
+                NotificationTemplatesRetrievalInput(
+                    channel = channel,
+                    type = type,
+                    language = language,
+                )
+            coEvery { repositoryPort.findBy(channel, type, language) } returns listOf(TestData.notificationTemplate).right()
 
-        // when
-        val actual = underTest.handle(input)
+            // when
+            val actual = underTest.handle(input)
 
-        // then
-        actual shouldBeRight listOf(TestData.notificationTemplate)
-    }
+            // then
+            actual shouldBeRight listOf(TestData.notificationTemplate)
+        }
 
     @Test
-    fun `should return UnexpectedFailure when something went unexpectedly wrong during execution`() = runTest {
-        // given
-        val channel = NotificationChannel.EMAIL
-        val type = NotificationType.WELCOME
-        val language = NotificationLanguage.EN
-        val input = NotificationTemplatesRetrievalInput(
-            channel = channel,
-            type = type,
-            language = language
-        )
-        coEvery { repositoryPort.findBy(channel, type, language) } returns UnexpectedFailure("Something went unexpectedly wrong!").left()
+    fun `should return UnexpectedFailure when something went unexpectedly wrong during execution`() =
+        runTest {
+            // given
+            val channel = NotificationChannel.EMAIL
+            val type = NotificationType.WELCOME
+            val language = NotificationLanguage.EN
+            val input =
+                NotificationTemplatesRetrievalInput(
+                    channel = channel,
+                    type = type,
+                    language = language,
+                )
+            coEvery { repositoryPort.findBy(channel, type, language) } returns UnexpectedFailure("Something went unexpectedly wrong!").left()
 
-        // when
-        val actual = underTest.handle(input)
+            // when
+            val actual = underTest.handle(input)
 
-        // then
-        actual shouldBeLeft UnexpectedFailure(isTemporary = true)
-    }
-
+            // then
+            actual shouldBeLeft UnexpectedFailure(isTemporary = true)
+        }
 }

@@ -17,7 +17,7 @@ internal data class NotificationTemplateCreationRequest(
     val subject: String,
     @Max(30_000)
     @get:Schema(description = "Content of the notification with placeholders if needed.")
-    val content: String
+    val content: String,
 ) {
     internal companion object {
         internal fun NotificationTemplateCreationRequest.toDomain() =

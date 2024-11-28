@@ -11,7 +11,7 @@ import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 
 internal class NotificationTemplateUpdateUseCase(
-    private val repositoryPort: NotificationTemplateRepositoryPort
+    private val repositoryPort: NotificationTemplateRepositoryPort,
 ) : UseCaseHandler<NotificationTemplateUpdateInput, Unit>, Logging {
     override suspend fun handle(input: NotificationTemplateUpdateInput): Either<Failure, Unit> {
         if (input.subject == null && input.content == null) {
@@ -23,9 +23,9 @@ internal class NotificationTemplateUpdateUseCase(
     private companion object {
         private fun toFailure(
             from: NotificationTemplateRepositoryPort.UpdateFailure,
-            input: NotificationTemplateUpdateInput
+            input: NotificationTemplateUpdateInput,
         ): Failure =
-            when(from) {
+            when (from) {
                 is NotificationTemplateRepositoryPort.UpdateFailure.DataNotFoundFailure -> {
                     DataNotFoundFailure(message = "No notification template found to update by given ID: ${input.id}")
                 }

@@ -9,11 +9,9 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConditionalOnProperty(
     value = ["ports.notification-template-repository.impl"],
-    havingValue = "jooq"
+    havingValue = "jooq",
 )
 internal class DslContextSpringConfiguration {
-
     @Bean
     internal fun dslContext(connectionFactory: ConnectionFactory) = DSL.using(connectionFactory)
-
 }

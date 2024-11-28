@@ -11,7 +11,6 @@ import org.kybprototyping.notificationservice.domain.model.NotificationType
  * Represents the API that provides access to [NotificationTemplate] data repository.
  */
 interface NotificationTemplateRepositoryPort {
-
     /**
      * Returns the [NotificationTemplate] with given ID.
      *
@@ -72,7 +71,11 @@ interface NotificationTemplateRepositoryPort {
      * @param contentToSet updated content, **if non-null**, if it's given as **null** no update will be made
      * @return [UpdateFailure] if something went wrong during deletion
      */
-    suspend fun update(id: Int, subjectToSet: String?, contentToSet: String?): Either<UpdateFailure, Unit>
+    suspend fun update(
+        id: Int,
+        subjectToSet: String?,
+        contentToSet: String?,
+    ): Either<UpdateFailure, Unit>
 
     /**
      * Failure that might occur during [delete] execution.
@@ -103,5 +106,4 @@ interface NotificationTemplateRepositoryPort {
          */
         data class UnexpectedFailure(val cause: Throwable) : UpdateFailure()
     }
-
 }

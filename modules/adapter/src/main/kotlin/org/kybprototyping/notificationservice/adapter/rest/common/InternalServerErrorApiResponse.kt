@@ -9,13 +9,12 @@ import org.springframework.http.ProblemDetail
 @ApiResponse(responseCode = "500")
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-internal annotation class InternalServerErrorApiResponse (
+internal annotation class InternalServerErrorApiResponse(
     val description: String = "Unexpected error.",
-
     val content: Array<Content> = [
         Content(
             mediaType = MediaType.APPLICATION_JSON_VALUE,
-            schema = Schema(implementation = ProblemDetail::class)
-        )
-    ]
+            schema = Schema(implementation = ProblemDetail::class),
+        ),
+    ],
 )

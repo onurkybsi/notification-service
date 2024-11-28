@@ -4,9 +4,9 @@ import org.kybprototyping.notificationservice.adapter.repository.notificationtem
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.NotificationLanguage.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.NotificationType.Companion.toDomain
 import java.time.LocalDateTime
-import org.kybprototyping.notificationservice.domain.model.NotificationTemplate as DomainNotificationTemplate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import org.kybprototyping.notificationservice.domain.model.NotificationTemplate as DomainNotificationTemplate
 
 internal data class NotificationTemplate(
     val id: Int?,
@@ -18,7 +18,7 @@ internal data class NotificationTemplate(
     val modifiedBy: String? = null,
     val modifiedAt: LocalDateTime,
     val createdBy: String? = null,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 ) {
     internal companion object {
         internal fun NotificationTemplate.toDomain() =
@@ -32,7 +32,7 @@ internal data class NotificationTemplate(
                 modifiedBy = this.modifiedBy,
                 modifiedAt = OffsetDateTime.of(this.modifiedAt, ZoneOffset.UTC),
                 createdBy = this.createdBy,
-                createdAt = OffsetDateTime.of(this.createdAt, ZoneOffset.UTC)
+                createdAt = OffsetDateTime.of(this.createdAt, ZoneOffset.UTC),
             )
 
         internal fun from(domain: DomainNotificationTemplate) =
@@ -46,7 +46,7 @@ internal data class NotificationTemplate(
                 modifiedBy = domain.modifiedBy,
                 modifiedAt = domain.modifiedAt.toLocalDateTime(),
                 createdBy = domain.createdBy,
-                createdAt = domain.createdAt.toLocalDateTime()
+                createdAt = domain.createdAt.toLocalDateTime(),
             )
     }
 }

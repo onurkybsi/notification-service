@@ -17,7 +17,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebFluxTest(controllers = [NotificationTemplateUpdateController::class])
 internal class NotificationTemplateUpdateControllerIntegrationTest {
-
     private val objetMapper = ObjectMapper() // TODO: Use the common one!
 
     @MockkBean
@@ -35,8 +34,8 @@ internal class NotificationTemplateUpdateControllerIntegrationTest {
                 NotificationTemplateUpdateInput(
                     id = id,
                     subject = testBody.subject,
-                    content = testBody.content
-                )
+                    content = testBody.content,
+                ),
             )
         } returns Unit.right()
 
@@ -61,8 +60,8 @@ internal class NotificationTemplateUpdateControllerIntegrationTest {
                 NotificationTemplateUpdateInput(
                     id = id,
                     subject = testBody.subject,
-                    content = testBody.content
-                )
+                    content = testBody.content,
+                ),
             )
         } returns DataNotFoundFailure("No notification template found to update by given ID: 1").left()
 
@@ -77,14 +76,14 @@ internal class NotificationTemplateUpdateControllerIntegrationTest {
             .expectBody()
             .json(
                 """
-                    {
-                        "type": "about:blank",
-                        "title": "Not Found",
-                        "status": 404,
-                        "detail": "No notification template found to update by given ID: 1",
-                        "instance": "/api/v1/notification-template/${id}"
-                    }
-                """.trimIndent()
+                {
+                    "type": "about:blank",
+                    "title": "Not Found",
+                    "status": 404,
+                    "detail": "No notification template found to update by given ID: 1",
+                    "instance": "/api/v1/notification-template/$id"
+                }
+                """.trimIndent(),
             )
     }
 
@@ -97,8 +96,8 @@ internal class NotificationTemplateUpdateControllerIntegrationTest {
                 NotificationTemplateUpdateInput(
                     id = id,
                     subject = testBody.subject,
-                    content = testBody.content
-                )
+                    content = testBody.content,
+                ),
             )
         } throws RuntimeException("Unexpected exception occurred!")
 
@@ -113,22 +112,22 @@ internal class NotificationTemplateUpdateControllerIntegrationTest {
             .expectBody()
             .json(
                 """
-                    {
-                        "type": "about:blank",
-                        "title": "Internal Server Error",
-                        "status": 500,
-                        "detail": "An unexpected error occurred!",
-                        "instance": "/api/v1/notification-template/${id}"
-                    }
-                """.trimIndent()
+                {
+                    "type": "about:blank",
+                    "title": "Internal Server Error",
+                    "status": 500,
+                    "detail": "An unexpected error occurred!",
+                    "instance": "/api/v1/notification-template/$id"
+                }
+                """.trimIndent(),
             )
     }
 
     private companion object {
-        private val testBody = NotificationTemplateUpdateRequest(
-            subject = "Updated Subject",
-            content = "Updated Content"
-        )
+        private val testBody =
+            NotificationTemplateUpdateRequest(
+                subject = "Updated Subject",
+                content = "Updated Content",
+            )
     }
-
 }

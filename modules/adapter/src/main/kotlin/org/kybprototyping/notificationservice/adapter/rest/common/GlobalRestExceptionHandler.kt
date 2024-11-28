@@ -10,12 +10,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 
 @ControllerAdvice
 internal class GlobalRestExceptionHandler : Logging {
-
     @ExceptionHandler(value = [Throwable::class])
     internal fun unexpectedExceptionHandler(throwable: Throwable): ResponseEntity<ProblemDetail> =
         ResponseEntity.of(forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred!")).build<ProblemDetail>()
             .also {
                 logger.error("An unexpected error occurred!", throwable)
             }
-
 }

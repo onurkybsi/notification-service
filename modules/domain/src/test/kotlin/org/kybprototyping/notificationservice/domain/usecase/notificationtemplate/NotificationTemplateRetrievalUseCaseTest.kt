@@ -18,7 +18,6 @@ import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRe
 
 @ExtendWith(MockKExtension::class)
 internal class NotificationTemplateRetrievalUseCaseTest {
-
     @MockK
     private lateinit var repositoryPort: NotificationTemplateRepositoryPort
 
@@ -26,42 +25,44 @@ internal class NotificationTemplateRetrievalUseCaseTest {
     private lateinit var underTest: NotificationTemplateRetrievalUseCase
 
     @Test
-    fun `should return notification template by notification template ID`() = runTest {
-        // given
-        val id = 1
-        coEvery { repositoryPort.findById(id) } returns TestData.notificationTemplate.right()
+    fun `should return notification template by notification template ID`() =
+        runTest {
+            // given
+            val id = 1
+            coEvery { repositoryPort.findById(id) } returns TestData.notificationTemplate.right()
 
-        // when
-        val actual = underTest.handle(id)
+            // when
+            val actual = underTest.handle(id)
 
-        // then
-        actual shouldBeRight TestData.notificationTemplate
-    }
-
-    @Test
-    fun `should return DataNotFoundFailure when no notification template found by given notification template ID`() = runTest {
-        // given
-        val id = 1
-        coEvery { repositoryPort.findById(id) } returns null.right()
-
-        // when
-        val actual = underTest.handle(id)
-
-        // then
-        actual shouldBeLeft DataNotFoundFailure("No notification template found by given ID: 1")
-    }
+            // then
+            actual shouldBeRight TestData.notificationTemplate
+        }
 
     @Test
-    fun `should return UnexpectedFailure when something went unexpectedly wrong during execution`() = runTest {
-        // given
-        val id = 1
-        coEvery { repositoryPort.findById(id) } returns UnexpectedFailure("Something went unexpectedly wrong!").left()
+    fun `should return DataNotFoundFailure when no notification template found by given notification template ID`() =
+        runTest {
+            // given
+            val id = 1
+            coEvery { repositoryPort.findById(id) } returns null.right()
 
-        // when
-        val actual = underTest.handle(id)
+            // when
+            val actual = underTest.handle(id)
 
-        // then
-        actual shouldBeLeft UnexpectedFailure(isTemporary = true)
-    }
+            // then
+            actual shouldBeLeft DataNotFoundFailure("No notification template found by given ID: 1")
+        }
 
+    @Test
+    fun `should return UnexpectedFailure when something went unexpectedly wrong during execution`() =
+        runTest {
+            // given
+            val id = 1
+            coEvery { repositoryPort.findById(id) } returns UnexpectedFailure("Something went unexpectedly wrong!").left()
+
+            // when
+            val actual = underTest.handle(id)
+
+            // then
+            actual shouldBeLeft UnexpectedFailure(isTemporary = true)
+        }
 }

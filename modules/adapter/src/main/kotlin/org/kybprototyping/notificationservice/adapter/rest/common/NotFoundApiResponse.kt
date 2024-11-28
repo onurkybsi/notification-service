@@ -11,12 +11,12 @@ import org.springframework.http.ProblemDetail
     content = [
         Content(
             mediaType = MediaType.APPLICATION_JSON_VALUE,
-            schema = Schema(implementation = ProblemDetail::class)
-        )
-    ]
+            schema = Schema(implementation = ProblemDetail::class),
+        ),
+    ],
 )
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 internal annotation class NotFoundApiResponse(
-    val description: String = "Non-existent resource"
+    val description: String = "Non-existent resource",
 )

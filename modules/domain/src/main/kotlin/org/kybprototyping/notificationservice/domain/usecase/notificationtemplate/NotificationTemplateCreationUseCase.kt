@@ -12,7 +12,7 @@ import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 
 internal class NotificationTemplateCreationUseCase(
-    private val repositoryPort: NotificationTemplateRepositoryPort
+    private val repositoryPort: NotificationTemplateRepositoryPort,
 ) : UseCaseHandler<NotificationTemplateCreationInput, Int>, Logging {
     override suspend fun handle(input: NotificationTemplateCreationInput): Either<Failure, Int> =
         repositoryPort.create(
@@ -20,7 +20,7 @@ internal class NotificationTemplateCreationUseCase(
             type = input.type,
             language = input.language,
             subject = input.subject,
-            content = input.content
+            content = input.content,
         ).mapLeft {
             logger.error(it.cause) { "Something went unexpectedly wrong during creating a notification template: $input" }
             UnexpectedFailure(isTemporary = true)
