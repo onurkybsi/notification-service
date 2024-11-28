@@ -102,7 +102,7 @@ tasks.withType<Test> {
 
 tasks.withType<JooqGenerate> {
     onlyIf { // Don't run this task when ktlint tasks are executed.
-        !gradle.taskGraph.allTasks.any { it.name.contains("ktlint") }
+        !gradle.startParameter.taskNames.any { it.contains("ktlint") }
     }
 
     dependsOn("flywayMigrate")
@@ -110,7 +110,7 @@ tasks.withType<JooqGenerate> {
 
 tasks.withType<FlywayMigrateTask> {
     onlyIf { // Don't run this task when ktlint tasks are executed.
-        !gradle.taskGraph.allTasks.any { it.name.contains("ktlint") }
+        !gradle.startParameter.taskNames.any { it.contains("ktlint") }
     }
 }
 

@@ -26,4 +26,10 @@ allprojects {
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
+    ktlint {
+        filter {
+            exclude { element -> element.file.absolutePath.contains("generated-src") }
+        }
+    }
 }
