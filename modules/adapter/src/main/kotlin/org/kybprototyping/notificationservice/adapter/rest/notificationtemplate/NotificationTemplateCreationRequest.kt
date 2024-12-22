@@ -1,7 +1,6 @@
 package org.kybprototyping.notificationservice.adapter.rest.notificationtemplate
 
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.validation.constraints.Max
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationChannel.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationLanguage.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationType.Companion.toDomain
@@ -12,11 +11,9 @@ internal data class NotificationTemplateCreationRequest(
     val channel: NotificationChannel,
     val type: NotificationType,
     val language: NotificationLanguage,
-    @Max(255)
-    @get:Schema(description = "Subject of the notification with placeholders if needed.")
+    @get:Schema(description = "Subject of the notification with placeholders if needed.", maxLength = 255)
     val subject: String,
-    @Max(30_000)
-    @get:Schema(description = "Content of the notification with placeholders if needed.")
+    @get:Schema(description = "Content of the notification with placeholders if needed.", maxLength = 30_000)
     val content: String,
 ) {
     internal companion object {
