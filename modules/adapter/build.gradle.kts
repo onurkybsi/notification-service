@@ -18,6 +18,12 @@ plugins {
     alias(libs.plugins.studerjooqgenerator)
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:2.10.0")
+    }
+}
+
 flyway {
     url = "jdbc:postgresql://$dbHost:$dbPort/notification_db"
     user = dbUser
@@ -79,6 +85,7 @@ dependencies {
     implementation(libs.postgresql.r2dbc)
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-jooq")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter")
 
     runtimeOnly(libs.postgresql.jdbc) // For Flyway task
     jooqGenerator(libs.postgresql.jdbc)

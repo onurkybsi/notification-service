@@ -22,13 +22,23 @@ springdoc:
     enabled: true
     path: "/swagger-ui"
 
+otel:
+  instrumentation:
+    common:
+      default-enabled: false
+    spring-webflux:
+      enabled: true
+    r2dbc:
+      enabled: true
+    log4j-appender:
+        enabled: true
+
 logging:
   level:
     org:
       springframework:
-        r2dbc: "DEBUG"
+        r2dbc: "INFO"
       kybprototyping: "DEBUG"
-
 
 ports:
   notification-template-repository:

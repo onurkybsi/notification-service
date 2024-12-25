@@ -7,3 +7,42 @@ services:
       - POSTGRES_DB=notification_db
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
+
+  opentelemetry-collector:
+    image: otel/opentelemetry-collector:0.116.1
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel/config.yaml
+    command:
+      - '--config=/etc/otel/config.yaml'
+    ports:
+      - "4318:4318" #http receiver
+
+  loki:
+    image: grafana/loki:3.3.2
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    volumes:
+      - ./grafana:/etc/grafana/provisioning
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
+      - GF_FEATURE_TOGGLES_ENABLE=accessControlOnCall
+      - GF_INSTALL_PLUGINS=https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
+    ports:
+      - "3000:3000/tcp"
+
+#  jaeger:
+#    image: jaegertracing/all-in-one:1.64.0
+#    ports:
+#      - "16686:16686"
+#      - "4317:4317"
+#      - "4318:4318"
+#    environment:
+#      - JAEGER_DISABLED=true
