@@ -3,6 +3,7 @@ springdoc = "2.6.0"
 arrow = "1.2.4"
 spring-context = "6.1.8"
 apache-log4j-kotlin = "1.5.0"
+apache-log4j-jsontemplatelayout = "2.24.3"
 jackson = "2.18.0"
 springmockk = "4.0.2"
 assertj = "3.26.3"
@@ -22,6 +23,7 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring-context" }
 apache-log4j-kotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "apache-log4j-kotlin" }
+apache-log4j-jsontemplatelayout = { module = "org.apache.logging.log4j:log4j-layout-template-json", version.ref = "apache-log4j-jsontemplatelayout" }
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmockk" }

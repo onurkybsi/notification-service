@@ -81,6 +81,7 @@ dependencies {
     implementation(project(":modules:domain"))
     implementation("org.springframework.boot:spring-boot-starter-log4j2")
     implementation(libs.apache.log4j.kotlin)
+    runtimeOnly(libs.apache.log4j.jsontemplatelayout)
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation(libs.postgresql.r2dbc)
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
