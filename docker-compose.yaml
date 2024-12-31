@@ -1,5 +1,6 @@
 services:
   db:
+    profiles: ["all", "db_only"]
     image: postgres:15.5
     ports:
       - "5432:5432"
@@ -9,15 +10,18 @@ services:
       - POSTGRES_PASSWORD=password
 
   opentelemetry-collector:
-    image: otel/opentelemetry-collector:0.116.1
+    profiles: ["all"]
+    image: otel/opentelemetry-collector-contrib:0.116.1
     volumes:
       - ./otel-collector-config.yaml:/etc/otel/config.yaml
+      - ./file-export:/file-export
     command:
       - '--config=/etc/otel/config.yaml'
     ports:
       - "4318:4318" #http receiver
 
   loki:
+    profiles: ["all"]
     image: grafana/loki:3.3.2
     volumes:
       - ./loki-config.yaml:/etc/loki/local-config.yaml
@@ -26,6 +30,7 @@ services:
       - "3100:3100"
 
   grafana:
+    profiles: ["all"]
     image: grafana/grafana:11.4.0
     volumes:
       - ./grafana:/etc/grafana/provisioning
@@ -37,12 +42,3 @@ services:
       - GF_INSTALL_PLUGINS=https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
     ports:
       - "3000:3000/tcp"
-
-#  jaeger:
-#    image: jaegertracing/all-in-one:1.64.0
-#    ports:
-#      - "16686:16686"
-#      - "4317:4317"
-#      - "4318:4318"
-#    environment:
-#      - JAEGER_DISABLED=true
