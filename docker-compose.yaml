@@ -1,6 +1,6 @@
 services:
   db:
-    profiles: ["all", "db_only"]
+    profiles: ["all", "without_loki", "db_only"]
     image: postgres:15.5
     ports:
       - "5432:5432"
@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=password
 
   opentelemetry-collector:
-    profiles: ["all"]
+    profiles: ["all", "without_loki"]
     image: otel/opentelemetry-collector-contrib:0.116.1
     volumes:
       - ./otel-collector-config.yaml:/etc/otel/config.yaml
