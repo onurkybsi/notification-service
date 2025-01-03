@@ -27,9 +27,9 @@ otel:
     common:
       default-enabled: false
     spring-webflux:
-      enabled: true
+      enabled: false
     r2dbc:
-      enabled: true
+      enabled: false
     log4j-appender:
         enabled: true
 
