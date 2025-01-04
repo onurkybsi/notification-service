@@ -1,5 +1,6 @@
 package org.kybprototyping.notificationservice.adapter
 
+import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizerProvider
 import io.opentelemetry.sdk.resources.Resource
 import io.opentelemetry.semconv.ServiceAttributes
@@ -18,6 +19,10 @@ internal class OtelSpringConfiguration {
                         .put(ServiceAttributes.SERVICE_NAME, serviceName)
                         .build()
                 )
+                b.addLogRecordProcessor { _, logRecord ->
+                    val data = logRecord.toLogRecordData()
+                    logRecord.setAttribute(AttributeKey.stringKey("thread"), Thread.currentThread().name)
+                }
             }
         }
 }

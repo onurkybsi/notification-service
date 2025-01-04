@@ -3,16 +3,15 @@
 
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
-            <!--<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />-->
-            <JsonTemplateLayout eventTemplateUri="classpath:log4j-json-template.json" />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
         </Console>
-        <!--<OpenTelemetry name="OpenTelemetryAppender" />-->
+        <OpenTelemetry name="OpenTelemetryAppender" captureMapMessageAttributes="true" />
     </Appenders>
 
     <Loggers>
         <Root level="INFO">
             <AppenderRef ref="console" />
-            <!--<AppenderRef ref="OpenTelemetryAppender" />-->
+            <AppenderRef ref="OpenTelemetryAppender" />
         </Root>
     </Loggers>
 
