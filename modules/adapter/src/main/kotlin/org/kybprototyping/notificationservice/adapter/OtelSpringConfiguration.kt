@@ -20,7 +20,6 @@ internal class OtelSpringConfiguration {
                         .build()
                 )
                 b.addLogRecordProcessor { _, logRecord ->
-                    val data = logRecord.toLogRecordData()
                     logRecord.setAttribute(AttributeKey.stringKey("thread"), Thread.currentThread().name)
                 }
             }
