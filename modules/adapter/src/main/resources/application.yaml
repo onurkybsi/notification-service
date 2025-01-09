@@ -32,6 +32,8 @@ otel:
       enabled: false
     log4j-appender:
         enabled: true
+  metrics:
+    exporter: otlp
 
 logging:
   level:

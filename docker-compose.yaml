@@ -14,11 +14,12 @@ services:
     image: otel/opentelemetry-collector-contrib:0.116.1
     volumes:
       - ./otel-collector-config.yaml:/etc/otel/config.yaml
-      - ./file-export:/file-export
+      - ./exporters/logs:/exporters/logs
+      - ./exporters/metrics:/exporters/metrics
     command:
       - '--config=/etc/otel/config.yaml'
     ports:
-      - "4318:4318" #http receiver
+      - "4318:4318" # HTTP receiver
 
   loki:
     profiles: ["all"]
@@ -30,7 +31,7 @@ services:
       - "3100:3100"
 
   grafana:
-    profiles: ["all"]
+    profiles: ["all", "without_loki"]
     image: grafana/grafana:11.4.0
     volumes:
       - ./grafana:/etc/grafana/provisioning
@@ -42,3 +43,13 @@ services:
       - GF_INSTALL_PLUGINS=https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
     ports:
       - "3000:3000/tcp"
+
+  prometheus:
+    profiles: ["all", "without_loki"]
+    image: prom/prometheus:v3.1.0
+    volumes:
+      - "./prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml"
+    command:
+      - "--config.file=/etc/prometheus/prometheus-config.yaml"
+    ports:
+      - 9090:9090
