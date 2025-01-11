@@ -26,5 +26,8 @@ internal class OtelSpringConfiguration {
             customizer.addMeterProviderCustomizer { b, _ ->
                 b.setResource(resource)
             }
+            customizer.addTracerProviderCustomizer { b, _ ->
+                b.setResource(resource)
+            }
         }
 }

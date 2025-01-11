@@ -9,3 +9,13 @@ datasources:
   access: proxy
   url: http://prometheus:9090
   isDefault: true
+- name: Jaeger
+  type: jaeger
+  access: proxy
+  url: http://jaeger:16686 # Replace with your Jaeger Query endpoint
+  basicAuth: false
+  isDefault: false
+  jsonData:
+    httpHeaderName: ""
+  secureJsonData:
+    httpHeaderValue: ""

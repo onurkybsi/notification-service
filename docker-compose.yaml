@@ -2,6 +2,7 @@ services:
   db:
     profiles: ["all", "without_loki", "db_only"]
     image: postgres:15.5
+    container_name: "postgres"
     ports:
       - "5432:5432"
     environment:
@@ -12,10 +13,12 @@ services:
   opentelemetry-collector:
     profiles: ["all", "without_loki"]
     image: otel/opentelemetry-collector-contrib:0.116.1
+    container_name: "otel-collector"
     volumes:
       - ./otel-collector-config.yaml:/etc/otel/config.yaml
       - ./exporters/logs:/exporters/logs
       - ./exporters/metrics:/exporters/metrics
+      - ./exporters/traces:/exporters/traces
     command:
       - '--config=/etc/otel/config.yaml'
     ports:
@@ -24,6 +27,7 @@ services:
   loki:
     profiles: ["all"]
     image: grafana/loki:3.3.2
+    container_name: "loki"
     volumes:
       - ./loki-config.yaml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
@@ -33,6 +37,7 @@ services:
   grafana:
     profiles: ["all", "without_loki"]
     image: grafana/grafana:11.4.0
+    container_name: "grafana"
     volumes:
       - ./grafana:/etc/grafana/provisioning
     environment:
@@ -47,9 +52,22 @@ services:
   prometheus:
     profiles: ["all", "without_loki"]
     image: prom/prometheus:v3.1.0
+    container_name: "prometheus"
     volumes:
       - "./prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml"
     command:
       - "--config.file=/etc/prometheus/prometheus-config.yaml"
     ports:
       - 9090:9090
+
+  jaeger:
+    profiles: ["all", "without_loki"]
+    # 'memory' storage type is only available in all-in-one image, in production use the collector with a storage backend!
+    image: jaegertracing/all-in-one:1.65.0
+    container_name: "jaeger"
+    ports:
+      - "4317:4317"
+      - "16686:16686"
+    environment:
+      - SPAN_STORAGE_TYPE=memory
+      - JAEGER_DISABLED=true
