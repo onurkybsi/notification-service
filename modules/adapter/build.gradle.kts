@@ -86,6 +86,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-jooq")
     implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter")
+    implementation(libs.micrometer.otlpregistry)
 
     runtimeOnly(libs.postgresql.jdbc) // For Flyway task
     jooqGenerator(libs.postgresql.jdbc)

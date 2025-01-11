@@ -16,6 +16,16 @@ management:
           - health
           - info
           - beans
+          - metrics
+  defaults:
+    metrics:
+      export:
+        enabled: false
+  otlp:
+    metrics:
+      export:
+        enabled: true
+        url: "http://localhost:4318/v1/metrics"
 
 springdoc:
   swagger-ui:

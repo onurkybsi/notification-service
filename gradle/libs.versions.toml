@@ -16,6 +16,7 @@ kotlincoroutinestest = "1.9.0"
 kotestassertionsarrow = "1.4.0"
 junit-engine = "5.11.0-M2"
 studerjooqgenerator = "8.0"
+micrometer-otlpregistry = "1.14.2"
 
 [libraries]
 springdoc = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
@@ -37,6 +38,7 @@ testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.
 kotlincoroutinestest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlincoroutinestest" }
 kotestassertionsarrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotestassertionsarrow" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-engine" }
+micrometer-otlpregistry = { module = "io.micrometer:micrometer-registry-otlp", version.ref = "micrometer-otlpregistry" }
 
 [plugins]
 flyway-plugin = { id = "org.flywaydb.flyway", version.ref = "flyway" }
