@@ -9,6 +9,9 @@ import kotlinx.coroutines.reactor.awaitSingle
 import org.kybprototyping.notificationservice.adapter.repository.common.TransactionAwareDSLContextProxy
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.Tables.NOTIFICATION_TEMPLATE
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.tables.records.NotificationTemplateRecord
+import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.NotificationChannel as RecordNotificationChannel
+import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.NotificationType as RecordNotificationType
+import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.NotificationLanguage as RecordNotificationLanguage
 import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.NotificationChannel
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
@@ -48,9 +51,9 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
         language: NotificationLanguage?,
     ) = try {
         var query = transactionAwareDSLContextProxy.dslContext().selectFrom(NOTIFICATION_TEMPLATE).where()
-        channel?.let { query = query.and(NOTIFICATION_TEMPLATE.CHANNEL.eq(channel.name)) }
-        type?.let { query = query.and(NOTIFICATION_TEMPLATE.TYPE.eq(type.name)) }
-        language?.let { query = query.and(NOTIFICATION_TEMPLATE.LANGUAGE.eq(language.name)) }
+        channel?.let { query = query.and(NOTIFICATION_TEMPLATE.CHANNEL.eq((toRecord(channel)))) }
+        type?.let { query = query.and(NOTIFICATION_TEMPLATE.TYPE.eq(toRecord(type))) }
+        language?.let { query = query.and(NOTIFICATION_TEMPLATE.LANGUAGE.eq(toRecord(language))) }
 
         Flux.from(query)
             .map { it.toDomain() }
@@ -70,13 +73,17 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
     ) = try {
         transactionAwareDSLContextProxy.dslContext()
             .insertInto(NOTIFICATION_TEMPLATE)
-            .set(NOTIFICATION_TEMPLATE.CHANNEL, channel.name)
-            .set(NOTIFICATION_TEMPLATE.TYPE, type.name)
-            .set(NOTIFICATION_TEMPLATE.LANGUAGE, language.name)
-            .set(NOTIFICATION_TEMPLATE.SUBJECT, subject)
-            .set(NOTIFICATION_TEMPLATE.CONTENT, content)
-            .set(NOTIFICATION_TEMPLATE.MODIFIED_AT, LocalDateTime.now()) // TODO: TimeUtils!
-            .set(NOTIFICATION_TEMPLATE.CREATED_AT, LocalDateTime.now()) // TODO: TimeUtils!
+            .set(
+                NotificationTemplateRecord().also {
+                    it.channel = toRecord(channel)
+                    it.type = toRecord(type)
+                    it.language = toRecord(language)
+                    it.subject = subject
+                    it.content = content
+                    it.modifiedAt =  LocalDateTime.now() // TODO: TimeUtils!
+                    it.createdAt =  LocalDateTime.now() // TODO: TimeUtils!
+                }
+            )
             .onDuplicateKeyIgnore()
             .returningResult(NOTIFICATION_TEMPLATE.ID)
             .awaitFirstOrNull()
@@ -137,9 +144,9 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
         internal fun NotificationTemplateRecord.toDomain() =
             NotificationTemplate(
                 id = this.id!!,
-                channel = NotificationChannel.valueOf(this.channel!!),
-                type = NotificationType.valueOf(this.type!!),
-                language = NotificationLanguage.valueOf(this.language!!),
+                channel = toDomain(this.channel),
+                type = toDomain(this.type),
+                language = toDomain(this.language),
                 subject = this.subject!!,
                 content = this.content!!,
                 modifiedBy = this.modifiedBy,
@@ -150,15 +157,47 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
 
         internal fun NotificationTemplate.toRecordForCreation() =
             NotificationTemplateRecord().also {
-                it.channel = this.channel.name
-                it.type = this.type.name
-                it.language = this.language.name
+                it.channel = toRecord(this.channel)
+                it.type = toRecord(this.type)
+                it.language = toRecord(this.language)
                 it.subject = this.subject
                 it.content = this.content
                 it.modifiedBy = this.modifiedBy
                 it.modifiedAt = this.modifiedAt.toLocalDateTime() // TODO: TimeUtils!
                 it.createdBy = this.createdBy
                 it.createdAt = this.createdAt.toLocalDateTime() // TODO: TimeUtils!
+            }
+
+        private fun toDomain(from: RecordNotificationChannel) =
+            when(from) {
+                RecordNotificationChannel.EMAIL -> NotificationChannel.EMAIL
+            }
+
+        private fun toDomain(from: RecordNotificationType) =
+            when(from) {
+                RecordNotificationType.WELCOME -> NotificationType.WELCOME
+                RecordNotificationType.PASSWORD_RESET -> NotificationType.PASSWORD_RESET
+            }
+
+        private fun toDomain(from: RecordNotificationLanguage) =
+            when(from) {
+                RecordNotificationLanguage.EN -> NotificationLanguage.EN
+            }
+
+        private fun toRecord(from: NotificationChannel) =
+            when(from) {
+                NotificationChannel.EMAIL -> RecordNotificationChannel.EMAIL
+            }
+
+        private fun toRecord(from: NotificationType) =
+            when(from) {
+                NotificationType.WELCOME -> RecordNotificationType.WELCOME
+                NotificationType.PASSWORD_RESET -> RecordNotificationType.PASSWORD_RESET
+            }
+
+        private fun toRecord(from: NotificationLanguage) =
+            when(from) {
+                NotificationLanguage.EN -> RecordNotificationLanguage.EN
             }
     }
 }

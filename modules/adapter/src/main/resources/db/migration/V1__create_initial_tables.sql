@@ -1,8 +1,7 @@
 -- notification_template
--- R2dbcEntityTemplate cannot generate write queries for enum types!
---CREATE TYPE notification_channel AS ENUM ('EMAIL');
---CREATE TYPE notification_type AS ENUM ('WELCOME', 'PASSWORD_RESET');
---CREATE TYPE notification_language AS ENUM ('EN');
+CREATE TYPE notification_channel AS ENUM ('EMAIL');
+CREATE TYPE notification_type AS ENUM ('WELCOME', 'PASSWORD_RESET');
+CREATE TYPE notification_language AS ENUM ('EN');
 
 CREATE TABLE IF NOT EXISTS notification_template (
   id SERIAL PRIMARY KEY,
@@ -10,9 +9,9 @@ CREATE TABLE IF NOT EXISTS notification_template (
   modified_at TIMESTAMP NOT NULL,
   created_by VARCHAR,
   created_at TIMESTAMP NOT NULL,
-  channel VARCHAR NOT NULL,
-  type VARCHAR NOT NULL,
-  "language" VARCHAR NOT NULL,
+  channel notification_channel NOT NULL,
+  type notification_type NOT NULL,
+  "language" notification_language NOT NULL,
   subject VARCHAR NOT NULL,
   content VARCHAR NOT NULL,
   UNIQUE(channel, type, "language")
