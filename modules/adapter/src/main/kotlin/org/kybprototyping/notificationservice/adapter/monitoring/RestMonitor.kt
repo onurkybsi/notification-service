@@ -8,6 +8,5 @@ import io.opentelemetry.api.metrics.LongCounter
  * Represents the API that provides monitoring for REST APIs.
  */
 internal class RestMonitor(private val requestCounter: LongCounter) {
-    internal fun increaseRequestCounter(path: String): Unit =
-        requestCounter.add(1, Attributes.of(AttributeKey.stringKey("path"), path))
+    internal fun increaseRequestCounter(path: String): Unit = requestCounter.add(1, Attributes.of(AttributeKey.stringKey("path"), path))
 }

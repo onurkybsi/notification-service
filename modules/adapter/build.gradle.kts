@@ -1,6 +1,9 @@
-import nu.studer.gradle.jooq.JooqEdition
-import nu.studer.gradle.jooq.JooqGenerate
 import org.flywaydb.gradle.task.FlywayMigrateTask
+import org.jlleitschuh.gradle.ktlint.tasks.KtLintCheckTask
+import org.jooq.meta.jaxb.Database
+import org.jooq.meta.jaxb.Generator
+import org.jooq.meta.jaxb.Property
+import org.jooq.meta.jaxb.Target
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 val dbHost = System.getenv("DB_HOST") ?: "localhost"
@@ -15,7 +18,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
 
     alias(libs.plugins.flyway.plugin)
-    alias(libs.plugins.studerjooqgenerator)
+    alias(libs.plugins.jooq.codegengradle)
 }
 
 dependencyManagement {
@@ -29,36 +32,6 @@ flyway {
     user = dbUser
     password = dbPassword
     locations = arrayOf("classpath:db/migration")
-}
-
-jooq {
-    version = dependencyManagement.importedProperties["jooq.version"]
-    edition = JooqEdition.OSS
-
-    configurations {
-        create("main") {
-            jooqConfiguration.apply {
-                jdbc.apply {
-                    driver = "org.postgresql.Driver"
-                    url = "jdbc:postgresql://$dbHost:$dbPort/notification_db"
-                    user = dbUser
-                    password = dbPassword
-                }
-                generator.apply {
-                    name = "org.jooq.codegen.KotlinGenerator"
-                    database.apply {
-                        name = "org.jooq.meta.postgres.PostgresDatabase"
-                        inputSchema = "public"
-                    }
-                    // Target package of the generated code
-                    target.apply {
-                        packageName = "org.kybprototyping.notificationservice.adapter.repository.notificationtemplate"
-                    }
-                    strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
-                }
-            }
-        }
-    }
 }
 
 dependencies {
@@ -89,13 +62,45 @@ dependencies {
     implementation(libs.micrometer.otlpregistry)
 
     runtimeOnly(libs.postgresql.jdbc) // For Flyway task
-    jooqGenerator(libs.postgresql.jdbc)
+
+    jooqCodegen(libs.jooq.metaextensions)
+    jooqCodegen("com.h2database:h2") // Needed for jOOQ generation!
 
     testImplementation(libs.springmockk)
     testImplementation(libs.bundles.testcontainers)
     testImplementation(libs.flyway.core)
     testImplementation(libs.kotlincoroutinestest)
     testImplementation(libs.kotestassertionsarrow)
+}
+
+jooq {
+    configuration {
+        withGenerator(
+            Generator()
+                .withDatabase(
+                    Database()
+                        .withName("org.jooq.meta.extensions.ddl.DDLDatabase")
+                        .withProperties(
+                            Property()
+                                .withKey("scripts")
+                                .withValue("src/main/resources/db/migration/*.sql"),
+                            Property()
+                                .withKey("sort")
+                                .withValue("semantic"),
+                            Property()
+                                .withKey("unqualifiedSchema")
+                                .withValue("none"),
+                            Property()
+                                .withKey("defaultNameCase")
+                                .withValue("lower"),
+                        ),
+                )
+                .withTarget(
+                    Target()
+                        .withPackageName("org.kybprototyping.notificationservice.adapter.repository.notificationtemplate"),
+                ),
+        )
+    }
 }
 
 configurations {
@@ -108,12 +113,12 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.withType<JooqGenerate> {
-    onlyIf { // Don't run this task when ktlint tasks are executed.
-        !gradle.startParameter.taskNames.any { it.contains("ktlint") }
-    }
+tasks.named("compileKotlin") {
+    dependsOn("jooqCodegen")
+}
 
-    dependsOn("flywayMigrate")
+tasks.withType<KtLintCheckTask> {
+    dependsOn("jooqCodegen")
 }
 
 tasks.withType<FlywayMigrateTask> {
@@ -124,5 +129,5 @@ tasks.withType<FlywayMigrateTask> {
 
 tasks.withType<BootRun> {
     dependsOn("flywayMigrate")
-    dependsOn("generateJooq")
+    dependsOn("jooqCodegen")
 }

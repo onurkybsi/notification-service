@@ -15,8 +15,8 @@ testcontainers = "1.20.1"
 kotlincoroutinestest = "1.9.0"
 kotestassertionsarrow = "1.4.0"
 junit-engine = "5.11.0-M2"
-studerjooqgenerator = "8.0"
 micrometer-otlpregistry = "1.14.2"
+jooq-codegen-gradle = "3.19.20"
 
 [libraries]
 springdoc = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
@@ -39,10 +39,11 @@ kotlincoroutinestest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test
 kotestassertionsarrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotestassertionsarrow" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-engine" }
 micrometer-otlpregistry = { module = "io.micrometer:micrometer-registry-otlp", version.ref = "micrometer-otlpregistry" }
+jooq-metaextensions = { module = "org.jooq:jooq-meta-extensions", version.ref = "jooq-codegen-gradle" }
 
 [plugins]
 flyway-plugin = { id = "org.flywaydb.flyway", version.ref = "flyway" }
-studerjooqgenerator = { id = "nu.studer.jooq", version.ref = "studerjooqgenerator" }
+jooq-codegengradle = { id = "org.jooq.jooq-codegen-gradle", version.ref = "jooq-codegen-gradle" }
 
 [bundles]
 arrow = ["arrow-core", "arrow-fx-coroutines"]

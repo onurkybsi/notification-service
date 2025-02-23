@@ -11,11 +11,14 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 internal class OtelSpringConfiguration {
     @Bean
-    internal fun otelCustomizer(@Value("\${spring.application.name}") serviceName: String): AutoConfigurationCustomizerProvider =
+    internal fun otelCustomizer(
+        @Value("\${spring.application.name}") serviceName: String,
+    ): AutoConfigurationCustomizerProvider =
         AutoConfigurationCustomizerProvider { customizer ->
-            val resource = Resource.builder()
-                .put(ServiceAttributes.SERVICE_NAME, serviceName)
-                .build()
+            val resource =
+                Resource.builder()
+                    .put(ServiceAttributes.SERVICE_NAME, serviceName)
+                    .build()
 
             customizer.addLoggerProviderCustomizer { b, _ ->
                 b.setResource(resource)

@@ -6,9 +6,9 @@ import arrow.core.right
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
-import org.jooq.DSLContext
+import org.kybprototyping.notificationservice.adapter.repository.common.TransactionAwareDSLContextProxy
+import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.Tables.NOTIFICATION_TEMPLATE
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.tables.records.NotificationTemplateRecord
-import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.tables.references.NOTIFICATION_TEMPLATE
 import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.NotificationChannel
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
@@ -22,16 +22,16 @@ import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
-// TODO: Make this Spring transactional management compatible.
 @Component
 @ConditionalOnProperty(
     value = ["ports.notification-template-repository.impl"],
     havingValue = "jooq",
 )
-internal class JooqImpl(private val dslContext: DSLContext) : NotificationTemplateRepositoryPort {
+internal class JooqImpl(private val transactionAwareDSLContextProxy: TransactionAwareDSLContextProxy) : NotificationTemplateRepositoryPort {
     override suspend fun findById(id: Int) =
         try {
-            dslContext.selectFrom(NOTIFICATION_TEMPLATE)
+            transactionAwareDSLContextProxy.dslContext()
+                .selectFrom(NOTIFICATION_TEMPLATE)
                 .where(NOTIFICATION_TEMPLATE.ID.eq(id))
                 .awaitSingle()
                 .toDomain()
@@ -47,7 +47,7 @@ internal class JooqImpl(private val dslContext: DSLContext) : NotificationTempla
         type: NotificationType?,
         language: NotificationLanguage?,
     ) = try {
-        var query = dslContext.selectFrom(NOTIFICATION_TEMPLATE).where()
+        var query = transactionAwareDSLContextProxy.dslContext().selectFrom(NOTIFICATION_TEMPLATE).where()
         channel?.let { query = query.and(NOTIFICATION_TEMPLATE.CHANNEL.eq(channel.name)) }
         type?.let { query = query.and(NOTIFICATION_TEMPLATE.TYPE.eq(type.name)) }
         language?.let { query = query.and(NOTIFICATION_TEMPLATE.LANGUAGE.eq(language.name)) }
@@ -68,7 +68,7 @@ internal class JooqImpl(private val dslContext: DSLContext) : NotificationTempla
         subject: String,
         content: String,
     ) = try {
-        dslContext
+        transactionAwareDSLContextProxy.dslContext()
             .insertInto(NOTIFICATION_TEMPLATE)
             .set(NOTIFICATION_TEMPLATE.CHANNEL, channel.name)
             .set(NOTIFICATION_TEMPLATE.TYPE, type.name)
@@ -88,7 +88,7 @@ internal class JooqImpl(private val dslContext: DSLContext) : NotificationTempla
 
     override suspend fun delete(id: Int) =
         try {
-            dslContext
+            transactionAwareDSLContextProxy.dslContext()
                 .deleteFrom(NOTIFICATION_TEMPLATE)
                 .where(NOTIFICATION_TEMPLATE.ID.eq(id))
                 .awaitSingle()
@@ -114,7 +114,7 @@ internal class JooqImpl(private val dslContext: DSLContext) : NotificationTempla
             }
 
             var statement =
-                dslContext
+                transactionAwareDSLContextProxy.dslContext()
                     .update(NOTIFICATION_TEMPLATE)
                     .set(NOTIFICATION_TEMPLATE.MODIFIED_AT, LocalDateTime.now()) // TODO: TimeUtils!
             subjectToSet?.let { statement = statement.set(NOTIFICATION_TEMPLATE.SUBJECT, subjectToSet) }

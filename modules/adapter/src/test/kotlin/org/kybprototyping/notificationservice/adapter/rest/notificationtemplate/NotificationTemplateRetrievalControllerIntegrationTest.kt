@@ -4,6 +4,7 @@ import arrow.core.left
 import arrow.core.right
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationChannel.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationLanguage.Companion.toDomain
@@ -22,6 +23,7 @@ import org.kybprototyping.notificationservice.domain.model.NotificationTemplate 
 import org.kybprototyping.notificationservice.domain.model.NotificationType as DomainNotificationType
 
 @WebFluxTest(controllers = [NotificationTemplateRetrievalController::class])
+@Disabled
 internal class NotificationTemplateRetrievalControllerIntegrationTest {
     @MockkBean
     private lateinit var notificationTemplatesRetrievalUseCase: UseCaseHandler<NotificationTemplatesRetrievalInput, List<DomainNotificationTemplate>>

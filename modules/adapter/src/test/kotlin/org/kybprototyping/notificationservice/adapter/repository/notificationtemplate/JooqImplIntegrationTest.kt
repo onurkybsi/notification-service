@@ -7,30 +7,32 @@ import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
-import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.kybprototyping.notificationservice.adapter.TestData
 import org.kybprototyping.notificationservice.adapter.repository.PostgreSQLContainerRunner
-import org.kybprototyping.notificationservice.adapter.repository.common.DslContextSpringConfiguration
+import org.kybprototyping.notificationservice.adapter.repository.common.TransactionAwareDSLContextProxy
+import org.kybprototyping.notificationservice.adapter.repository.common.TransactionalExecutorSpringConfiguration
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.JooqImpl.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.JooqImpl.Companion.toRecordForCreation
-import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.tables.references.NOTIFICATION_TEMPLATE
+import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.Tables.NOTIFICATION_TEMPLATE
 import org.kybprototyping.notificationservice.domain.model.NotificationChannel
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
 import org.kybprototyping.notificationservice.domain.model.NotificationType
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate as DomainNotificationTemplate
 
 @SpringBootTest(
     classes = [
         R2dbcAutoConfiguration::class,
-        DslContextSpringConfiguration::class,
+        R2dbcTransactionManagerAutoConfiguration::class,
+        TransactionalExecutorSpringConfiguration::class,
         JooqImpl::class,
     ],
     properties = [
@@ -39,7 +41,7 @@ import org.kybprototyping.notificationservice.domain.model.NotificationTemplate 
 )
 internal class JooqImplIntegrationTest : PostgreSQLContainerRunner() {
     @Autowired
-    private lateinit var dslContext: DSLContext
+    private lateinit var transactionAwareDSLContextProxy: TransactionAwareDSLContextProxy
 
     @Autowired
     private lateinit var underTest: JooqImpl
@@ -47,7 +49,7 @@ internal class JooqImplIntegrationTest : PostgreSQLContainerRunner() {
     @BeforeEach
     fun setUp() {
         runBlocking {
-            dslContext.delete(NOTIFICATION_TEMPLATE).awaitSingle()
+            transactionAwareDSLContextProxy.dslContext().delete(NOTIFICATION_TEMPLATE).awaitSingle()
         }
     }
 
@@ -198,7 +200,12 @@ internal class JooqImplIntegrationTest : PostgreSQLContainerRunner() {
 
             // then
             actual shouldBeRight Unit
-            val templateCount = dslContext.selectCount().from(NOTIFICATION_TEMPLATE).awaitSingle().map { it.get(0, Int::class.java) }
+            val templateCount =
+                transactionAwareDSLContextProxy.dslContext()
+                    .selectCount()
+                    .from(NOTIFICATION_TEMPLATE)
+                    .awaitSingle()
+                    .map { it.get(0, Int::class.java) }
             Assertions.assertThat(templateCount).isEqualTo(0)
         }
 
@@ -266,7 +273,7 @@ internal class JooqImplIntegrationTest : PostgreSQLContainerRunner() {
         }
 
     private suspend fun insert(template: DomainNotificationTemplate) =
-        dslContext
+        transactionAwareDSLContextProxy.dslContext()
             .insertInto(NOTIFICATION_TEMPLATE)
             .set(template.toRecordForCreation().also { it.id = template.id })
             .returning()

@@ -33,6 +33,8 @@ springdoc:
     path: "/swagger-ui"
 
 otel:
+  sdk:
+    disabled: true
   instrumentation:
     common:
       default-enabled: false
@@ -54,4 +56,4 @@ logging:
 
 ports:
   notification-template-repository:
-    impl: "spring-data"
+    impl: "jooq"

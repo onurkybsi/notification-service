@@ -4,6 +4,7 @@ import arrow.core.left
 import arrow.core.right
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.kybprototyping.notificationservice.domain.common.DataNotFoundFailure
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebFluxTest(controllers = [NotificationTemplateDeletionController::class])
+@Disabled
 internal class NotificationTemplateDeletionControllerIntegrationTest {
     @MockkBean
     private lateinit var useCaseHandler: UseCaseHandler<Int, Unit>

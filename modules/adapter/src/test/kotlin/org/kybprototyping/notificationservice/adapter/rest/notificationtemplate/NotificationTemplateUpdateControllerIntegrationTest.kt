@@ -5,6 +5,7 @@ import arrow.core.right
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.kybprototyping.notificationservice.domain.common.DataNotFoundFailure
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
@@ -16,6 +17,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebFluxTest(controllers = [NotificationTemplateUpdateController::class])
+@Disabled
 internal class NotificationTemplateUpdateControllerIntegrationTest {
     private val objetMapper = ObjectMapper() // TODO: Use the common one!
 

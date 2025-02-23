@@ -9,7 +9,10 @@ import reactor.core.publisher.Mono
 
 @Component
 internal class RequestCounterSpringWebFilter(private val restMonitor: RestMonitor) : WebFilter {
-    override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
+    override fun filter(
+        exchange: ServerWebExchange,
+        chain: WebFilterChain,
+    ): Mono<Void> {
         // TODO: "1" shouldn't be included to the metric in case "/api/v1/notification-template/1"!
         restMonitor.increaseRequestCounter(exchange.request.path.value())
         return chain.filter(exchange)
