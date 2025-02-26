@@ -7,7 +7,7 @@ import kotlinx.coroutines.withContext
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
-import org.kybprototyping.notificationservice.domain.common.Failure
+import org.kybprototying.notificationservice.common.Failure
 import org.kybprototyping.notificationservice.domain.port.TransactionalExecutor
 import org.springframework.r2dbc.connection.ConnectionFactoryUtils
 import org.springframework.transaction.ReactiveTransactionManager

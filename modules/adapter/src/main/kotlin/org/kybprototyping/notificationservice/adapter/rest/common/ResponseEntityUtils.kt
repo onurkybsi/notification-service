@@ -1,10 +1,10 @@
 package org.kybprototyping.notificationservice.adapter.rest.common
 
-import org.kybprototyping.notificationservice.domain.common.DataConflictFailure
-import org.kybprototyping.notificationservice.domain.common.DataInvalidityFailure
-import org.kybprototyping.notificationservice.domain.common.DataNotFoundFailure
-import org.kybprototyping.notificationservice.domain.common.Failure
-import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
+import org.kybprototying.notificationservice.common.DataConflictFailure
+import org.kybprototying.notificationservice.common.DataInvalidityFailure
+import org.kybprototying.notificationservice.common.DataNotFoundFailure
+import org.kybprototying.notificationservice.common.Failure
+import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity

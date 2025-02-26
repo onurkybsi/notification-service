@@ -12,11 +12,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.kybprototying.notificationservice.common.Failure
+import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.adapter.repository.PostgreSQLContainerRunner
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.JooqImpl
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.Tables.NOTIFICATION_TEMPLATE
-import org.kybprototyping.notificationservice.domain.common.Failure
-import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.NotificationChannel
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
 import org.kybprototyping.notificationservice.domain.model.NotificationType

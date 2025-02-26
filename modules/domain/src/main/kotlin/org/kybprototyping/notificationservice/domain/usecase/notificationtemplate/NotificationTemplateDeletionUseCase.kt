@@ -2,9 +2,9 @@ package org.kybprototyping.notificationservice.domain.usecase.notificationtempla
 
 import arrow.core.Either
 import org.apache.logging.log4j.kotlin.Logging
-import org.kybprototyping.notificationservice.domain.common.DataNotFoundFailure
-import org.kybprototyping.notificationservice.domain.common.Failure
-import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
+import org.kybprototying.notificationservice.common.DataNotFoundFailure
+import org.kybprototying.notificationservice.common.Failure
+import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 

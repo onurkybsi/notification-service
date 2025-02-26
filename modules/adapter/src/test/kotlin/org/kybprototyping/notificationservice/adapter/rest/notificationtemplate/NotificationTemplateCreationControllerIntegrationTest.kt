@@ -8,10 +8,10 @@ import io.mockk.coEvery
 import org.apache.commons.lang3.StringUtils
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.kybprototying.notificationservice.common.DataConflictFailure
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationChannel.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationLanguage.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationType.Companion.toDomain
-import org.kybprototyping.notificationservice.domain.common.DataConflictFailure
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateCreationInput
 import org.springframework.beans.factory.annotation.Autowired

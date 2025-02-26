@@ -1,7 +1,7 @@
 package org.kybprototyping.notificationservice.domain.port
 
 import arrow.core.Either
-import org.kybprototyping.notificationservice.domain.common.Failure
+import org.kybprototying.notificationservice.common.Failure
 
 interface TransactionalExecutor {
     /**

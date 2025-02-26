@@ -5,8 +5,8 @@ import arrow.core.left
 import arrow.core.right
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.NotificationTemplate.Companion.toDomain
-import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort.DeletionFailure
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort.UpdateFailure

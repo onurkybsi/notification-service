@@ -1,7 +1,7 @@
 package org.kybprototyping.notificationservice.domain.port
 
 import arrow.core.Either
-import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
+import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.NotificationChannel
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate

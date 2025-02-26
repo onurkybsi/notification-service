@@ -1,6 +1,4 @@
-package org.kybprototyping.notificationservice.domain.common
-
-import org.kybprototying.notificationservice.common.ValidationResult
+package org.kybprototying.notificationservice.common
 
 /**
  * Base type for the *Notification Service* failures.

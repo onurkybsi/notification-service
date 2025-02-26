@@ -6,10 +6,10 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.kybprototying.notificationservice.common.DataNotFoundFailure
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationChannel.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationLanguage.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationType.Companion.toDomain
-import org.kybprototyping.notificationservice.domain.common.DataNotFoundFailure
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplatesRetrievalInput
 import org.springframework.beans.factory.annotation.Autowired

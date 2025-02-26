@@ -11,9 +11,9 @@ import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.kybprototying.notificationservice.common.DataNotFoundFailure
+import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.TestData
-import org.kybprototyping.notificationservice.domain.common.DataNotFoundFailure
-import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 
 @ExtendWith(MockKExtension::class)

@@ -1,7 +1,7 @@
 package org.kybprototyping.notificationservice.domain.usecase.notificationtemplate
 
 import org.apache.logging.log4j.kotlin.Logging
-import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
+import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort

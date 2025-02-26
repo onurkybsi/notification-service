@@ -11,8 +11,8 @@ import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.kybprototyping.notificationservice.domain.common.DataConflictFailure
-import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
+import org.kybprototying.notificationservice.common.DataConflictFailure
+import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.NotificationChannel
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
 import org.kybprototyping.notificationservice.domain.model.NotificationType

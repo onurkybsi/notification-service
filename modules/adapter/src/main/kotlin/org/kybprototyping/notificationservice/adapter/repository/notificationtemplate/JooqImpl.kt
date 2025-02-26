@@ -6,13 +6,10 @@ import arrow.core.right
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
+import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.adapter.repository.common.TransactionAwareDSLContextProxy
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.Tables.NOTIFICATION_TEMPLATE
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.tables.records.NotificationTemplateRecord
-import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.NotificationChannel as RecordNotificationChannel
-import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.NotificationType as RecordNotificationType
-import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.NotificationLanguage as RecordNotificationLanguage
-import org.kybprototyping.notificationservice.domain.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.NotificationChannel
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
@@ -24,6 +21,9 @@ import reactor.core.publisher.Flux
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.NotificationChannel as RecordNotificationChannel
+import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.NotificationLanguage as RecordNotificationLanguage
+import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.NotificationType as RecordNotificationType
 
 @Component
 @ConditionalOnProperty(
@@ -80,9 +80,9 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
                     it.language = toRecord(language)
                     it.subject = subject
                     it.content = content
-                    it.modifiedAt =  LocalDateTime.now() // TODO: TimeUtils!
-                    it.createdAt =  LocalDateTime.now() // TODO: TimeUtils!
-                }
+                    it.modifiedAt = LocalDateTime.now() // TODO: TimeUtils!
+                    it.createdAt = LocalDateTime.now() // TODO: TimeUtils!
+                },
             )
             .onDuplicateKeyIgnore()
             .returningResult(NOTIFICATION_TEMPLATE.ID)
@@ -169,34 +169,34 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
             }
 
         private fun toDomain(from: RecordNotificationChannel) =
-            when(from) {
+            when (from) {
                 RecordNotificationChannel.EMAIL -> NotificationChannel.EMAIL
             }
 
         private fun toDomain(from: RecordNotificationType) =
-            when(from) {
+            when (from) {
                 RecordNotificationType.WELCOME -> NotificationType.WELCOME
                 RecordNotificationType.PASSWORD_RESET -> NotificationType.PASSWORD_RESET
             }
 
         private fun toDomain(from: RecordNotificationLanguage) =
-            when(from) {
+            when (from) {
                 RecordNotificationLanguage.EN -> NotificationLanguage.EN
             }
 
         private fun toRecord(from: NotificationChannel) =
-            when(from) {
+            when (from) {
                 NotificationChannel.EMAIL -> RecordNotificationChannel.EMAIL
             }
 
         private fun toRecord(from: NotificationType) =
-            when(from) {
+            when (from) {
                 NotificationType.WELCOME -> RecordNotificationType.WELCOME
                 NotificationType.PASSWORD_RESET -> RecordNotificationType.PASSWORD_RESET
             }
 
         private fun toRecord(from: NotificationLanguage) =
-            when(from) {
+            when (from) {
                 NotificationLanguage.EN -> RecordNotificationLanguage.EN
             }
     }

@@ -6,7 +6,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.kybprototyping.notificationservice.domain.common.DataNotFoundFailure
+import org.kybprototying.notificationservice.common.DataNotFoundFailure
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest

@@ -1,6 +1,7 @@
 package org.kybprototyping.notificationservice.domain.common
 
 import arrow.core.Either
+import org.kybprototying.notificationservice.common.Failure
 
 /**
  * Represents the _Notification Service_ use case implementations.
