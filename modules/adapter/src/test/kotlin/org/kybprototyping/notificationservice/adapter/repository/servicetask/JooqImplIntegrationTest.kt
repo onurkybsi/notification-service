@@ -2,6 +2,7 @@ package org.kybprototyping.notificationservice.adapter.repository.servicetask
 
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -12,16 +13,21 @@ import org.junit.jupiter.api.Test
 import org.kybprototying.notificationservice.common.DataConflictFailure
 import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.adapter.TestData
+import org.kybprototyping.notificationservice.adapter.TimeUtilsSpringConfiguration
 import org.kybprototyping.notificationservice.adapter.repository.PostgreSQLContainerRunner
 import org.kybprototyping.notificationservice.adapter.repository.common.TransactionAwareDSLContextProxy
 import org.kybprototyping.notificationservice.adapter.repository.common.TransactionalExecutorSpringConfiguration
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.Tables.SERVICE_TASK
+import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.tables.records.ServiceTaskRecord
 import org.kybprototyping.notificationservice.adapter.repository.servicetask.JooqImpl.Companion.toRecord
+import org.kybprototyping.notificationservice.domain.model.ServiceTaskStatus
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
+import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.ServiceTaskStatus as RecordServiceTaskStatus
 import reactor.core.publisher.Flux
+import java.time.OffsetDateTime
 import java.util.UUID
 
 @SpringBootTest(
@@ -29,6 +35,7 @@ import java.util.UUID
         R2dbcAutoConfiguration::class,
         R2dbcTransactionManagerAutoConfiguration::class,
         TransactionalExecutorSpringConfiguration::class,
+        TimeUtilsSpringConfiguration::class,
         JooqImpl::class,
     ],
     properties = [
@@ -106,4 +113,54 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
         }
     }
 
+    @Nested
+    inner class UpdateStatusByStatus {
+        @Test
+        fun `should update tasks with given status as given status in the underlying repository`() = runTest {
+            // given
+            val task1ToUpdate = TestData.serviceTaskRecord()
+            val task2ToUpdate = TestData.serviceTaskRecord()
+            insert(task1ToUpdate)
+            insert(task2ToUpdate)
+            insert(TestData.serviceTaskRecord(status = RecordServiceTaskStatus.COMPLETED))
+            val status = ServiceTaskStatus.PENDING
+            val statusToSet = ServiceTaskStatus.IN_PROGRESS
+            val executionStartedAtToSet = OffsetDateTime.parse("2025-01-01T00:00Z")
+
+            // when
+            val actual = underTest.updateBy(status, statusToSet, executionStartedAtToSet)
+
+            // then
+            actual
+                .shouldBeRight()
+                .also { updatedTasks ->
+                    assertThat(updatedTasks)
+                        .isEqualTo(
+                            listOf(
+                                TestData.serviceTask.copy(
+                                    id = task1ToUpdate.id,
+                                    status = ServiceTaskStatus.IN_PROGRESS,
+                                    externalId = task1ToUpdate.externalId,
+                                    executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
+                                    modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
+                                ),
+                                TestData.serviceTask.copy(
+                                    id = task2ToUpdate.id,
+                                    status = ServiceTaskStatus.IN_PROGRESS,
+                                    externalId = task2ToUpdate.externalId,
+                                    executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
+                                    modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
+                                ),
+                            )
+                        )
+                }
+        }
+    }
+
+    private suspend fun insert(record: ServiceTaskRecord) {
+        transactionAwareDSLContextProxy.dslContext()
+            .insertInto(SERVICE_TASK)
+            .set(record)
+            .awaitFirstOrNull()
+    }
 }

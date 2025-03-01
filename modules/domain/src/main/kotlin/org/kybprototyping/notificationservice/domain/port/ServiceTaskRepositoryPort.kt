@@ -5,6 +5,8 @@ import org.kybprototying.notificationservice.common.DataConflictFailure
 import org.kybprototying.notificationservice.common.Failure
 import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.ServiceTask
+import org.kybprototyping.notificationservice.domain.model.ServiceTaskStatus
+import java.time.OffsetDateTime
 
 /**
  * Represents the API that provides access to [ServiceTask] data repository.
@@ -18,4 +20,18 @@ interface ServiceTaskRepositoryPort {
      * [UnexpectedFailure] if something went unexpectedly wrong
      */
     suspend fun insert(task: ServiceTask): Either<Failure, Unit>
+
+    /**
+     * Updates the tasks with given [status] by given values.
+     *
+     * @param status status to be updated from
+     * @param statusToSet status to be updated to
+     * @param executionStartedAtToSet execution start date time to be updated to
+     * @return updated tasks, [UnexpectedFailure] if something went unexpectedly wrong
+     */
+    suspend fun updateBy(
+        status: ServiceTaskStatus,
+        statusToSet: ServiceTaskStatus,
+        executionStartedAtToSet: OffsetDateTime,
+    ): Either<Failure, List<ServiceTask>> // TODO: Maybe, limit?
 }

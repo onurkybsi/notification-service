@@ -55,12 +55,17 @@ internal class JooqImpl(
             }
         }
 
-    override suspend fun updateBy(status: ServiceTaskStatus, statusToSet: ServiceTaskStatus) =
+    override suspend fun updateBy(
+        status: ServiceTaskStatus,
+        statusToSet: ServiceTaskStatus,
+        executionStartedAtToSet: OffsetDateTime,
+    ) =
         runExceptionCatching {
             transactionAwareDSLContextProxy.dslContext()
                 .update(SERVICE_TASK)
                 .set(SERVICE_TASK.STATUS, toRecord(statusToSet))
                 .set(SERVICE_TASK.MODIFIED_AT, timeUtils.nowAsLocalDateTime())
+                .set(SERVICE_TASK.EXECUTION_STARTED_AT, executionStartedAtToSet.toLocalDateTime())
                 .where(SERVICE_TASK.STATUS.eq(toRecord(status)))
                 .returning()
                 .let { publisher -> Flux.from(publisher) }
@@ -95,8 +100,8 @@ internal class JooqImpl(
             externalId = from.externalId,
             priority = ServiceTaskPriority.valueOf(from.priority.toInt())!!,
             executionCount = from.executionCount.toInt(),
-            executionStartedAt = from.executionStartedAt?.let { OffsetDateTime.from(it) },
-            executionScheduledAt = from.executionScheduledAt?.let { OffsetDateTime.from(it) },
+            executionStartedAt = from.executionStartedAt?.let { timeUtils.toOffsetDateTime(it) },
+            executionScheduledAt = from.executionScheduledAt?.let { timeUtils.toOffsetDateTime(it) },
             input = from.input?.let { objectMapper.readTree(it.data()) },
             output = from.output?.let { objectMapper.readTree(it.data()) },
             message = from.message,

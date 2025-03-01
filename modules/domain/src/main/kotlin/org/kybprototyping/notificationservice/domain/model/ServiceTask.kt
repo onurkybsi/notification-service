@@ -13,7 +13,7 @@ data class ServiceTask(
     val status: ServiceTaskStatus,
     val externalId: UUID,
     val priority: ServiceTaskPriority,
-    val executionCount: Int,
+    val executionCount: Int, // Increased after execution!
     val executionStartedAt: OffsetDateTime?,
     val executionScheduledAt: OffsetDateTime?,
     val input: TreeNode?,
