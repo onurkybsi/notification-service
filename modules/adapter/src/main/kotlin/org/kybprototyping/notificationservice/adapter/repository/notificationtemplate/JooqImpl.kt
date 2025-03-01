@@ -6,6 +6,7 @@ import arrow.core.right
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
+import org.kybprototying.notificationservice.common.TimeUtils
 import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.adapter.repository.common.TransactionAwareDSLContextProxy
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.Tables.NOTIFICATION_TEMPLATE
@@ -18,7 +19,6 @@ import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRe
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.NotificationChannel as RecordNotificationChannel
@@ -30,7 +30,10 @@ import org.kybprototyping.notificationservice.adapter.repository.notificationtem
     value = ["ports.notification-template-repository.impl"],
     havingValue = "jooq",
 )
-internal class JooqImpl(private val transactionAwareDSLContextProxy: TransactionAwareDSLContextProxy) : NotificationTemplateRepositoryPort {
+internal class JooqImpl(
+    private val transactionAwareDSLContextProxy: TransactionAwareDSLContextProxy,
+    private val timeUtils: TimeUtils,
+) : NotificationTemplateRepositoryPort {
     override suspend fun findById(id: Int) =
         try {
             transactionAwareDSLContextProxy.dslContext()
@@ -80,8 +83,8 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
                     it.language = toRecord(language)
                     it.subject = subject
                     it.content = content
-                    it.modifiedAt = LocalDateTime.now() // TODO: TimeUtils!
-                    it.createdAt = LocalDateTime.now() // TODO: TimeUtils!
+                    it.modifiedAt = timeUtils.nowAsLocalDateTime()
+                    it.createdAt = timeUtils.nowAsLocalDateTime()
                 },
             )
             .onDuplicateKeyIgnore()
@@ -123,7 +126,7 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
             var statement =
                 transactionAwareDSLContextProxy.dslContext()
                     .update(NOTIFICATION_TEMPLATE)
-                    .set(NOTIFICATION_TEMPLATE.MODIFIED_AT, LocalDateTime.now()) // TODO: TimeUtils!
+                    .set(NOTIFICATION_TEMPLATE.MODIFIED_AT, timeUtils.nowAsLocalDateTime())
             subjectToSet?.let { statement = statement.set(NOTIFICATION_TEMPLATE.SUBJECT, subjectToSet) }
             contentToSet?.let { statement = statement.set(NOTIFICATION_TEMPLATE.CONTENT, contentToSet) }
             statement.where(NOTIFICATION_TEMPLATE.ID.eq(id))
@@ -163,9 +166,9 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
                 it.subject = this.subject
                 it.content = this.content
                 it.modifiedBy = this.modifiedBy
-                it.modifiedAt = this.modifiedAt.toLocalDateTime() // TODO: TimeUtils!
+                it.modifiedAt = this.modifiedAt.toLocalDateTime()
                 it.createdBy = this.createdBy
-                it.createdAt = this.createdAt.toLocalDateTime() // TODO: TimeUtils!
+                it.createdAt = this.createdAt.toLocalDateTime()
             }
 
         private fun toDomain(from: RecordNotificationChannel) =
