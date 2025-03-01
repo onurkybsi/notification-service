@@ -5,6 +5,7 @@ import arrow.core.left
 import arrow.core.right
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.kybprototying.notificationservice.common.TimeUtils
 import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.NotificationTemplate.Companion.toDomain
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
@@ -29,7 +30,10 @@ import org.kybprototyping.notificationservice.domain.model.NotificationType as D
     value = ["ports.notification-template-repository.impl"],
     havingValue = "spring-data",
 )
-internal class SpringDataImpl(private val entityTemplate: R2dbcEntityTemplate) : NotificationTemplateRepositoryPort {
+internal class SpringDataImpl(
+    private val entityTemplate: R2dbcEntityTemplate,
+    private val timeUtils: TimeUtils,
+) : NotificationTemplateRepositoryPort {
     override suspend fun findById(id: Int): Either<UnexpectedFailure, DomainNotificationTemplate?> =
         try {
             entityTemplate.selectOne(query(where("id").`is`(id)), NotificationTemplate::class.java)
@@ -76,7 +80,6 @@ internal class SpringDataImpl(private val entityTemplate: R2dbcEntityTemplate) :
         content: String,
     ): Either<UnexpectedFailure, Int?> =
         try {
-            // TODO: Add modified_at, created_at!
             entityTemplate.databaseClient.sql(
                 """
                 INSERT INTO notification_template (channel, type, language, subject, content, modified_at, created_at)
@@ -89,8 +92,8 @@ internal class SpringDataImpl(private val entityTemplate: R2dbcEntityTemplate) :
                 .bind("language", language.name)
                 .bind("subject", subject)
                 .bind("content", content)
-                .bind("modified_at", LocalDateTime.now()) // TODO: TimeUtils!
-                .bind("created_at", LocalDateTime.now())
+                .bind("modified_at", timeUtils.nowAsLocalDateTime())
+                .bind("created_at", timeUtils.nowAsLocalDateTime())
                 .map { row -> row.get("id", Integer::class.java)!!.toInt() }
                 .one()
                 .awaitSingleOrNull()!!
@@ -130,7 +133,7 @@ internal class SpringDataImpl(private val entityTemplate: R2dbcEntityTemplate) :
             }
 
             val columnsToUpdate = mutableListOf("modified_at = :modifiedAt")
-            val valuesToBind = mutableMapOf<String, Any>("id" to id, "modifiedAt" to LocalDateTime.now()) // TODO: TimeUtils!
+            val valuesToBind = mutableMapOf<String, Any>("id" to id, "modifiedAt" to timeUtils.nowAsLocalDateTime())
             subjectToSet?.let {
                 columnsToUpdate.add("subject = :subject")
                 valuesToBind["subject"] = subjectToSet

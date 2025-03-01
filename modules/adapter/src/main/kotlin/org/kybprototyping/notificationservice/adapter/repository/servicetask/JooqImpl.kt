@@ -6,8 +6,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import org.jooq.JSON
-import org.jooq.impl.DSL.exists
 import org.kybprototying.notificationservice.common.DataConflictFailure
+import org.kybprototying.notificationservice.common.TimeUtils
 import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototying.notificationservice.common.runExceptionCatching
 import org.kybprototyping.notificationservice.adapter.repository.common.TransactionAwareDSLContextProxy
@@ -19,12 +19,17 @@ import org.kybprototyping.notificationservice.domain.model.ServiceTaskStatus
 import org.kybprototyping.notificationservice.domain.model.ServiceTaskType
 import org.kybprototyping.notificationservice.domain.port.ServiceTaskRepositoryPort
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.ServiceTaskStatus as RecordServiceTaskStatus
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.ServiceTaskType as RecordServiceTaskType
 
 @Component
-internal class JooqImpl(private val transactionAwareDSLContextProxy: TransactionAwareDSLContextProxy) : ServiceTaskRepositoryPort {
+internal class JooqImpl(
+    private val transactionAwareDSLContextProxy: TransactionAwareDSLContextProxy,
+    private val timeUtils: TimeUtils,
+) : ServiceTaskRepositoryPort {
     private val objectMapper = jacksonObjectMapper() // TODO: Use a common one!
 
     override suspend fun insert(task: ServiceTask) =
@@ -48,6 +53,21 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
                     ?.let { DataConflictFailure("External ID already exists: ${task.externalId}").left() }
                     ?: UnexpectedFailure("Primary key conflict: ${task.id}").left()
             }
+        }
+
+    override suspend fun updateBy(status: ServiceTaskStatus, statusToSet: ServiceTaskStatus) =
+        runExceptionCatching {
+            transactionAwareDSLContextProxy.dslContext()
+                .update(SERVICE_TASK)
+                .set(SERVICE_TASK.STATUS, toRecord(statusToSet))
+                .set(SERVICE_TASK.MODIFIED_AT, timeUtils.nowAsLocalDateTime())
+                .where(SERVICE_TASK.STATUS.eq(toRecord(status)))
+                .returning()
+                .let { publisher -> Flux.from(publisher) }
+                .map { updatedRecord -> toDomain(updatedRecord) }
+                .collectList()
+                .awaitSingle()
+                .right()
         }
 
     internal fun toRecord(from: ServiceTask) =
@@ -75,13 +95,13 @@ internal class JooqImpl(private val transactionAwareDSLContextProxy: Transaction
             externalId = from.externalId,
             priority = ServiceTaskPriority.valueOf(from.priority.toInt())!!,
             executionCount = from.executionCount.toInt(),
-            executionStartedAt = OffsetDateTime.from(from.executionStartedAt),
-            executionScheduledAt = OffsetDateTime.from(from.executionScheduledAt),
-            input = objectMapper.readTree(from.input.data()),
-            output = objectMapper.readTree(from.output.data()),
+            executionStartedAt = from.executionStartedAt?.let { OffsetDateTime.from(it) },
+            executionScheduledAt = from.executionScheduledAt?.let { OffsetDateTime.from(it) },
+            input = from.input?.let { objectMapper.readTree(it.data()) },
+            output = from.output?.let { objectMapper.readTree(it.data()) },
             message = from.message,
-            modifiedAt = OffsetDateTime.from(from.modifiedAt),
-            createdAt = OffsetDateTime.from(from.createdAt),
+            modifiedAt = timeUtils.toOffsetDateTime(from.modifiedAt),
+            createdAt = timeUtils.toOffsetDateTime(from.createdAt),
         )
 
     internal companion object {
