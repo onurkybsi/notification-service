@@ -1,8 +1,14 @@
 package org.kybprototyping.notificationservice.domain
 
+import org.kybprototying.notificationservice.common.TimeUtils
+import org.kybprototyping.notificationservice.domain.common.CoroutineDispatcherProvider
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
+import org.kybprototyping.notificationservice.domain.model.ServiceTaskType
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
+import org.kybprototyping.notificationservice.domain.port.ServiceTaskRepositoryPort
+import org.kybprototyping.notificationservice.domain.scheduled.servicetask.ServiceTaskExecutor
+import org.kybprototyping.notificationservice.domain.scheduled.servicetask.ServiceTaskExecutorJob
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateCreationUseCase
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateDeletionUseCase
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateRetrievalUseCase
@@ -35,4 +41,12 @@ internal open class SpringConfiguration {
     @Bean
     internal open fun notificationTemplateUpdateUseCase(repositoryPort: NotificationTemplateRepositoryPort) =
         NotificationTemplateUpdateUseCase(repositoryPort)
+
+    @Bean
+    internal open fun serviceTaskExecutorJob(
+        coroutineDispatcherProvider: CoroutineDispatcherProvider,
+        timeUtils: TimeUtils,
+        serviceTaskRepositoryPort: ServiceTaskRepositoryPort,
+        executors: Map<ServiceTaskType, ServiceTaskExecutor>,
+    ) = ServiceTaskExecutorJob(coroutineDispatcherProvider, timeUtils, serviceTaskRepositoryPort, executors)
 }

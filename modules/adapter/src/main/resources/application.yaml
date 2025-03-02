@@ -54,6 +54,10 @@ logging:
         r2dbc: "INFO"
       kybprototyping: "DEBUG"
 
+scheduled:
+  enabled: true
+  pool-size: 1
+
 ports:
   notification-template-repository:
     impl: "jooq"

@@ -1,6 +1,5 @@
 package org.kybprototyping.notificationservice.adapter.repository.servicetask
 
-import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -19,11 +18,10 @@ import org.kybprototyping.notificationservice.domain.port.ServiceTaskRepositoryP
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.ServiceTaskStatus as RecordServiceTaskStatus
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.ServiceTaskType as RecordServiceTaskType
 
-@Component
+@Component("service-task")
 internal class JooqImpl(
     private val transactionAwareDSLContextProxy: TransactionAwareDSLContextProxy,
     private val timeUtils: TimeUtils,

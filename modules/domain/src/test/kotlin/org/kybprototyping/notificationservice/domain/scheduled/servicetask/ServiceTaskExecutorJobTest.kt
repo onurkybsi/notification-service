@@ -42,6 +42,8 @@ internal class ServiceTaskExecutorJobTest {
 
     @BeforeEach
     fun setUp() {
+        every { coroutineDispatcherProvider.serviceTaskExecutorDispatcher } returns Dispatchers.Unconfined
+
         underTest = ServiceTaskExecutorJob(
             coroutineDispatcherProvider = coroutineDispatcherProvider,
             timeUtils = TimeUtils(Clock.fixed(Instant.ofEpochSecond(1735689600), ZoneId.of("UTC"))),
@@ -53,7 +55,6 @@ internal class ServiceTaskExecutorJobTest {
     @Test
     fun `should execute service tasks`() = runTest {
         // given
-        every { coroutineDispatcherProvider.serviceTaskExecutorDispatcher } returns Dispatchers.Unconfined
         val taskToExecute = TestData.serviceTask(
             status = IN_PROGRESS,
             executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
@@ -83,7 +84,6 @@ internal class ServiceTaskExecutorJobTest {
     @Test
     fun `should execute tasks independently so that no task failure should affect the other tasks executions`() = runTest {
         // given
-        every { coroutineDispatcherProvider.serviceTaskExecutorDispatcher } returns Dispatchers.Unconfined
         val task1ToExecute = TestData.serviceTask(
             status = IN_PROGRESS,
             executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
@@ -137,7 +137,6 @@ internal class ServiceTaskExecutorJobTest {
     @Test
     fun `should ignore when task status update failed`() = runTest {
         // given
-        every { coroutineDispatcherProvider.serviceTaskExecutorDispatcher } returns Dispatchers.Unconfined
         coEvery { serviceTaskRepositoryPort.updateBy(any(), any(), any(), any(), any()) }
             .returns(UnexpectedFailure("Something went wrong!").left())
 

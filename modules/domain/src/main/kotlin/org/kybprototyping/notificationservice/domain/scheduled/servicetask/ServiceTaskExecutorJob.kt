@@ -26,7 +26,7 @@ internal class ServiceTaskExecutorJob(
     private val serviceTaskRepositoryPort: ServiceTaskRepositoryPort,
     private val executors: Map<ServiceTaskType, ServiceTaskExecutor>,
 ): ScheduledJob {
-    override suspend fun execute(): Unit = withContext(coroutineDispatcherProvider.serviceTaskExecutorDispatcher) {
+    override suspend fun execute() {
         logger.info("Task execution is being started...")
 
         val now = timeUtils.nowAsOffsetDateTime()
@@ -41,12 +41,14 @@ internal class ServiceTaskExecutorJob(
             .onLeft { logger.warn("Pending tasks couldn't be updated: $it") }
             .onRight { tasksToExecute ->
                 val taskExecutions = mutableListOf<Deferred<Either<Failure, Unit>>>()
-                supervisorScope {
-                    tasksToExecute.forEach { taskToExecute ->
-                        if (!executors.containsKey(taskToExecute.type)) {
-                            logger.warn("No executor found for ${taskToExecute.type}")
-                        } else {
-                            taskExecutions.add(async { executors[taskToExecute.type]!!.execute(taskToExecute) })
+                withContext(coroutineDispatcherProvider.serviceTaskExecutorDispatcher) {
+                    supervisorScope {
+                        tasksToExecute.forEach { taskToExecute ->
+                            if (!executors.containsKey(taskToExecute.type)) {
+                                logger.warn("No executor found for ${taskToExecute.type}")
+                            } else {
+                                taskExecutions.add(async { executors[taskToExecute.type]!!.execute(taskToExecute) })
+                            }
                         }
                     }
                 }
