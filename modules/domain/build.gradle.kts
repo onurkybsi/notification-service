@@ -3,7 +3,7 @@ dependencies {
     implementation(libs.bundles.arrow)
     implementation(libs.apache.log4j.kotlin)
     implementation(libs.spring.context)
-    implementation(libs.jackson.core)
+    implementation(libs.jackson.databind)
 
     testImplementation(libs.junit.engine)
     testImplementation(libs.assertj.core)
