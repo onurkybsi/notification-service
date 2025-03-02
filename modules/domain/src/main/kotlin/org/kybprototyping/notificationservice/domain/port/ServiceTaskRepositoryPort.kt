@@ -22,16 +22,23 @@ interface ServiceTaskRepositoryPort {
     suspend fun insert(task: ServiceTask): Either<Failure, Unit>
 
     /**
-     * Updates the tasks with given [status] by given values.
+     * Updates the tasks with given values by given values.
      *
-     * @param status status to be updated from
+     * The tasks to be updated must have one of the statuses given **and**
+     * execution scheduled date time less than or equal to given [executionScheduledAt] or as *null*.
+     *
+     * @param statuses statuses to be updated from
+     * @param executionScheduledAt execution scheduled date to be updated from (less, equal or *null*)
      * @param statusToSet status to be updated to
+     * @param executionScheduledAtToSet execution scheduled date to be updated to
      * @param executionStartedAtToSet execution start date time to be updated to
      * @return updated tasks, [UnexpectedFailure] if something went unexpectedly wrong
      */
     suspend fun updateBy(
-        status: ServiceTaskStatus,
+        statuses: List<ServiceTaskStatus>,
+        executionScheduledAt: OffsetDateTime,
         statusToSet: ServiceTaskStatus,
+        executionScheduledAtToSet: OffsetDateTime?,
         executionStartedAtToSet: OffsetDateTime,
     ): Either<Failure, List<ServiceTask>> // TODO: Maybe, limit?
 }

@@ -35,4 +35,14 @@ internal class TimeUtilsTest {
         assertThat(actual).isEqualTo(OffsetDateTime.parse("2025-01-01T00:00Z"))
     }
 
+    @Test
+    fun `should return current-date as OffsetDateTime from the configured clock`() {
+        // given
+
+        // when
+        val actual = underTest.nowAsOffsetDateTime()
+
+        // then
+        assertThat(actual).isEqualTo(OffsetDateTime.parse("2025-01-01T00:00:00Z"))
+    }
 }

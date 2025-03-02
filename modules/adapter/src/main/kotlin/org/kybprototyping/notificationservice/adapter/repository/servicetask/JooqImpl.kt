@@ -1,15 +1,13 @@
 package org.kybprototyping.notificationservice.adapter.repository.servicetask
 
+import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import org.jooq.JSON
-import org.kybprototying.notificationservice.common.DataConflictFailure
-import org.kybprototying.notificationservice.common.TimeUtils
-import org.kybprototying.notificationservice.common.UnexpectedFailure
-import org.kybprototying.notificationservice.common.runExceptionCatching
+import org.kybprototying.notificationservice.common.*
 import org.kybprototyping.notificationservice.adapter.repository.common.TransactionAwareDSLContextProxy
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.Tables.SERVICE_TASK
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.tables.records.ServiceTaskRecord
@@ -56,17 +54,26 @@ internal class JooqImpl(
         }
 
     override suspend fun updateBy(
-        status: ServiceTaskStatus,
+        statuses: List<ServiceTaskStatus>,
+        executionScheduledAt: OffsetDateTime,
         statusToSet: ServiceTaskStatus,
+        executionScheduledAtToSet: OffsetDateTime?,
         executionStartedAtToSet: OffsetDateTime,
     ) =
         runExceptionCatching {
             transactionAwareDSLContextProxy.dslContext()
                 .update(SERVICE_TASK)
                 .set(SERVICE_TASK.STATUS, toRecord(statusToSet))
-                .set(SERVICE_TASK.MODIFIED_AT, timeUtils.nowAsLocalDateTime())
+                .set(SERVICE_TASK.EXECUTION_SCHEDULED_AT, executionScheduledAtToSet?.toLocalDateTime())
                 .set(SERVICE_TASK.EXECUTION_STARTED_AT, executionStartedAtToSet.toLocalDateTime())
-                .where(SERVICE_TASK.STATUS.eq(toRecord(status)))
+                .set(SERVICE_TASK.MODIFIED_AT, timeUtils.nowAsLocalDateTime())
+                .where(
+                    SERVICE_TASK.STATUS.`in`(statuses.map { toRecord(it) }).and(
+                        SERVICE_TASK.EXECUTION_SCHEDULED_AT.isNull.or(
+                            SERVICE_TASK.EXECUTION_SCHEDULED_AT.lessOrEqual(executionScheduledAt.toLocalDateTime())
+                        )
+                    )
+                )
                 .returning()
                 .let { publisher -> Flux.from(publisher) }
                 .map { updatedRecord -> toDomain(updatedRecord) }

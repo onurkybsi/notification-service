@@ -114,21 +114,31 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
     }
 
     @Nested
-    inner class UpdateStatusByStatus {
+    inner class UpdateByStatusesAndExecutionScheduledAt {
         @Test
-        fun `should update tasks with given status as given status in the underlying repository`() = runTest {
+        fun `should update tasks with given statuses and execution scheduled time less than or equal to given or null`() = runTest {
             // given
             val task1ToUpdate = TestData.serviceTaskRecord()
-            val task2ToUpdate = TestData.serviceTaskRecord()
+            val task2ToUpdate = TestData.serviceTaskRecord(
+                executionScheduledAt = OffsetDateTime.parse("2024-10-01T09:00:00Z").toLocalDateTime()
+            )
+            val task3ToUpdate = TestData.serviceTaskRecord(
+                status = RecordServiceTaskStatus.ERROR,
+                executionScheduledAt = OffsetDateTime.parse("2024-10-01T08:50:00Z").toLocalDateTime()
+            )
             insert(task1ToUpdate)
             insert(task2ToUpdate)
+            insert(task3ToUpdate)
             insert(TestData.serviceTaskRecord(status = RecordServiceTaskStatus.COMPLETED))
-            val status = ServiceTaskStatus.PENDING
+            insert(TestData.serviceTaskRecord(executionScheduledAt = OffsetDateTime.parse("2024-10-01T09:00:01Z").toLocalDateTime()))
+            val statuses = listOf(ServiceTaskStatus.PENDING, ServiceTaskStatus.ERROR)
+            val executionScheduledAt = OffsetDateTime.parse("2024-10-01T09:00:00Z")
             val statusToSet = ServiceTaskStatus.IN_PROGRESS
+            val executionScheduledAtToSet = null
             val executionStartedAtToSet = OffsetDateTime.parse("2025-01-01T00:00Z")
 
             // when
-            val actual = underTest.updateBy(status, statusToSet, executionStartedAtToSet)
+            val actual = underTest.updateBy(statuses, executionScheduledAt, statusToSet, executionScheduledAtToSet, executionStartedAtToSet)
 
             // then
             actual
@@ -142,6 +152,7 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
                                     status = ServiceTaskStatus.IN_PROGRESS,
                                     externalId = task1ToUpdate.externalId,
                                     executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
+                                    executionScheduledAt = null,
                                     modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
                                 ),
                                 TestData.serviceTask.copy(
@@ -149,6 +160,15 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
                                     status = ServiceTaskStatus.IN_PROGRESS,
                                     externalId = task2ToUpdate.externalId,
                                     executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
+                                    executionScheduledAt = null,
+                                    modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
+                                ),
+                                TestData.serviceTask.copy(
+                                    id = task3ToUpdate.id,
+                                    status = ServiceTaskStatus.IN_PROGRESS,
+                                    externalId = task3ToUpdate.externalId,
+                                    executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
+                                    executionScheduledAt = null,
                                     modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
                                 ),
                             )

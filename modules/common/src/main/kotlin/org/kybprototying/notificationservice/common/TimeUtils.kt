@@ -21,4 +21,11 @@ data class TimeUtils(private val clock: Clock = Clock.systemUTC()) {
      * @return converted [OffsetDateTime] value
      */
     fun toOffsetDateTime(from: LocalDateTime): OffsetDateTime = from.atZone(clock.zone).toOffsetDateTime()
+
+    /**
+     * Obtains the current date-time as [OffsetDateTime] from the configured [clock].
+     *
+     * @return current date-time
+     */
+    fun nowAsOffsetDateTime(): OffsetDateTime = OffsetDateTime.now(clock)
 }
