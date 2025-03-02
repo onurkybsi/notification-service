@@ -60,6 +60,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jooq")
     implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter")
     implementation(libs.micrometer.otlpregistry)
+    implementation(libs.angusmail)
 
     runtimeOnly(libs.postgresql.jdbc) // For Flyway task
 

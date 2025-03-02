@@ -61,3 +61,15 @@ scheduled:
 ports:
   notification-template-repository:
     impl: "jooq"
+  email-sender:
+    impl: "jakarta"
+    from: "o.kayabasi@outlook.com"
+    smtp:
+      host: "localhost"
+      port: 1025
+      auth: false
+      starttls:
+        enable: false
+        required: false
+      username: "username"
+      password: "password"

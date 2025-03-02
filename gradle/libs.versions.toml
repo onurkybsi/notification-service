@@ -17,6 +17,7 @@ kotestassertionsarrow = "1.4.0"
 junit-engine = "5.11.0-M2"
 micrometer-otlpregistry = "1.14.2"
 jooq-codegen-gradle = "3.19.20"
+angusmail = "2.0.3"
 
 [libraries]
 springdoc = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
@@ -40,6 +41,7 @@ kotestassertionsarrow = { module = "io.kotest.extensions:kotest-assertions-arrow
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-engine" }
 micrometer-otlpregistry = { module = "io.micrometer:micrometer-registry-otlp", version.ref = "micrometer-otlpregistry" }
 jooq-metaextensions = { module = "org.jooq:jooq-meta-extensions", version.ref = "jooq-codegen-gradle" }
+angusmail = { module = "org.eclipse.angus:angus-mail", version.ref = "angusmail" }
 
 [plugins]
 flyway-plugin = { id = "org.flywaydb.flyway", version.ref = "flyway" }
