@@ -45,7 +45,7 @@ internal class ServiceTaskExecutorJob(
                     supervisorScope {
                         tasksToExecute.forEach { taskToExecute ->
                             if (!executors.containsKey(taskToExecute.type)) {
-                                logger.warn("No executor found for ${taskToExecute.type}")
+                                logger.warn("No executor found for ${taskToExecute.type}!")
                             } else {
                                 taskExecutions.add(async { executors[taskToExecute.type]!!.execute(taskToExecute) })
                             }
