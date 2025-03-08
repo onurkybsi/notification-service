@@ -34,6 +34,7 @@ internal class NotificationTemplateRetrievalController(
     private val notificationTemplateRetrievalUseCase: UseCaseHandler<Int, DomainNotificationTemplate>,
 ) {
     // TODO: Pagination!
+    // TODO: Return Flux!
     @GetMapping
     @Operation(summary = "Returns the notification templates by given values.")
     @OkApiResponse(
