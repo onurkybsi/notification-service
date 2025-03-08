@@ -14,7 +14,7 @@ internal class RequestCounterSpringWebFilter(private val restMonitor: RestMonito
         chain: WebFilterChain,
     ): Mono<Void> {
         // TODO: "1" shouldn't be included to the metric in case "/api/v1/notification-template/1"!
-        restMonitor.increaseRequestCounter(exchange.request.path.value())
+        restMonitor.increaseRequestCounter(exchange.request.path.value(), exchange.request.method.name())
         return chain.filter(exchange)
     }
 }

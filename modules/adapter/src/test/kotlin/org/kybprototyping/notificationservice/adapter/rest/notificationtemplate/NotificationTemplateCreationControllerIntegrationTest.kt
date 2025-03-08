@@ -5,10 +5,13 @@ import arrow.core.right
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
+import io.mockk.every
 import org.apache.commons.lang3.StringUtils
-import org.junit.jupiter.api.Disabled
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.kybprototying.notificationservice.common.DataConflictFailure
+import org.kybprototyping.notificationservice.adapter.monitoring.RestMonitor
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationChannel.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationLanguage.Companion.toDomain
 import org.kybprototyping.notificationservice.adapter.rest.notificationtemplate.NotificationType.Companion.toDomain
@@ -21,15 +24,24 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebFluxTest(controllers = [NotificationTemplateCreationController::class])
-@Disabled
 internal class NotificationTemplateCreationControllerIntegrationTest {
     private val objetMapper = ObjectMapper() // TODO: Use the common one!
+    private var requestCounter = 0
+
+    @MockkBean
+    private lateinit var restMonitor: RestMonitor
 
     @MockkBean
     private lateinit var useCaseHandler: UseCaseHandler<NotificationTemplateCreationInput, Int>
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
+
+    @BeforeEach
+    fun setUp() {
+        requestCounter = 0
+        every { restMonitor.increaseRequestCounter("/api/v1/notification-template", "POST") } answers { requestCounter++ }
+    }
 
     @Test
     fun `should create a notification template and return created template ID`() {
@@ -56,6 +68,7 @@ internal class NotificationTemplateCreationControllerIntegrationTest {
             .location("/api/v1/notification-template/1")
             .expectBody()
             .isEmpty
+        assertThat(requestCounter).isEqualTo(1)
     }
 
     @Test
@@ -91,6 +104,7 @@ internal class NotificationTemplateCreationControllerIntegrationTest {
                 }
                 """.trimIndent(),
             )
+        assertThat(requestCounter).isEqualTo(1)
     }
 
     @Test
@@ -126,6 +140,7 @@ internal class NotificationTemplateCreationControllerIntegrationTest {
                 }
                 """.trimIndent(),
             )
+        assertThat(requestCounter).isEqualTo(1)
     }
 
     private companion object {

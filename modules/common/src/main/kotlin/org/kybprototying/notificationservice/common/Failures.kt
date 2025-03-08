@@ -37,4 +37,8 @@ data class UnexpectedFailure(
     override val message: String = "Something went unexpectedly wrong!",
     override val isTemporary: Boolean = false,
     override val cause: Throwable? = null,
-) : Failure(message, isTemporary)
+) : Failure(message, isTemporary) {
+    companion object {
+        val unexpectedFailure = UnexpectedFailure()
+    }
+}

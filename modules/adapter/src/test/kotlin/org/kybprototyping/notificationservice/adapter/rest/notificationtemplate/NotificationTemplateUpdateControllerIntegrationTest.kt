@@ -5,9 +5,12 @@ import arrow.core.right
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
-import org.junit.jupiter.api.Disabled
+import io.mockk.every
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.kybprototying.notificationservice.common.DataNotFoundFailure
+import org.kybprototyping.notificationservice.adapter.monitoring.RestMonitor
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateUpdateInput
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,15 +20,28 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebFluxTest(controllers = [NotificationTemplateUpdateController::class])
-@Disabled
 internal class NotificationTemplateUpdateControllerIntegrationTest {
     private val objetMapper = ObjectMapper() // TODO: Use the common one!
+    private var requestCounter = 0
+
+    @MockkBean
+    private lateinit var restMonitor: RestMonitor
 
     @MockkBean
     private lateinit var useCaseHandler: UseCaseHandler<NotificationTemplateUpdateInput, Unit>
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
+
+    @BeforeEach
+    fun setUp() {
+        requestCounter = 0
+        every { restMonitor.increaseRequestCounter(any(), "PATCH") } answers {
+            if ((invocation.args[0] as String).startsWith("/api/v1/notification-template")) {
+                requestCounter++
+            }
+        }
+    }
 
     @Test
     fun `should update an existing notification template by given ID`() {
@@ -51,6 +67,7 @@ internal class NotificationTemplateUpdateControllerIntegrationTest {
             .isOk
             .expectBody()
             .isEmpty
+        assertThat(requestCounter).isEqualTo(1)
     }
 
     @Test
@@ -87,6 +104,7 @@ internal class NotificationTemplateUpdateControllerIntegrationTest {
                 }
                 """.trimIndent(),
             )
+        assertThat(requestCounter).isEqualTo(1)
     }
 
     @Test
@@ -123,6 +141,7 @@ internal class NotificationTemplateUpdateControllerIntegrationTest {
                 }
                 """.trimIndent(),
             )
+        assertThat(requestCounter).isEqualTo(1)
     }
 
     private companion object {

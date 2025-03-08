@@ -4,9 +4,12 @@ import arrow.core.left
 import arrow.core.right
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
-import org.junit.jupiter.api.Disabled
+import io.mockk.every
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.kybprototying.notificationservice.common.DataNotFoundFailure
+import org.kybprototyping.notificationservice.adapter.monitoring.RestMonitor
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -14,13 +17,27 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebFluxTest(controllers = [NotificationTemplateDeletionController::class])
-@Disabled
 internal class NotificationTemplateDeletionControllerIntegrationTest {
+    private var requestCounter = 0
+
+    @MockkBean
+    private lateinit var restMonitor: RestMonitor
+
     @MockkBean
     private lateinit var useCaseHandler: UseCaseHandler<Int, Unit>
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
+
+    @BeforeEach
+    fun setUp() {
+        requestCounter = 0
+        every { restMonitor.increaseRequestCounter(any(), eq("DELETE")) } answers {
+            if ((invocation.args[0] as String).startsWith("/api/v1/notification-template")) {
+                requestCounter++
+            }
+        }
+    }
 
     @Test
     fun `should delete a notification template`() {
@@ -36,6 +53,7 @@ internal class NotificationTemplateDeletionControllerIntegrationTest {
             .isNoContent
             .expectBody()
             .isEmpty
+        assertThat(requestCounter).isEqualTo(1)
     }
 
     @Test
@@ -63,6 +81,7 @@ internal class NotificationTemplateDeletionControllerIntegrationTest {
                 }
                 """.trimIndent(),
             )
+        assertThat(requestCounter).isEqualTo(1)
     }
 
     @Test
@@ -89,5 +108,6 @@ internal class NotificationTemplateDeletionControllerIntegrationTest {
                 }
                 """.trimIndent(),
             )
+        assertThat(requestCounter).isEqualTo(1)
     }
 }
