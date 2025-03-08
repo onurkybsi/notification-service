@@ -9,6 +9,7 @@ import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRe
 import org.kybprototyping.notificationservice.domain.port.ServiceTaskRepositoryPort
 import org.kybprototyping.notificationservice.domain.scheduled.servicetask.ServiceTaskExecutor
 import org.kybprototyping.notificationservice.domain.scheduled.servicetask.ServiceTaskExecutorJob
+import org.kybprototyping.notificationservice.domain.usecase.notification.SendEmailUseCase
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateCreationUseCase
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateDeletionUseCase
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateRetrievalUseCase
@@ -49,4 +50,10 @@ internal open class SpringConfiguration {
         serviceTaskRepositoryPort: ServiceTaskRepositoryPort,
         executors: Map<ServiceTaskType, ServiceTaskExecutor>,
     ) = ServiceTaskExecutorJob(coroutineDispatcherProvider, timeUtils, serviceTaskRepositoryPort, executors)
+
+    @Bean
+    internal open fun sendEmailUseCase(
+        timeUtils: TimeUtils,
+        serviceTaskRepositoryPort: ServiceTaskRepositoryPort,
+    ) = SendEmailUseCase(timeUtils, serviceTaskRepositoryPort)
 }
