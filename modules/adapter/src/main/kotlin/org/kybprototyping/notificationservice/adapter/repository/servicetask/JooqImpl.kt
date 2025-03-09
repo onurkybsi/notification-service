@@ -2,6 +2,7 @@ package org.kybprototyping.notificationservice.adapter.repository.servicetask
 
 import arrow.core.left
 import arrow.core.right
+import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
@@ -18,6 +19,7 @@ import org.kybprototyping.notificationservice.domain.port.ServiceTaskRepositoryP
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import java.time.OffsetDateTime
+import java.util.UUID
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.ServiceTaskStatus as RecordServiceTaskStatus
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.enums.ServiceTaskType as RecordServiceTaskType
 
@@ -80,6 +82,31 @@ internal class JooqImpl(
                 .right()
         }
 
+    override suspend fun updateBy(
+        id: UUID,
+        statusToSet: ServiceTaskStatus,
+        executionCountToSet: Int,
+        executionStartedAtToSet: OffsetDateTime?,
+        executionScheduledAtToSet: OffsetDateTime?,
+        contextToSet: TreeNode?,
+        messageToSet: String?
+    ) =
+        runExceptionCatching {
+            transactionAwareDSLContextProxy.dslContext()
+                .update(SERVICE_TASK)
+                .set(SERVICE_TASK.STATUS, toRecord(statusToSet))
+                .set(SERVICE_TASK.EXECUTION_COUNT, executionCountToSet.toShort())
+                .set(SERVICE_TASK.EXECUTION_STARTED_AT, executionStartedAtToSet?.toLocalDateTime())
+                .set(SERVICE_TASK.EXECUTION_SCHEDULED_AT, executionScheduledAtToSet?.toLocalDateTime())
+                .set(SERVICE_TASK.CONTEXT, contextToSet?.let { c -> JSON.valueOf(objectMapper.writeValueAsString(c)) })
+                .set(SERVICE_TASK.MESSAGE, messageToSet)
+                .set(SERVICE_TASK.MODIFIED_AT, timeUtils.nowAsLocalDateTime())
+                .where(SERVICE_TASK.ID.eq(id))
+                .awaitFirstOrNull()
+                .let { }
+                .right()
+        }
+
     internal fun toRecord(from: ServiceTask) =
         ServiceTaskRecord().also {
             it.id = from.id
@@ -90,8 +117,7 @@ internal class JooqImpl(
             it.executionCount = from.executionCount.toShort()
             it.executionStartedAt = from.executionStartedAt?.toLocalDateTime()
             it.executionScheduledAt = from.executionScheduledAt?.toLocalDateTime()
-            it.input = from.input?.let { i -> JSON.valueOf(objectMapper.writeValueAsString(i)) } // TODO: These should be JSONB, there is an issue with jOOQ generator!
-            it.output = from.output?.let { o -> JSON.valueOf(objectMapper.writeValueAsString(o)) }
+            it.context = from.context?.let { c -> JSON.valueOf(objectMapper.writeValueAsString(c)) } // TODO: These should be JSONB, there is an issue with jOOQ generator!
             it.message = from.message
             it.modifiedAt = from.modifiedAt.toLocalDateTime()
             it.createdAt = from.createdAt.toLocalDateTime()
@@ -107,8 +133,7 @@ internal class JooqImpl(
             executionCount = from.executionCount.toInt(),
             executionStartedAt = from.executionStartedAt?.let { timeUtils.toOffsetDateTime(it) },
             executionScheduledAt = from.executionScheduledAt?.let { timeUtils.toOffsetDateTime(it) },
-            input = from.input?.let { objectMapper.readTree(it.data()) },
-            output = from.output?.let { objectMapper.readTree(it.data()) },
+            context = from.context?.let { objectMapper.readTree(it.data()) },
             message = from.message,
             modifiedAt = timeUtils.toOffsetDateTime(from.modifiedAt),
             createdAt = timeUtils.toOffsetDateTime(from.createdAt),

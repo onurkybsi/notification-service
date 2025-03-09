@@ -10,5 +10,5 @@ import java.time.ZoneId
 @TestConfiguration
 internal class TimeUtilsSpringConfiguration {
     @Bean
-    internal fun timeUtils() = TimeUtils(Clock.fixed(Instant.ofEpochSecond(1735689600), ZoneId.of("UTC")))
+    internal fun timeUtils() = TimeUtils(Clock.fixed(Instant.parse("2025-01-01T12:00:00Z"), ZoneId.of("UTC")))
 }

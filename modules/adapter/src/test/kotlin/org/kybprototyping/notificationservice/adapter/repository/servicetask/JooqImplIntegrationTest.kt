@@ -1,5 +1,10 @@
 package org.kybprototyping.notificationservice.adapter.repository.servicetask
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import kotlinx.coroutines.reactive.awaitFirstOrNull
@@ -79,8 +84,7 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
             assertThat(created.executionCount).isEqualTo(TestData.serviceTask.executionCount.toShort())
             assertThat(created.executionStartedAt).isEqualTo(TestData.serviceTask.executionStartedAt?.toLocalDateTime())
             assertThat(created.executionScheduledAt).isEqualTo(TestData.serviceTask.executionScheduledAt?.toLocalDateTime())
-            assertThat(created.input.data()).isEqualTo("{\"inputField\": \"inputValue\"}")
-            assertThat(created.output).isNull()
+            assertThat(created.context.data()).isEqualTo("{\"input\": {\"inputField\": \"inputValue\"}}")
             assertThat(created.message).isEqualTo(TestData.serviceTask.message)
             assertThat(created.modifiedAt).isEqualTo(TestData.serviceTask.modifiedAt.toLocalDateTime())
             assertThat(created.createdAt).isEqualTo(TestData.serviceTask.createdAt.toLocalDateTime())
@@ -153,7 +157,7 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
                                     externalId = task1ToUpdate.externalId,
                                     executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
                                     executionScheduledAt = null,
-                                    modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
+                                    modifiedAt = OffsetDateTime.parse("2025-01-01T12:00Z")
                                 ),
                                 TestData.serviceTask.copy(
                                     id = task2ToUpdate.id,
@@ -161,7 +165,7 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
                                     externalId = task2ToUpdate.externalId,
                                     executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
                                     executionScheduledAt = null,
-                                    modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
+                                    modifiedAt = OffsetDateTime.parse("2025-01-01T12:00Z")
                                 ),
                                 TestData.serviceTask.copy(
                                     id = task3ToUpdate.id,
@@ -169,11 +173,60 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
                                     externalId = task3ToUpdate.externalId,
                                     executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
                                     executionScheduledAt = null,
-                                    modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
+                                    modifiedAt = OffsetDateTime.parse("2025-01-01T12:00Z")
                                 ),
                             )
                         )
                 }
+        }
+    }
+
+    @Nested
+    inner class UpdateById {
+        @Test
+        fun `should update the service task with given ID by given values`() = runTest {
+            // given
+            val taskToUpdate = TestData.serviceTaskRecord()
+            insert(taskToUpdate)
+            val statusToSet = ServiceTaskStatus.COMPLETED
+            val executionCountToSet = 1
+            val executionStartedAtToSet: OffsetDateTime? = null
+            val executionScheduledAtToSet: OffsetDateTime? = null
+            val contextToSet = objectMapper
+                .createObjectNode()
+                .set<ObjectNode>("output", objectMapper.createObjectNode().set("status", TextNode("SUCCESSFUL")))
+            val messageToSet: String? = null
+
+            // when
+            val actual = underTest.updateBy(
+                id = taskToUpdate.id,
+                statusToSet = statusToSet,
+                executionCountToSet = executionCountToSet,
+                executionStartedAtToSet = executionStartedAtToSet,
+                executionScheduledAtToSet = executionScheduledAtToSet,
+                contextToSet = contextToSet,
+                messageToSet = messageToSet,
+            )
+
+            // then
+            actual.shouldBeRight()
+            val updated = transactionAwareDSLContextProxy
+                .dslContext()
+                .selectFrom(SERVICE_TASK)
+                .where(SERVICE_TASK.ID.eq(taskToUpdate.id))
+                .awaitSingle()!!
+            assertThat(updated.id).isEqualTo(taskToUpdate.id)
+            assertThat(updated.type).isEqualTo(taskToUpdate.type)
+            assertThat(updated.status).isEqualTo(RecordServiceTaskStatus.COMPLETED)
+            assertThat(updated.externalId).isEqualTo(taskToUpdate.externalId)
+            assertThat(updated.priority).isEqualTo(taskToUpdate.priority)
+            assertThat(updated.executionCount).isEqualTo(1)
+            assertThat(updated.executionStartedAt).isNull()
+            assertThat(updated.executionScheduledAt).isNull()
+            assertThat(updated.context.data()).isEqualTo("{\"output\": {\"status\": \"SUCCESSFUL\"}}")
+            assertThat(updated.message).isEqualTo(taskToUpdate.message)
+            assertThat(updated.modifiedAt).isEqualTo(OffsetDateTime.parse("2025-01-01T12:00:00Z").toLocalDateTime())
+            assertThat(updated.createdAt).isEqualTo(taskToUpdate.createdAt)
         }
     }
 
@@ -182,5 +235,11 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
             .insertInto(SERVICE_TASK)
             .set(record)
             .awaitFirstOrNull()
+    }
+
+    private companion object {
+        private val objectMapper = jacksonObjectMapper()
+            .registerModules(JavaTimeModule())
+            .also { it.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS) }
     }
 }

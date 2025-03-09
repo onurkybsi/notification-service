@@ -55,7 +55,7 @@ internal object TestData {
         executionCount: Short = 0,
         executionStartedAt: LocalDateTime? = null,
         executionScheduledAt: LocalDateTime? = null,
-        context: JSON? = JSON.valueOf("{\"input\":{\"inputField\":\"inputValue\"},\"output\":null}"),
+        context: JSON? = JSON.valueOf("{\"input\":{\"inputField\":\"inputValue\"}}"),
         message: String? = null,
         modifiedAt: LocalDateTime = OffsetDateTime.parse("2024-10-01T09:00:00Z").toLocalDateTime(),
         createdAt: LocalDateTime = OffsetDateTime.parse("2024-10-01T09:00:00Z").toLocalDateTime(),
