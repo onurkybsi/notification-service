@@ -1,6 +1,8 @@
 package org.kybprototyping.notificationservice.domain.port
 
 import arrow.core.Either
+import org.kybprototying.notificationservice.common.DataNotFoundFailure
+import org.kybprototying.notificationservice.common.Failure
 import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.NotificationChannel
 import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
@@ -36,19 +38,19 @@ interface NotificationTemplateRepositoryPort {
     ): Either<UnexpectedFailure, List<NotificationTemplate>>
 
     /**
-     * Returns the [NotificationTemplate] entities that has the given values.
+     * Returns the [NotificationTemplate] that has the given values.
      *
      * @param channel notification channel
      * @param type type of the notification
      * @param language language of the notification
-     * @return templates that has the given values, or,
-     *  [UnexpectedFailure] if something went unexpectedly wrong
+     * @return template that has the given values, [DataNotFoundFailure] if no such a template found,
+     * [UnexpectedFailure] if something went unexpectedly wrong
      */
     suspend fun findOneBy(
-        channel: NotificationChannel?,
-        type: NotificationType?,
-        language: NotificationLanguage?,
-    ): Either<UnexpectedFailure, NotificationTemplate>
+        channel: NotificationChannel,
+        type: NotificationType,
+        language: NotificationLanguage,
+    ): Either<Failure, NotificationTemplate>
 
     /**
      * Creates a new template and returns its ID.

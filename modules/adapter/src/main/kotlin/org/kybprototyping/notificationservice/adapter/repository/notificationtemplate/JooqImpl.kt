@@ -3,11 +3,14 @@ package org.kybprototyping.notificationservice.adapter.repository.notificationte
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import kotlinx.coroutines.reactive.awaitFirstOrElse
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
+import org.kybprototying.notificationservice.common.DataNotFoundFailure
 import org.kybprototying.notificationservice.common.TimeUtils
 import org.kybprototying.notificationservice.common.UnexpectedFailure
+import org.kybprototying.notificationservice.common.runExceptionCatching
 import org.kybprototyping.notificationservice.adapter.repository.common.TransactionAwareDSLContextProxy
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.Tables.NOTIFICATION_TEMPLATE
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.tables.records.NotificationTemplateRecord
@@ -66,6 +69,24 @@ internal class JooqImpl(
     } catch (e: Exception) {
         UnexpectedFailure(cause = e).left()
     }
+
+    override suspend fun findOneBy(
+        channel: NotificationChannel,
+        type: NotificationType,
+        language: NotificationLanguage
+    ) =
+        runExceptionCatching {
+            transactionAwareDSLContextProxy.dslContext()
+                .selectFrom(NOTIFICATION_TEMPLATE)
+                .where()
+                .and(NOTIFICATION_TEMPLATE.CHANNEL.eq((toRecord(channel))))
+                .and(NOTIFICATION_TEMPLATE.LANGUAGE.eq(toRecord(language)))
+                .and(NOTIFICATION_TEMPLATE.TYPE.eq(toRecord(type)))
+                .awaitFirstOrNull()
+                ?.toDomain()
+                ?.right()
+                ?: DataNotFoundFailure("No template exists by given values: $channel & $type & $language").left()
+        }
 
     override suspend fun create(
         channel: NotificationChannel,

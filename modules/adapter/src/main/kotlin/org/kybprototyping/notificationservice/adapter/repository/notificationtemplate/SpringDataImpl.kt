@@ -8,6 +8,9 @@ import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.kybprototying.notificationservice.common.TimeUtils
 import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.NotificationTemplate.Companion.toDomain
+import org.kybprototyping.notificationservice.domain.model.NotificationChannel
+import org.kybprototyping.notificationservice.domain.model.NotificationLanguage
+import org.kybprototyping.notificationservice.domain.model.NotificationType
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort.DeletionFailure
 import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort.UpdateFailure
@@ -71,6 +74,14 @@ internal class SpringDataImpl(
         } catch (e: Exception) {
             UnexpectedFailure(isTemporary = true, cause = e).left()
         }
+
+    override suspend fun findOneBy(
+        channel: NotificationChannel,
+        type: NotificationType,
+        language: NotificationLanguage
+    ): Either<UnexpectedFailure, DomainNotificationTemplate> {
+        TODO("Not yet implemented")
+    }
 
     override suspend fun create(
         channel: DomainNotificationChannel,

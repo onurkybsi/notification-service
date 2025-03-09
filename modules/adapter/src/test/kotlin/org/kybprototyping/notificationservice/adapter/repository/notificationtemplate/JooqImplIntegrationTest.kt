@@ -7,11 +7,15 @@ import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.kybprototying.notificationservice.common.DataNotFoundFailure
 import org.kybprototyping.notificationservice.adapter.TestData
+import org.kybprototyping.notificationservice.adapter.TimeUtilsSpringConfiguration
 import org.kybprototyping.notificationservice.adapter.repository.PostgreSQLContainerRunner
 import org.kybprototyping.notificationservice.adapter.repository.common.TransactionAwareDSLContextProxy
 import org.kybprototyping.notificationservice.adapter.repository.common.TransactionalExecutorSpringConfiguration
@@ -33,6 +37,7 @@ import org.kybprototyping.notificationservice.domain.model.NotificationTemplate 
         R2dbcAutoConfiguration::class,
         R2dbcTransactionManagerAutoConfiguration::class,
         TransactionalExecutorSpringConfiguration::class,
+        TimeUtilsSpringConfiguration::class,
         JooqImpl::class,
     ],
     properties = [
@@ -138,6 +143,38 @@ internal class JooqImplIntegrationTest : PostgreSQLContainerRunner() {
             // then
             actual shouldBeRight listOf(TestData.notificationTemplate)
         }
+
+    @Nested
+    inner class FindOneByChannelTypeLanguage {
+        @Test
+        fun `should return the template with given channel, type and language`() = runTest {
+            // given
+            insert(TestData.notificationTemplate)
+            val channel = NotificationChannel.EMAIL
+            val type = NotificationType.WELCOME
+            val language = NotificationLanguage.EN
+
+            // when
+            val actual = underTest.findOneBy(channel, type, language)
+
+            // then
+            actual shouldBeRight TestData.notificationTemplate
+        }
+
+        @Test
+        fun `should return DataNotFoundFailure when no template exists given channel, type and language`() = runTest {
+            // given
+            val channel = NotificationChannel.EMAIL
+            val type = NotificationType.WELCOME
+            val language = NotificationLanguage.EN
+
+            // when
+            val actual = underTest.findOneBy(channel, type, language)
+
+            // then
+            actual shouldBeLeft DataNotFoundFailure("No template exists by given values: EMAIL & WELCOME & EN")
+        }
+    }
 
     @Test
     fun `should create notification template by values`() =
