@@ -36,8 +36,7 @@ CREATE TABLE IF NOT EXISTS service_task (
   execution_count SMALLINT NOT NULL,
   execution_started_at TIMESTAMP,
   execution_scheduled_at TIMESTAMP,
-  input JSONB,
-  output JSONB,
+  context JSONB,
   message VARCHAR
 );
 

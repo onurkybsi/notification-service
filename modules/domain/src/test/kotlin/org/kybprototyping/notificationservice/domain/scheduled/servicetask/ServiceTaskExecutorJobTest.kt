@@ -59,7 +59,7 @@ internal class ServiceTaskExecutorJobTest {
             status = IN_PROGRESS,
             executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
             executionScheduledAt = null,
-            input = null,
+            context = null,
             modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
         )
         coEvery { serviceTaskRepositoryPort.updateBy(any(), any(), any(), any(), any()) } returns listOf(taskToExecute).right()
@@ -88,21 +88,21 @@ internal class ServiceTaskExecutorJobTest {
             status = IN_PROGRESS,
             executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
             executionScheduledAt = null,
-            input = null,
+            context = null,
             modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
         )
         val task2ToExecute = TestData.serviceTask(
             status = IN_PROGRESS,
             executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
             executionScheduledAt = null,
-            input = null,
+            context = null,
             modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
         )
         val task3ToExecute = TestData.serviceTask(
             status = IN_PROGRESS,
             executionStartedAt = OffsetDateTime.parse("2025-01-01T00:00Z"),
             executionScheduledAt = null,
-            input = null,
+            context = null,
             modifiedAt = OffsetDateTime.parse("2025-01-01T00:00Z")
         )
         coEvery { serviceTaskRepositoryPort.updateBy(any(), any(), any(), any(), any()) }

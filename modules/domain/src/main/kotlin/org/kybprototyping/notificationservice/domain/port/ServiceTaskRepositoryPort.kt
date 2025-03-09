@@ -1,12 +1,14 @@
 package org.kybprototyping.notificationservice.domain.port
 
 import arrow.core.Either
+import com.fasterxml.jackson.core.TreeNode
 import org.kybprototying.notificationservice.common.DataConflictFailure
 import org.kybprototying.notificationservice.common.Failure
 import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.ServiceTask
 import org.kybprototyping.notificationservice.domain.model.ServiceTaskStatus
 import java.time.OffsetDateTime
+import java.util.UUID
 
 /**
  * Represents the API that provides access to [ServiceTask] data repository.
@@ -41,4 +43,26 @@ interface ServiceTaskRepositoryPort {
         executionScheduledAtToSet: OffsetDateTime?,
         executionStartedAtToSet: OffsetDateTime,
     ): Either<Failure, List<ServiceTask>> // TODO: Maybe, limit?
+
+    /**
+     * Updates the task with given ID by given values.
+     *
+     * @param id task ID
+     * @param statusToSet status to be updated to
+     * @param executionCountToSet execution count to be updated to
+     * @param executionStartedAtToSet execution start date time to be updated to
+     * @param executionScheduledAtToSet execution scheduled date to be updated to
+     * @param contextToSet context to be updated to
+     * @param messageToSet message to be updated to
+     * @return [UnexpectedFailure] if something went unexpectedly wrong
+     */
+    suspend fun updateBy(
+        id: UUID,
+        statusToSet: ServiceTaskStatus,
+        executionCountToSet: Int,
+        executionStartedAtToSet: OffsetDateTime?,
+        executionScheduledAtToSet: OffsetDateTime?,
+        contextToSet: TreeNode?,
+        messageToSet: String?,
+    ): Either<Failure, Unit>
 }

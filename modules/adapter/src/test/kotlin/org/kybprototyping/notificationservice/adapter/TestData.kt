@@ -38,8 +38,9 @@ internal object TestData {
             executionCount = 0,
             executionStartedAt = null,
             executionScheduledAt = null,
-            input = objectMapper.createObjectNode().set("inputField", TextNode("inputValue")),
-            output = null,
+            context = objectMapper
+                .createObjectNode()
+                .set("input", objectMapper.createObjectNode().set("inputField", TextNode("inputValue"))),
             message = null,
             modifiedAt = OffsetDateTime.parse("2024-10-01T09:00:00Z"),
             createdAt = OffsetDateTime.parse("2024-10-01T09:00:00Z"),
@@ -54,8 +55,7 @@ internal object TestData {
         executionCount: Short = 0,
         executionStartedAt: LocalDateTime? = null,
         executionScheduledAt: LocalDateTime? = null,
-        input: JSON? = JSON.valueOf("{\"inputField\":\"inputValue\"}"),
-        output: JSON? = null,
+        context: JSON? = JSON.valueOf("{\"input\":{\"inputField\":\"inputValue\"},\"output\":null}"),
         message: String? = null,
         modifiedAt: LocalDateTime = OffsetDateTime.parse("2024-10-01T09:00:00Z").toLocalDateTime(),
         createdAt: LocalDateTime = OffsetDateTime.parse("2024-10-01T09:00:00Z").toLocalDateTime(),
@@ -69,8 +69,7 @@ internal object TestData {
             it.executionCount = executionCount
             it.executionStartedAt = executionStartedAt
             it.executionScheduledAt = executionScheduledAt
-            it.input = input
-            it.output = output
+            it.context = context
             it.message = message
             it.modifiedAt = modifiedAt
             it.createdAt = createdAt

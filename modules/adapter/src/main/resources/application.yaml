@@ -57,6 +57,12 @@ logging:
 scheduled:
   enabled: true
   pool-size: 1
+  service-task:
+    send-email:
+      sender-address: "o.kayabasi@outlook.com"
+      max-execution-count: 3
+      template-not-found-backoff-hour: 24
+      email-sender-failure-backoff-min: 2
 
 ports:
   notification-template-repository:

@@ -16,8 +16,7 @@ data class ServiceTask(
     val executionCount: Int, // Increased after execution!
     val executionStartedAt: OffsetDateTime?,
     val executionScheduledAt: OffsetDateTime?,
-    val input: TreeNode?,
-    val output: TreeNode?,
+    val context: TreeNode?,
     val message: String?,
     val modifiedAt: OffsetDateTime,
     val createdAt: OffsetDateTime,

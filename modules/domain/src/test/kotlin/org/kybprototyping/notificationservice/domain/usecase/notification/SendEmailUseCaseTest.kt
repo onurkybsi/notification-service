@@ -3,7 +3,7 @@ package org.kybprototyping.notificationservice.domain.usecase.notification
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.mockk.*
@@ -20,6 +20,7 @@ import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototying.notificationservice.common.UnexpectedFailure.Companion.unexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.*
 import org.kybprototyping.notificationservice.domain.port.ServiceTaskRepositoryPort
+import org.kybprototyping.notificationservice.domain.scheduled.servicetask.sendemail.SendEmailTaskContext
 import java.time.Clock
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -73,8 +74,7 @@ internal class SendEmailUseCaseTest {
                     executionCount = 0,
                     executionStartedAt = null,
                     executionScheduledAt = null,
-                    input = objectMapper.readTree("{\"type\":\"WELCOME\",\"language\":\"EN\",\"to\":\"recipient@gmail.com\",\"values\":{\"firstName\":\"Onur\"},\"externalId\":\"${input.externalId}\"}"),
-                    output = null,
+                    context = objectMapper.valueToTree(SendEmailTaskContext(input)),
                     message = null,
                     modifiedAt = OffsetDateTime.parse("2025-01-01T00:00:00Z"),
                     createdAt = OffsetDateTime.parse("2025-01-01T00:00:00Z"),
@@ -122,6 +122,6 @@ internal class SendEmailUseCaseTest {
     }
 
     private companion object {
-        private val objectMapper = ObjectMapper()
+        private val objectMapper = jacksonObjectMapper()
     }
 }

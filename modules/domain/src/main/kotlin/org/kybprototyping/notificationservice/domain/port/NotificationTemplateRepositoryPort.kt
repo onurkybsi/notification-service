@@ -36,6 +36,21 @@ interface NotificationTemplateRepositoryPort {
     ): Either<UnexpectedFailure, List<NotificationTemplate>>
 
     /**
+     * Returns the [NotificationTemplate] entities that has the given values.
+     *
+     * @param channel notification channel
+     * @param type type of the notification
+     * @param language language of the notification
+     * @return templates that has the given values, or,
+     *  [UnexpectedFailure] if something went unexpectedly wrong
+     */
+    suspend fun findOneBy(
+        channel: NotificationChannel?,
+        type: NotificationType?,
+        language: NotificationLanguage?,
+    ): Either<UnexpectedFailure, NotificationTemplate>
+
+    /**
      * Creates a new template and returns its ID.
      *
      * @param channel notification channel

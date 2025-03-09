@@ -2,9 +2,11 @@ package org.kybprototyping.notificationservice.domain
 
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.TextNode
 import org.kybprototyping.notificationservice.domain.model.*
+import org.kybprototyping.notificationservice.domain.usecase.notification.SendEmailInput
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.UUID
 
 internal object TestData {
     private val objectMapper = ObjectMapper()
@@ -32,8 +34,9 @@ internal object TestData {
         executionCount: Int = 0,
         executionStartedAt: OffsetDateTime? = null,
         executionScheduledAt: OffsetDateTime? = null,
-        input: TreeNode? = objectMapper.createObjectNode().put("inputField", "inputValue"),
-        output: TreeNode? = null,
+        context: TreeNode? = objectMapper
+            .createObjectNode()
+            .set("input", objectMapper.createObjectNode().set("inputField", TextNode("inputValue"))),
         message: String? = null,
         modifiedAt: OffsetDateTime = OffsetDateTime.parse("2024-10-01T09:00:00Z"),
         createdAt: OffsetDateTime = OffsetDateTime.parse("2024-10-01T09:00:00Z"),
@@ -47,10 +50,18 @@ internal object TestData {
             executionCount = executionCount,
             executionStartedAt = executionStartedAt,
             executionScheduledAt = executionScheduledAt,
-            input = input,
-            output = output,
+            context = context,
             message = message,
             modifiedAt = modifiedAt,
             createdAt = createdAt,
+        )
+
+    internal fun sendEmailInput(externalId: UUID = UUID.randomUUID()) =
+        SendEmailInput(
+            type = NotificationType.WELCOME,
+            language = NotificationLanguage.EN,
+            to = "recipient@gmail.com",
+            values = mapOf("firstName" to "Onur"),
+            externalId = externalId,
         )
 }

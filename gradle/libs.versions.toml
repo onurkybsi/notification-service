@@ -4,6 +4,7 @@ arrow = "1.2.4"
 spring-context = "6.1.8"
 apache-log4j-kotlin = "1.5.0"
 apache-log4j-jsontemplatelayout = "2.24.3"
+apache-commons-text = "1.13.0"
 jackson = "2.18.0"
 springmockk = "4.0.2"
 assertj = "3.26.3"
@@ -14,7 +15,7 @@ postgresql-jdbc = "42.7.3"
 testcontainers = "1.20.1"
 kotlincoroutinestest = "1.9.0"
 kotestassertionsarrow = "1.4.0"
-junit-engine = "5.11.0-M2"
+junit = "5.11.0-M2"
 micrometer-otlpregistry = "1.14.2"
 jooq-codegen-gradle = "3.19.20"
 angusmail = "2.0.3"
@@ -26,8 +27,11 @@ arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref 
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring-context" }
 apache-log4j-kotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "apache-log4j-kotlin" }
 apache-log4j-jsontemplatelayout = { module = "org.apache.logging.log4j:log4j-layout-template-json", version.ref = "apache-log4j-jsontemplatelayout" }
+apache-commons-text = { module = "org.apache.commons:commons-text", version.ref = "apache-commons-text" }
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmockk" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
@@ -38,7 +42,8 @@ testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.re
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 kotlincoroutinestest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlincoroutinestest" }
 kotestassertionsarrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotestassertionsarrow" }
-junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-engine" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 micrometer-otlpregistry = { module = "io.micrometer:micrometer-registry-otlp", version.ref = "micrometer-otlpregistry" }
 jooq-metaextensions = { module = "org.jooq:jooq-meta-extensions", version.ref = "jooq-codegen-gradle" }
 angusmail = { module = "org.eclipse.angus:angus-mail", version.ref = "angusmail" }
