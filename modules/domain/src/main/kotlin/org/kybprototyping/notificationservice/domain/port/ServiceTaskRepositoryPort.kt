@@ -2,11 +2,14 @@ package org.kybprototyping.notificationservice.domain.port
 
 import arrow.core.Either
 import com.fasterxml.jackson.core.TreeNode
+import kotlinx.coroutines.flow.Flow
 import org.kybprototying.notificationservice.common.DataConflictFailure
 import org.kybprototying.notificationservice.common.Failure
+import org.kybprototying.notificationservice.common.DataNotFoundFailure
 import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.domain.model.ServiceTask
 import org.kybprototyping.notificationservice.domain.model.ServiceTaskStatus
+import org.kybprototyping.notificationservice.domain.model.ServiceTaskType
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -65,4 +68,32 @@ interface ServiceTaskRepositoryPort {
         contextToSet: TreeNode?,
         messageToSet: String?,
     ): Either<Failure, Unit>
+
+    /**
+     * Updates the task with given ID by given values.
+     *
+     * @param id task ID
+     * @param statusToSet status to be updated to
+     * @return [DataNotFoundFailure] if no task with given ID exists,
+     * [UnexpectedFailure] if something went unexpectedly wrong
+     */
+    suspend fun updateBy(id: UUID, statusToSet: ServiceTaskStatus): Either<Failure, Unit>
+
+    /**
+     * Returns the tasks by given values.
+     *
+     * The tasks' exclusive locks are acquired with this API call.
+     * So, no concurrent transaction can write these tasks
+     * until the transaction that this API call is part of is commited.
+     *
+     * @param types task types to return
+     * @param statuses task statuses to return
+     * @param limit maximum number of task to return
+     * @return [UnexpectedFailure] if something went unexpectedly wrong
+     */
+    suspend fun lockBy(
+        types: List<ServiceTaskType>,
+        statuses: List<ServiceTaskStatus>,
+        limit: Int,
+    ): Either<Failure, Flow<ServiceTask>>
 }

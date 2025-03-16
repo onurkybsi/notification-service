@@ -1,5 +1,7 @@
 package org.kybprototyping.notificationservice.adapter.repository.servicetask
 
+import arrow.core.right
+import arrow.fx.coroutines.CountDownLatch
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
@@ -7,15 +9,23 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
+import io.r2dbc.spi.ConnectionFactory
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.jooq.impl.DSL
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.kybprototying.notificationservice.common.DataConflictFailure
+import org.kybprototying.notificationservice.common.DataNotFoundFailure
 import org.kybprototying.notificationservice.common.UnexpectedFailure
 import org.kybprototyping.notificationservice.adapter.TestData
 import org.kybprototyping.notificationservice.adapter.TimeUtilsSpringConfiguration
@@ -26,6 +36,8 @@ import org.kybprototyping.notificationservice.adapter.repository.notificationtem
 import org.kybprototyping.notificationservice.adapter.repository.notificationtemplate.tables.records.ServiceTaskRecord
 import org.kybprototyping.notificationservice.adapter.repository.servicetask.JooqImpl.Companion.toRecord
 import org.kybprototyping.notificationservice.domain.model.ServiceTaskStatus
+import org.kybprototyping.notificationservice.domain.model.ServiceTaskType
+import org.kybprototyping.notificationservice.domain.port.TransactionalExecutor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
@@ -50,6 +62,10 @@ import java.util.UUID
 internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() {
     @Autowired
     private lateinit var transactionAwareDSLContextProxy: TransactionAwareDSLContextProxy
+    @Autowired
+    private lateinit var transactionalExecutor: TransactionalExecutor
+    @Autowired
+    private lateinit var connectionFactory: ConnectionFactory
 
     @Autowired
     private lateinit var underTest: JooqImpl
@@ -230,11 +246,103 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
         }
     }
 
-    private suspend fun insert(record: ServiceTaskRecord) {
-        transactionAwareDSLContextProxy.dslContext()
-            .insertInto(SERVICE_TASK)
-            .set(record)
-            .awaitFirstOrNull()
+    @Nested
+    inner class UpdateStatusById {
+        @Test
+        fun `should update the task status with given ID`() = runTest {
+            // given
+            val taskToUpdate = TestData.serviceTaskRecord()
+            insert(taskToUpdate)
+            val statusToSet = ServiceTaskStatus.PUBLISHED
+
+            // when
+            val actual = underTest.updateBy(
+                id = taskToUpdate.id,
+                statusToSet = statusToSet,
+            )
+
+            // then
+            actual.shouldBeRight()
+            val updated = transactionAwareDSLContextProxy
+                .dslContext()
+                .selectFrom(SERVICE_TASK)
+                .where(SERVICE_TASK.ID.eq(taskToUpdate.id))
+                .awaitSingle()!!
+            assertThat(updated.status).isEqualTo(RecordServiceTaskStatus.PUBLISHED)
+            assertThat(updated.modifiedAt).isEqualTo(OffsetDateTime.parse("2025-01-01T12:00:00Z").toLocalDateTime())
+        }
+
+        @Test
+        fun `should return DataNotFoundFailure when no task with given ID exists`() = runTest {
+            // given
+            val taskToUpdate = TestData.serviceTaskRecord()
+            val statusToSet = ServiceTaskStatus.PUBLISHED
+
+            // when
+            val actual = underTest.updateBy(
+                id = taskToUpdate.id,
+                statusToSet = statusToSet,
+            )
+
+            // then
+            actual.shouldBeLeft(DataNotFoundFailure("No task with given ID found: ${taskToUpdate.id}"))
+        }
+    }
+
+    @Nested
+    inner class LockBy {
+        @Test
+        fun `should lock by given values`(): Unit = runBlocking {
+            // given
+            val createdAt = OffsetDateTime.parse("2024-10-01T09:00:00Z").toLocalDateTime()
+            val task1 = TestData.serviceTaskRecord(status = RecordServiceTaskStatus.COMPLETED, createdAt = createdAt)
+            val task2 = TestData.serviceTaskRecord(status = RecordServiceTaskStatus.FAILED, createdAt = createdAt)
+            val task3 = TestData.serviceTaskRecord(status = RecordServiceTaskStatus.PENDING, createdAt = createdAt.minusDays(1))
+            val task4 = TestData.serviceTaskRecord(status = RecordServiceTaskStatus.FAILED, createdAt = createdAt.plusDays(1))
+            insert(task1, task2, task3, task4)
+            val types = listOf(ServiceTaskType.SEND_EMAIL)
+            val statuses = listOf(ServiceTaskStatus.COMPLETED, ServiceTaskStatus.FAILED)
+            val limit = 2
+
+            // when
+            val latch1 = CountDownLatch(1)
+            val latch2 = CountDownLatch(1)
+            val actual = async {
+                transactionalExecutor.execute {
+                    val lockTasks = underTest
+                        .lockBy(types, statuses, limit)
+                        .getOrNull()!!
+                        .toList()
+                        .map { it.id }
+                    latch1.countDown()
+                    latch2.await()
+                    lockTasks.right()
+                }.getOrNull()!!
+            }
+            latch1.await()
+            val concurrentRead = DSL
+                .using(connectionFactory.create().awaitSingle())
+                .selectFrom(SERVICE_TASK)
+                .forUpdate()
+                .skipLocked()
+                .asFlow()
+                .map { it.id }
+                .onCompletion { latch2.countDown() }
+                .toList()
+
+            // then
+            assertThat(actual.await()).isEqualTo(listOf(task1.id, task2.id))
+            assertThat(concurrentRead).isEqualTo(listOf(task3.id, task4.id))
+        }
+    }
+
+    private suspend fun insert(vararg records: ServiceTaskRecord) {
+        records.forEach { record ->
+            transactionAwareDSLContextProxy.dslContext()
+                .insertInto(SERVICE_TASK)
+                .set(record)
+                .awaitFirstOrNull()
+        }
     }
 
     private companion object {

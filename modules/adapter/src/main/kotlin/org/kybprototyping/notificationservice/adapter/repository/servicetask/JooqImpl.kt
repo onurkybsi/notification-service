@@ -4,6 +4,9 @@ import arrow.core.left
 import arrow.core.right
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import org.jooq.JSON
@@ -104,6 +107,50 @@ internal class JooqImpl(
                 .where(SERVICE_TASK.ID.eq(id))
                 .awaitFirstOrNull()
                 .let { }
+                .right()
+        }
+
+    override suspend fun updateBy(id: UUID, statusToSet: ServiceTaskStatus) =
+        runExceptionCatching {
+            transactionAwareDSLContextProxy.dslContext()
+                .update(SERVICE_TASK)
+                .set(SERVICE_TASK.STATUS, toRecord(statusToSet))
+                .set(SERVICE_TASK.MODIFIED_AT, timeUtils.nowAsLocalDateTime())
+                .where(SERVICE_TASK.ID.eq(id))
+                .awaitFirstOrNull()
+                .let { numOfAffectedRows ->
+                    when(numOfAffectedRows) {
+                        0 -> DataNotFoundFailure("No task with given ID found: $id").left()
+                        1 -> Unit.right()
+                        else -> UnexpectedFailure("Unexpected number of rows affected: $numOfAffectedRows!").left()
+                    }
+                }
+        }
+
+    override suspend fun lockBy(
+        types: List<ServiceTaskType>,
+        statuses: List<ServiceTaskStatus>,
+        limit: Int,
+    ) =
+        runExceptionCatching {
+            if (types.isEmpty() && statuses.isEmpty())
+                return@runExceptionCatching emptyFlow<ServiceTask>().right()
+
+            var query = transactionAwareDSLContextProxy.dslContext().selectFrom(SERVICE_TASK).where()
+            types
+                .takeIf { types.isNotEmpty() }
+                ?.also { query = query.and(SERVICE_TASK.TYPE.`in`(types.map { type -> toRecord(type) })) }
+            statuses
+                .takeIf { statuses.isNotEmpty() }
+                ?.also { query = query.and(SERVICE_TASK.STATUS.`in`(statuses.map { status -> toRecord(status) })) }
+
+            query
+                .orderBy(SERVICE_TASK.CREATED_AT)
+                .limit(limit)
+                .forUpdate()
+                .skipLocked()
+                .asFlow()
+                .map { toDomain(it) }
                 .right()
         }
 
