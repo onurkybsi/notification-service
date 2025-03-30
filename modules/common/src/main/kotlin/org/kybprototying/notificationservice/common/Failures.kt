@@ -14,7 +14,7 @@ sealed class Failure(
  */
 data class DataInvalidityFailure(
     override val message: String,
-    val validationResult: ValidationResult,
+    val validationResult: ValidationResult? = null,
 ) : Failure(message, false)
 
 /**

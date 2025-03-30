@@ -14,7 +14,12 @@ internal object ResponseEntityUtils {
         when (this) {
             is DataInvalidityFailure ->
                 ResponseEntity
-                    .of(problemDetail(HttpStatus.BAD_REQUEST, properties = mapOf("validationResult" to this.validationResult)))
+                    .of(
+                        problemDetail(
+                            status = HttpStatus.BAD_REQUEST,
+                            properties = validationResult?.let { mapOf("validationResult" to this.validationResult!!) }
+                        )
+                    )
                     .build()
             is DataNotFoundFailure -> ResponseEntity.of(problemDetail(HttpStatus.NOT_FOUND, detail = this.message)).build()
             is DataConflictFailure -> ResponseEntity.of(problemDetail(HttpStatus.CONFLICT, detail = this.message)).build()
