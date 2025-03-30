@@ -61,6 +61,10 @@ dependencies {
     implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter")
     implementation(libs.micrometer.otlpregistry)
     implementation(libs.angusmail)
+    implementation("org.springframework.kafka:spring-kafka")
+    testImplementation("org.springframework.kafka:spring-kafka-test") {
+        exclude(group = "ch.qos.logback", module = "logback-core")
+    }
 
     runtimeOnly(libs.postgresql.jdbc) // For Flyway task
 

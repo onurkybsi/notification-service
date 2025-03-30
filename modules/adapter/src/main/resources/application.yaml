@@ -7,6 +7,11 @@ spring:
     password: "${DB_PASSWORD}"
     pool:
       enabled: true
+  kafka:
+    bootstrap-servers: "${KAFKA_HOST1}:${KAFKA_PORT1}"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
 
 management:
   endpoints:
@@ -56,7 +61,7 @@ logging:
 
 scheduled:
   enabled: true
-  pool-size: 1
+  pool-size: 2
   service-task:
     send-email:
       sender-address: "o.kayabasi@outlook.com"
@@ -79,3 +84,5 @@ ports:
         required: false
       username: "username"
       password: "password"
+  service-task-publisher:
+    topic-names: { 'SEND_EMAIL': 'sent-email' }

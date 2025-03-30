@@ -1,6 +1,6 @@
 services:
   db:
-    profiles: ["all", "without_loki", "db_only"]
+    profiles: ["all", "without_loki", "db_only", "without_observability"]
     image: postgres:15.5
     container_name: "postgres"
     ports:
@@ -11,10 +11,45 @@ services:
       - POSTGRES_PASSWORD=password
 
   mailhog:
+    profiles: ["all", "without_observability"]
     image: mailhog/mailhog:v1.0.1
     ports:
       - "1025:1025"
       - "8025:8025"
+
+  zookeeper:
+    profiles: ["all", "without_observability"]
+    image: confluentinc/cp-zookeeper:7.2.1
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka-ui:
+    profiles: ["all", "without_observability"]
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - 8090:8080
+    depends_on:
+      - kafka-broker
+    environment:
+      KAFKA_CLUSTERS_0_NAME: cluster1
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker:9092
+      DYNAMIC_CONFIG_ENABLED: 'true'
+
+  kafka-broker:
+    profiles: ["all", "without_observability"]
+    image: confluentinc/cp-kafka:7.2.1
+    ports:
+      - "8097:8097"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-broker:9092,EXTERNAL://localhost:8097
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
 
   opentelemetry-collector:
     profiles: ["all", "without_loki"]
