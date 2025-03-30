@@ -4,9 +4,6 @@ import arrow.core.left
 import arrow.core.right
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import org.jooq.JSON
@@ -127,14 +124,10 @@ internal class JooqImpl(
                 }
         }
 
-    override suspend fun lockBy(
-        types: List<ServiceTaskType>,
-        statuses: List<ServiceTaskStatus>,
-        limit: Int,
-    ) =
+    override suspend fun lockBy(types: List<ServiceTaskType>, statuses: List<ServiceTaskStatus>) =
         runExceptionCatching {
             if (types.isEmpty() && statuses.isEmpty())
-                return@runExceptionCatching emptyFlow<ServiceTask>().right()
+                return@runExceptionCatching DataInvalidityFailure("'types' and 'statuses' cannot be null!").left()
 
             var query = transactionAwareDSLContextProxy.dslContext().selectFrom(SERVICE_TASK).where()
             types
@@ -146,11 +139,11 @@ internal class JooqImpl(
 
             query
                 .orderBy(SERVICE_TASK.CREATED_AT)
-                .limit(limit)
+                .limit(1)
                 .forUpdate()
                 .skipLocked()
-                .asFlow()
-                .map { toDomain(it) }
+                .awaitFirstOrNull()
+                ?.let { toDomain(it) }
                 .right()
         }
 

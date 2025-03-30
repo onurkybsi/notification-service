@@ -296,31 +296,28 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
             // given
             val createdAt = OffsetDateTime.parse("2024-10-01T09:00:00Z").toLocalDateTime()
             val task1 = TestData.serviceTaskRecord(status = RecordServiceTaskStatus.COMPLETED, createdAt = createdAt)
-            val task2 = TestData.serviceTaskRecord(status = RecordServiceTaskStatus.FAILED, createdAt = createdAt)
-            val task3 = TestData.serviceTaskRecord(status = RecordServiceTaskStatus.PENDING, createdAt = createdAt.minusDays(1))
-            val task4 = TestData.serviceTaskRecord(status = RecordServiceTaskStatus.FAILED, createdAt = createdAt.plusDays(1))
-            insert(task1, task2, task3, task4)
+            val task2 = TestData.serviceTaskRecord(status = RecordServiceTaskStatus.PENDING, createdAt = createdAt.minusDays(1))
+            val task3 = TestData.serviceTaskRecord(status = RecordServiceTaskStatus.FAILED, createdAt = createdAt.plusDays(1))
+            insert(task1, task2, task3)
             val types = listOf(ServiceTaskType.SEND_EMAIL)
             val statuses = listOf(ServiceTaskStatus.COMPLETED, ServiceTaskStatus.FAILED)
-            val limit = 2
 
             // when
             val latch1 = CountDownLatch(1)
             val latch2 = CountDownLatch(1)
             val actual = async {
                 transactionalExecutor.execute {
-                    val lockTasks = underTest
-                        .lockBy(types, statuses, limit)
-                        .getOrNull()!!
-                        .toList()
-                        .map { it.id }
+                    val lockTask = underTest
+                        .lockBy(types, statuses)
+                        .getOrNull()
+                        ?.id
                     latch1.countDown()
                     latch2.await()
-                    lockTasks.right()
+                    lockTask.right()
                 }.getOrNull()!!
             }
             latch1.await()
-            val concurrentRead = DSL
+            val concurrentReadWithSkipLocked = DSL
                 .using(connectionFactory.create().awaitSingle())
                 .selectFrom(SERVICE_TASK)
                 .forUpdate()
@@ -331,8 +328,21 @@ internal class JooqImplIntegrationIntegrationTest : PostgreSQLContainerRunner() 
                 .toList()
 
             // then
-            assertThat(actual.await()).isEqualTo(listOf(task1.id, task2.id))
-            assertThat(concurrentRead).isEqualTo(listOf(task3.id, task4.id))
+            assertThat(actual.await()).isEqualTo(task1.id)
+            assertThat(concurrentReadWithSkipLocked).isEqualTo(listOf(task2.id, task3.id))
+        }
+
+        @Test
+        fun `should return null when no task exists by given values`(): Unit = runBlocking {
+            // given
+            val types = listOf(ServiceTaskType.SEND_EMAIL)
+            val statuses = listOf(ServiceTaskStatus.COMPLETED, ServiceTaskStatus.FAILED)
+
+            // when
+            val actual = underTest.lockBy(types, statuses)
+
+            // then
+            actual.shouldBeRight(null)
         }
     }
 
