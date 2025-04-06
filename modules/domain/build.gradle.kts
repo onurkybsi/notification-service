@@ -13,6 +13,7 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.kotlincoroutinestest)
     testImplementation(libs.kotestassertionsarrow)
+    testImplementation(libs.logcaptor)
 }
 
 tasks.withType<Test> {

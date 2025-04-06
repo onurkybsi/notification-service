@@ -85,8 +85,8 @@ interface ServiceTaskRepositoryPort {
      * So, no concurrent transaction can write the task returned
      * until the transaction that this API call is part of is commited.
      *
-     * @param types task type to return
-     * @param statuses task status to return
+     * @param types task types to return
+     * @param statuses task statuses to return
      * @return *null* if there is no such a task,
      * [UnexpectedFailure] if something went unexpectedly wrong
      */

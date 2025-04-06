@@ -5,10 +5,9 @@ import org.kybprototyping.notificationservice.domain.common.CoroutineDispatcherP
 import org.kybprototyping.notificationservice.domain.common.UseCaseHandler
 import org.kybprototyping.notificationservice.domain.model.NotificationTemplate
 import org.kybprototyping.notificationservice.domain.model.ServiceTaskType
-import org.kybprototyping.notificationservice.domain.port.EmailSenderPort
-import org.kybprototyping.notificationservice.domain.port.NotificationTemplateRepositoryPort
-import org.kybprototyping.notificationservice.domain.port.ServiceTaskRepositoryPort
+import org.kybprototyping.notificationservice.domain.port.*
 import org.kybprototyping.notificationservice.domain.scheduled.servicetask.ServiceTaskExecutorJob
+import org.kybprototyping.notificationservice.domain.scheduled.servicetask.ServiceTaskOutputPublisherJob
 import org.kybprototyping.notificationservice.domain.scheduled.servicetask.sendemail.SendEmailTaskExecutor
 import org.kybprototyping.notificationservice.domain.usecase.notification.SendEmailUseCase
 import org.kybprototyping.notificationservice.domain.usecase.notificationtemplate.NotificationTemplateCreationUseCase
@@ -86,4 +85,15 @@ internal open class SpringConfiguration {
         emailSenderPort: EmailSenderPort,
         timeUtils: TimeUtils,
     ) = SendEmailTaskExecutor(properties, templateRepositoryPort, serviceTaskRepositoryPort, emailSenderPort, timeUtils)
+
+    @Bean
+    internal open fun serviceTaskOutputPublisherJob(
+        transactionalExecutor: TransactionalExecutor,
+        serviceTaskRepositoryPort: ServiceTaskRepositoryPort,
+        serviceTaskPublisherPort: ServiceTaskPublisherPort,
+    ) = ServiceTaskOutputPublisherJob(
+        transactionalExecutor,
+        serviceTaskRepositoryPort,
+        serviceTaskPublisherPort
+    )
 }
